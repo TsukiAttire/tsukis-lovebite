@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Tsuki’s Lovebite</title>
+
+<link rel="stylesheet" href="assets/css/style.css" />
+<script defer src="assets/js/script.js"></script>
+
+</head>
+<body>
+
+<div class="container">
+
+  <div class="tabs">
+    <div class="tab active" data-tab="home">home</div>
+    <div class="tab" data-tab="info">info</div>
+    <div class="tab" data-tab="update">stay up to date</div>
+  </div>
+
+  <div class="tab-content active" id="home">
+    <h2>welcome to tsuki’s lovebite ♡</h2>
+    <p>your soft + sparkly Y2K hangout ☆彡</p>
+  </div>
+
+  <div class="tab-content" id="info">
+    <h2>extra info</h2>
+    <p>I can update this with your details later!</p>
+  </div>
+
+  <div class="tab-content" id="update">
+    <h2>stay up to date</h2>
+    <div class="socials">
+      <a href="#">YouTube</a>
+      <a href="#">TikTok #1</a>
+      <a href="#">TikTok #2</a>
+      <a href="#">TikTok #3</a>
+      <a href="#">Roblox Profile</a>
+    </div>
+  </div>
+
+</div>
+
+<img id="phoneIcon" src="assets/images/phone.png" alt="Phone Icon">
+
+<div id="vnWindow">
+
+  <img id="vnSprite" src="assets/sprites/neutral.png" alt="Tsuki Sprite" />
+
+  <div id="vnText">📞 *Tsuki is calling…*</div>
+
+  <div id="vnChoices">
+    <button class="choice-btn" onclick="react('happy')">Answer</button>
+    <button class="choice-btn" onclick="react('annoyed')">Ignore</button>
+    <button class="choice-btn" onclick="react('confused')">Where am I?</button>
+  </div>
+
+  <div id="subChoices" style="display:none;">
+    <button class="choice-btn" onclick="openFormMenu()">Suggest rant topic or game</button>
+  </div>
+
+  <div id="formMenu" style="display:none;">
+    <button class="choice-btn" onclick="openForm('rant')">Rant</button>
+    <button class="choice-btn" onclick="openForm('game')">Game</button>
+  </div>
+
+  <div class="form-section" id="rantForm">
+    <h3>Suggest a Rant Topic</h3>
+    <input placeholder="Your name">
+    <textarea placeholder="What should Tsuki rant about?"></textarea>
+    <button class="submit">Submit</button>
+  </div>
+
+  <div class="form-section" id="gameForm">
+    <h3>Suggest a Game</h3>
+    <input placeholder="Your name">
+    <textarea placeholder="What game should Tsuki play?"></textarea>
+    <button class="submit">Submit</button>
+  </div>
+
+</div>
+
+</body>
+</html>
