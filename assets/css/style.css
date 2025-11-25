@@ -1,0 +1,140 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #ffd6f5, #ffbde8);
+  margin: 0;
+  padding: 0;
+  color: #6a4c6e;
+}
+
+.container {
+  width: 90%;
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff0fb;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 0 20px rgba(255, 134, 218, 0.4);
+  border: 2px dashed #ff8ad6;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 20px;
+  margin: 0 5px;
+  background: #ffd0f0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  border: 2px solid #ff94dd;
+  transition: 0.3s;
+}
+
+.tab.active {
+  background: #ffb3ea;
+  transform: scale(1.05);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.socials a {
+  display: block;
+  font-size: 18px;
+  margin: 5px 0;
+  color: #b1008a;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.socials a:hover {
+  color: hotpink;
+  transform: translateX(4px);
+}
+
+#phoneIcon {
+  width: 80px;
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  cursor: pointer;
+  animation: ring 1.2s infinite ease-in-out;
+}
+
+@keyframes ring {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(10deg); }
+  40% { transform: rotate(-10deg); }
+  60% { transform: rotate(5deg); }
+  80% { transform: rotate(-5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+#vnWindow {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 85%;
+  max-width: 500px;
+  background: #ffe4fa;
+  padding: 20px;
+  border-radius: 20px;
+  border: 3px solid #ff88d7;
+  display: none;
+  z-index: 99999;
+}
+
+#vnSprite {
+  width: 200px;
+  display: block;
+  margin: 0 auto;
+}
+
+.choice-btn {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background: #ffa8e7;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #732a6d;
+}
+
+.choice-btn:hover {
+  background: #ff8ce0;
+}
+
+.form-section {
+  display: none;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ff8ad6;
+  margin: 7px 0;
+  border-radius: 10px;
+  background: #fff8fc;
+}
+
+button.submit {
+  padding: 10px;
+  background: #ff77d1;
+  border: none;
+  border-radius: 10px;
+  margin-top: 8px;
+  color: #fff;
+  font-weight: bold;
+}
