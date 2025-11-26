@@ -1,19 +1,20 @@
 /* assets/js/script.js
-   Full VN + UI script for Tsuki's Lovebite.exe
-   - typing + talking frames (2-frame pairs)
-   - phone open/close
-   - tab navigation
-   - modal (Formspree) with AJAX
-   - sprite preloads and fallbacks
+   Hyper-Y2K VN + UI
+   - Thanks pair used for happy (no Happy Talking)
+   - WebAudio synthesized ring + typing sounds (no external audio files required)
+   - Formspree integration
+   - Tab navigation (top row)
+   - Typing + talking frames + sprite transitions
 */
 
 (() => {
+  // -------------- CONFIG --------------
   const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
-  const TALK_INTERVAL_MS = 140;
   const TYPE_SPEED_MS = 24;
+  const TALK_INTERVAL_MS = 140;
   const SPRITE_TRANSITION_CLASS = 'sprite-transition';
 
-  // final sprite mapping (happy uses Thanks pair as requested)
+  // sprite filename mapping (happy uses Thanks pair)
   const spriteFiles = {
     happy: ['Thanks.png', 'Thanks 2.png'],
     thanks: ['Thanks.png', 'Thanks 2.png'],
@@ -28,7 +29,7 @@
   const sprites = {};
   Object.keys(spriteFiles).forEach(k => sprites[k] = spriteFiles[k].map(fn => encodeURI('assets/sprites/' + fn)));
 
-  // Elements
+  // -------------- DOM --------------
   const phoneBtn = document.getElementById('phoneButton');
   const vnContainer = document.getElementById('vnContainer');
   const vnClose = document.getElementById('vnClose');
@@ -39,18 +40,98 @@
   const suggestForm = document.getElementById('suggestForm');
   const modalCloseBtn = document.getElementById('modalCloseBtn');
   const toast = document.getElementById('toast');
+  const toggleSfx = document.getElementById('toggle-sfx');
+  const openVNbtn = document.getElementById('openVNbtn');
 
-  let talkInterval = null;
+  // -------------- Audio (WebAudio synth) --------------
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  const audioCtx = AudioCtx ? new AudioCtx() : null;
+  let ringOscList = [];
+  let ringGain = null;
+  let ringIntervalId = null;
+  let typingEnabled = true;
 
-  /* ---------- helpers ---------- */
-  function showToast(msg, ms = 3000) {
-    toast.textContent = msg;
-    toast.classList.add('show');
-    toast.style.display = 'block';
-    setTimeout(() => { toast.classList.remove('show'); toast.style.display = 'none'; }, ms);
+  function canPlaySound() {
+    return audioCtx && (toggleSfx ? toggleSfx.checked : true);
   }
 
+  // Ring: soft twinkly looping tone (multiple oscillators)
+  function startRing() {
+    if (!canPlaySound()) return;
+    stopRing();
+    ringOscList = [];
+    ringGain = audioCtx.createGain();
+    ringGain.gain.value = 0;
+    ringGain.connect(audioCtx.destination);
+
+    // create a soft chord-ish ring repeated
+    const freqs = [520, 660, 780];
+    freqs.forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = f;
+      g.gain.value = 0.0001;
+      osc.connect(g);
+      g.connect(ringGain);
+      osc.start();
+      ringOscList.push({osc,g});
+    });
+
+    // ramp up a gentle background tone
+    ringGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+    // pulse the gain slightly to simulate ringtone pulse
+    ringIntervalId = setInterval(() => {
+      // tiny pulsing
+      ringGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      ringGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+      ringGain.gain.linearRampToValueAtTime(0.02, audioCtx.currentTime + 0.12);
+      ringGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
+    }, 420);
+  }
+
+  function stopRing() {
+    try {
+      if (ringIntervalId) { clearInterval(ringIntervalId); ringIntervalId = null; }
+      if (ringGain) {
+        ringGain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 0.06);
+      }
+      ringOscList.forEach(obj => {
+        try {
+          obj.osc.stop(audioCtx.currentTime + 0.1);
+          obj.osc.disconnect();
+          obj.g.disconnect();
+        } catch (e) { }
+      });
+      ringOscList = [];
+      ringGain = null;
+    } catch (e) { console.warn(e); }
+  }
+
+  // Typing blip: quick short high -> low click using oscillator
+  function playTypeBlip() {
+    if (!canPlaySound()) return;
+    if (!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'square';
+    o.frequency.value = 1200;
+    g.gain.value = 0;
+    o.connect(g);
+    g.connect(audioCtx.destination);
+    const now = audioCtx.currentTime;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.linearRampToValueAtTime(0.008, now + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
+    o.start(now);
+    o.stop(now + 0.07);
+  }
+
+  // -------------- Sprite helpers & typing --------------
+  let talkInterval = null;
   function safeSetSprite(path) {
+    if (!tsukiSprite) return;
     tsukiSprite.classList.add(SPRITE_TRANSITION_CLASS);
     tsukiSprite.src = path;
     tsukiSprite.onerror = () => {
@@ -61,14 +142,18 @@
 
   function typeText(text, speed = TYPE_SPEED_MS) {
     return new Promise(resolve => {
+      if (!textBox) return resolve();
       textBox.innerHTML = '';
       let i = 0;
       function tick() {
         if (i < text.length) {
           textBox.innerHTML += text.charAt(i);
+          if (i % 2 === 0) playTypeBlip(); // gentle typing sound every couple chars
           i++;
           setTimeout(tick, speed);
-        } else resolve();
+        } else {
+          resolve();
+        }
       }
       tick();
     });
@@ -76,7 +161,7 @@
 
   function startTalking(frames = [], intervalMs = TALK_INTERVAL_MS) {
     stopTalking();
-    if (!frames || !frames.length) return;
+    if (!frames || frames.length === 0) return;
     let idx = 0;
     talkInterval = setInterval(() => {
       tsukiSprite.classList.add(SPRITE_TRANSITION_CLASS);
@@ -101,13 +186,13 @@
     });
   }
 
-  /* ---------- scenes ---------- */
+  // -------------- Scenes --------------
   async function scene_start() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
     await typeText("Tsuki: Hey Boo! ♡ You finally picked up..");
     stopTalking(sprites.happy[0]);
-    setTimeout(scene_whatsUp, 320);
+    setTimeout(scene_whatsUp, 300);
   }
 
   async function scene_whatsUp() {
@@ -135,7 +220,7 @@
 
   async function scene_hangUpAngry() {
     optionsBox.innerHTML = '';
-    startTalking([...(sprites.frown || []), ...(sprites.neutral || [])]);
+    startTalking([...sprites.frown, ...sprites.neutral]);
     await typeText("Tsuki: Girl..don’t piss me off.");
     stopTalking(sprites.hangup[1] || sprites.hangup[0]);
     setTimeout(() => closeVN(), 1100);
@@ -156,14 +241,16 @@
     optionsBox.innerHTML = '';
     safeSetSprite(sprites.hangup[1] || sprites.hangup[0]);
     await typeText("—call ended—");
-    setTimeout(() => closeVN(), 800);
+    setTimeout(() => closeVN(), 700);
   }
 
-  /* ---------- VN controls ---------- */
+  // -------------- VN controls --------------
   function openVN() {
     vnContainer.classList.remove('hidden');
     vnContainer.setAttribute('aria-hidden', 'false');
     safeSetSprite(sprites.happy[0]);
+    // stop ring when opened
+    stopRing();
     scene_start();
   }
 
@@ -175,12 +262,11 @@
     stopTalking();
   }
 
-  /* ---------- modal ---------- */
+  // -------------- modal --------------
   function openSuggestModal(kind = '') {
     if (suggestForm && !suggestForm.querySelector('input[name="type"]')) {
       const hidden = document.createElement('input');
-      hidden.type = 'hidden';
-      hidden.name = 'type';
+      hidden.type = 'hidden'; hidden.name = 'type';
       suggestForm.appendChild(hidden);
     }
     const typeField = suggestForm.querySelector('input[name="type"]');
@@ -196,51 +282,64 @@
     suggestModal.setAttribute('aria-hidden', 'true');
   }
 
-  /* ---------- form submit ---------- */
+  // -------------- Formspree submit --------------
   if (suggestForm) {
     suggestForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData(suggestForm);
+      const fd = new FormData(suggestForm);
       try {
-        const res = await fetch(FORM_ENDPOINT, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' }});
+        const res = await fetch(FORM_ENDPOINT, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' }});
         if (res.ok) {
           showToast('Submitted — thanks babe ♡');
           closeSuggestModal();
           textBox.innerText = "Tsuki: Mmm thanks! I'll check it out.";
           optionsBox.innerHTML = '';
-          setTimeout(() => closeVN(), 1100);
+          setTimeout(() => closeVN(), 900);
         } else {
           showToast('Submission failed — try again');
-          console.warn('Formspree status:', res.status, res.statusText);
         }
       } catch (err) {
-        console.error('Form submit error', err);
-        showToast('Submission failed — check your network');
+        console.error('submit err', err);
+        showToast('Submission failed — check network');
       }
     });
   }
 
-  /* ---------- events ---------- */
+  // -------------- events --------------
   if (phoneBtn) {
+    // start soft ring
+    startRing();
     phoneBtn.addEventListener('click', () => {
+      // resume audio context if needed (some browsers require a user gesture)
+      if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
+      // stop ring and open VN
+      stopRing();
       openVN();
-      phoneBtn.style.animation = 'none';
     });
   }
   if (vnClose) vnClose.addEventListener('click', closeVN);
   if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeSuggestModal);
+  if (openVNbtn) openVNbtn.addEventListener('click', () => {
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    stopRing(); openVN();
+  });
 
-  if (suggestModal) {
-    suggestModal.addEventListener('click', (e) => {
-      if (e.target === suggestModal) closeSuggestModal();
+  // Allow toggling SFX
+  if (toggleSfx) {
+    toggleSfx.addEventListener('change', () => {
+      if (!toggleSfx.checked) { stopRing(); }
+      else { startRing(); }
     });
   }
 
-  /* ---------- tab navigation ---------- */
-  document.querySelectorAll('.tab').forEach(tab => {
+  // close modal when clicking outside
+  if (suggestModal) suggestModal.addEventListener('click', (e) => { if (e.target === suggestModal) closeSuggestModal(); });
+
+  // Top nav behavior
+  document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.page-panel').forEach(p => p.classList.remove('active'));
       tab.classList.add('active');
       const id = tab.dataset.tab;
       const panel = document.getElementById(id);
@@ -248,21 +347,20 @@
     });
   });
 
-  /* ---------- preload check ---------- */
+  // -------------- preload sprites --------------
   (function preloadAll() {
     const missing = [];
     Object.values(sprites).forEach(arr => arr.forEach(path => {
-      const img = new Image();
-      img.src = path;
-      img.onerror = () => missing.push(path);
+      const img = new Image(); img.src = path; img.onerror = () => missing.push(path);
     }));
-    const phone = new Image(); phone.src = 'assets/images/Phone.png'; phone.onerror = () => console.warn('Phone icon missing: assets/images/Phone.png');
+    const phoneTest = new Image(); phoneTest.src = 'assets/images/Phone.png'; phoneTest.onerror = () => console.warn('Phone icon missing: assets/images/Phone.png');
     if (missing.length) {
-      console.warn('Missing sprite files:', missing);
-      setTimeout(() => showToast('Some sprites missing — check console for names'), 700);
+      console.warn('Missing sprites:', missing);
+      setTimeout(() => showToast('Some sprites missing — check console'), 700);
     }
   })();
 
-  window.TsukiDebug = { sprites, openVN, closeVN, openSuggestModal, closeSuggestModal };
+  // expose debug
+  window.TsukiDebug = { sprites, openVN, closeVN, openSuggestModal, closeSuggestModal, startRing, stopRing };
 
 })();
