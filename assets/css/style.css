@@ -1,7 +1,6 @@
-/* =====================
-   Tsuki's Lovebite.exe CSS
-   Retro Windows + Y2K chrome + pixel style
-   ===================== */
+/* Hyper-Y2K webcore / aesthetic carrd style
+   Palette: chocolate browns + blush pinks (user palette)
+*/
 
 :root{
   --bg: #3b2a2a;
@@ -10,113 +9,126 @@
   --hot-pink:#ff99aa;
   --card:#ffe6e9;
   --subtle:#fff0f0;
-  --text:#ffe6e9;
+  --gloss:#ffb3c6;
+  --text:#3b2a2a;
 }
 
+/* basic resets */
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:'VT323', monospace;background:linear-gradient(180deg,var(--bg), #2f2222);color:var(--text);-webkit-font-smoothing:antialiased}
+html,body{height:100%;margin:0;font-family:'VT323', monospace;background:
+  radial-gradient(circle at 10% 10%, #3b1f1f 0%, #2a1717 40%, #1f1212 100%);
+color:var(--card);-webkit-font-smoothing:antialiased}
+a{color:var(--accent-strong);text-decoration:none}
 
-/* ---------- Titlebar (chrome + XP feel) ---------- */
-.win-titlebar{
+/* TOPBAR */
+.topbar{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:10px 14px;
-  background: linear-gradient(180deg,#ffd7e9,#ff99aa);
-  border-bottom:4px solid var(--accent-dark);
-  box-shadow:0 8px 0 rgba(0,0,0,0.12);
+  padding:14px 20px;
+  gap:18px;
+  background: linear-gradient(180deg, rgba(255,179,198,0.12), rgba(255,153,170,0.06));
+  border-bottom: 2px solid rgba(255,179,198,0.14);
+  position:sticky;top:0;backdrop-filter: blur(6px);
+  z-index:1000;
 }
-.win-left{display:flex;align-items:center;gap:12px}
-.win-icon{
-  width:34px;height:34px;border-radius:6px;background:#fff0f0;color:#cc4455;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid var(--accent-dark)
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{
+  width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#fff0f0,#ffdce6);
+  color:var(--accent-strong);display:flex;align-items:center;justify-content:center;
+  border:3px solid var(--accent-dark);font-size:20px;box-shadow:0 8px 20px rgba(255,153,170,0.12)
 }
-.win-title{
-  font-size:20px;color:#3b2a2a;font-weight:bold;text-shadow:0 2px 0 rgba(255,255,255,0.2);
+.brand-title{font-size:18px;color:var(--card);text-shadow:0 6px 0 rgba(0,0,0,0.25);font-weight:700}
+
+/* NAV */
+.nav{display:flex;gap:8px;align-items:center}
+.nav-tab{
+  background: linear-gradient(180deg,#fff3f6,#ffe6ee);
+  color:var(--accent-strong);
+  border:2px solid var(--accent-dark);
+  padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
 }
-.win-controls{display:flex;gap:8px}
-.win-btn{background:linear-gradient(180deg,#fff,#ffdce6);border:2px solid var(--accent-dark);padding:6px 8px;border-radius:4px;cursor:pointer;font-family:'VT323'}
-.win-btn.close-x{background:linear-gradient(180deg,#cc4455,#a83a4a);color:#fff}
+.nav-tab.active{background:linear-gradient(180deg,var(--hot-pink),#ff7ea0);color:#3b2a2a;transform:translateY(-2px)}
 
-/* ---------- Top Tabs ---------- */
-.top-tabs{display:flex;gap:8px;padding:12px;background:linear-gradient(180deg,#ffeef2,#fff7f8);border-bottom:3px solid var(--accent-dark)}
-.top-tabs .tab{background:#fdf2f6;border:2px solid var(--accent-dark);padding:8px 12px;border-radius:6px;cursor:pointer;color:var(--accent-strong)}
-.top-tabs .tab.active{background:var(--hot-pink);color:#3b2a2a;transform:translateY(-2px)}
+/* MAIN wrapper */
+.main{max-width:1100px;margin:22px auto;padding:10px}
+.page-panel{display:none}
+.page-panel.active{display:block}
 
-/* ---------- Main wrapper & panels ---------- */
-.wrapper{max-width:980px;margin:18px auto;padding:12px}
-.panel{background:linear-gradient(180deg,var(--card),var(--subtle));border-radius:10px;padding:16px;border:3px solid var(--accent-dark);box-shadow:0 8px 0 rgba(0,0,0,0.12);margin-bottom:14px}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
-.big-title{font-size:48px;text-align:center;margin:18px 0;color:#3b2a2a;text-shadow:0 6px 0 rgba(255,255,255,0.12)}
-.subtle{text-align:center;color:#5c3d3d;margin-top:-6px}
-
-/* socials + support */
-.socials-list a{display:inline-block;margin:6px 8px;padding:8px 12px;background:var(--subtle);border:2px solid var(--accent-dark);border-radius:8px;color:var(--accent-strong)}
-.kofi-btn{display:inline-block;margin-top:12px;padding:10px 16px;background:linear-gradient(180deg,var(--hot-pink),#ff7ea0);color:#351a1a;border-radius:8px;border:2px solid var(--accent-dark);text-decoration:none}
-
-/* settings & form */
-.settings-grid label{display:block;margin:8px 0}
-
-/* ---------- PHONE ICON ---------- */
-#phoneButton{
-  position: fixed;
-  right: 26px;
-  bottom: 20px;
-  width: 96px;
-  cursor: pointer;
-  z-index: 99999;
-  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
-  animation: phoneRing 1.3s infinite;
-  image-rendering: pixelated;
+/* HERO */
+.hero{display:flex;flex-direction:column;align-items:center;gap:12px;padding:36px}
+.title-chrome{
+  font-size:56px;
+  color:var(--card);
+  background: linear-gradient(90deg,#fff0f6,#ffd7ea 40%, #ff9ebc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 12px 0 rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.12);
+  letter-spacing:1px;
 }
-@keyframes phoneRing{
+.tagline{color:var(--subtle);opacity:0.9}
+
+/* hero actions */
+.hero-actions{display:flex;gap:12px;align-items:center}
+.cta{
+  background:linear-gradient(180deg,#ffccd5,#ff8fb0);color:#2f1b1b;border:3px solid var(--accent-dark);
+  padding:12px 18px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow: 0 10px 30px rgba(255,102,153,0.12)
+}
+.kofi-btn{background:linear-gradient(180deg,#fff0f0,#ffdce6);padding:10px 14px;border-radius:10px;border:2px solid var(--accent-dark);color:var(--accent-strong)}
+
+/* CARDS */
+.card{background:linear-gradient(180deg,#fff5f7,#fff0f4);padding:18px;border-radius:12px;border:3px solid var(--accent-dark);color:var(--accent-strong);box-shadow:0 12px 40px rgba(0,0,0,0.15)}
+.links a{display:inline-block;margin:8px 10px;padding:8px 12px;border-radius:10px;background:#fff0f3;border:2px solid var(--accent-dark);color:var(--accent-strong)}
+
+/* PHONE ICON */
+.phone-icon{
+  position:fixed;right:28px;bottom:26px;width:96px;z-index:9999;cursor:pointer;image-rendering:pixelated;
+  filter: drop-shadow(0 16px 28px rgba(255,102,153,0.12));
+  animation: ring 1.4s infinite;
+}
+@keyframes ring{
   0%{transform:translateY(0) rotate(0)}
-  22%{transform:translateY(-6px) rotate(10deg)}
-  44%{transform:translateY(0) rotate(-10deg)}
-  66%{transform:translateY(-3px) rotate(6deg)}
+  20%{transform:translateY(-6px) rotate(10deg)}
+  40%{transform:translateY(0) rotate(-10deg)}
+  60%{transform:translateY(-3px) rotate(6deg)}
   100%{transform:translateY(0) rotate(0)}
 }
 
-/* ---------- VN window (Style B) ---------- */
-.vn{position:fixed;left:50%;bottom:14%;transform:translateX(-50%);width:86%;max-width:760px;background:linear-gradient(180deg,var(--card),#fff7f8);border-radius:12px;border:4px solid var(--accent-dark);padding:12px;z-index:9000;box-shadow:0 24px 60px rgba(0,0,0,0.6)}
+/* VN window (aesthetic card) */
+.vn{position:fixed;left:50%;bottom:14%;transform:translateX(-50%);width:86%;max-width:760px;border-radius:16px;padding:14px;z-index:9950;display:flex;justify-content:center}
+.vn-card{display:flex;gap:14px;align-items:flex-end;background:linear-gradient(180deg,#fff6f8,#fff0f3);border:4px solid var(--accent-dark);padding:12px;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,0.5)}
 .vn.hidden{display:none}
-.vn-inner{display:flex;gap:14px;align-items:flex-end}
 .vn-left{flex:0 0 260px}
-.tsuki-sprite{width:100%;image-rendering:pixelated;border:3px solid var(--accent-dark);border-radius:8px;background:var(--subtle)}
+.tsuki-sprite{width:100%;image-rendering:pixelated;border-radius:10px;border:3px solid var(--accent-dark);background:linear-gradient(180deg,#fff0f0,#fff7f7)}
 .vn-right{flex:1}
-.vn-box{background:linear-gradient(180deg,#ffeef2,#fff7f8);border:3px solid var(--accent-strong);padding:12px;border-radius:8px;min-height:120px;display:flex;flex-direction:column;justify-content:space-between}
-.vn-text{font-size:20px;color:var(--accent-dark);min-height:60px;line-height:1.25}
+.vn-box{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff6f8,#fff0f2);border:3px solid var(--accent-strong);min-height:120px;display:flex;flex-direction:column;justify-content:space-between}
+.vn-text{color:var(--accent-dark);font-size:18px;min-height:56px;line-height:1.26}
 .vn-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.optionButton{font-family:'VT323', monospace;background:var(--hot-pink);color:#351a1a;border:3px solid var(--accent-dark);padding:10px;border-radius:8px;cursor:pointer;font-size:18px}
-.optionButton:hover{transform:translateX(6px)}
-.vn-close{position:absolute;right:8px;top:-20px;background:var(--accent-dark);color:var(--card);border:3px solid var(--accent-strong);padding:6px 8px;border-radius:8px;cursor:pointer;z-index:9050}
+.optionButton{background:linear-gradient(180deg,#ffbfd2,#ff9db8);border:3px solid var(--accent-dark);padding:10px;border-radius:10px;color:#351a1a;font-weight:800;cursor:pointer;font-size:16px}
+.vn-close{position:absolute;right:8px;top:-26px;background:var(--accent-dark);color:var(--card);border:3px solid var(--accent-strong);padding:6px 8px;border-radius:8px;cursor:pointer}
 
-/* sprite transition */
+/* transition */
 .sprite-transition{animation:fadeBounce 0.36s ease-out}
-@keyframes fadeBounce{
-  0%{opacity:0;transform:scale(0.96)}
-  60%{opacity:1;transform:scale(1.04)}
-  100%{opacity:1;transform:scale(1)}
-}
+@keyframes fadeBounce{0%{opacity:0;transform:scale(0.96)}60%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
 
-/* ---------- Modal ---------- */
-.hidden{display:none !important}
-.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:9980;padding:20px}
-.modal-content{background:var(--card);padding:18px;border-radius:10px;border:3px solid var(--accent-strong);max-width:420px;width:100%;color:var(--accent-dark)}
-.modal-title{color:var(--accent-strong);text-align:center;margin:0 0 8px}
-.suggest-form input,.suggest-form textarea{width:100%;padding:8px;border:2px solid var(--accent-dark);border-radius:6px;background:#fff8fb;font-family:'VT323',monospace;font-size:16px;margin:8px 0}
-.modal-buttons{display:flex;gap:8px}
-.submit-btn{flex:1;background:var(--hot-pink);border:2px solid var(--accent-dark);padding:10px;color:#351a1a;font-size:18px;cursor:pointer;border-radius:8px}
-.close-btn{flex:1;background:transparent;border:2px solid var(--accent-dark);padding:10px;color:var(--accent-dark);font-size:18px;cursor:pointer;border-radius:8px}
+/* MODAL */
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.50);z-index:9998;padding:20px}
+.modal.hidden{display:none}
+.modal-card{background:linear-gradient(180deg,#fff6f8,#fff0f4);border-radius:12px;padding:16px;border:3px solid var(--accent-strong);max-width:420px;width:100}
+.modal-card input,.modal-card textarea{width:100%;padding:8px;border-radius:8px;border:2px solid var(--accent-dark);margin:8px 0;font-family:'VT323'}
+.modal-actions{display:flex;gap:8px}
+.submit-btn{flex:1;background:linear-gradient(180deg,#ffb3c6,#ff88af);border:2px solid var(--accent-dark);padding:10px;border-radius:8px;font-weight:800}
+.close-btn{flex:1;background:transparent;border:2px solid var(--accent-dark);padding:10px;border-radius:8px}
 
-/* ---------- Toast ---------- */
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:var(--accent-dark);color:var(--card);padding:10px 14px;border-radius:8px;display:none;z-index:100000;font-family:'VT323',monospace}
+/* toast */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:var(--accent-dark);color:var(--card);padding:10px 14px;border-radius:8px;display:none;z-index:100000;font-family:'VT323'}
 .toast.show{display:block}
 
 /* responsive */
 @media (max-width:720px){
-  .vn-inner{flex-direction:column;align-items:center}
+  .title-chrome{font-size:32px}
+  .vn-card{flex-direction:column;align-items:center}
   .vn-left{width:160px}
-  .vn-text{font-size:18px}
-  .big-title{font-size:36px}
 }
