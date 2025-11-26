@@ -1,118 +1,95 @@
-body {
-    background-color: #3b2a2a;
-    font-family: "VT323", monospace;
-    color: #ffe6e9;
-    margin: 0;
-    overflow: hidden;
+/* ========== BASE / PALETTE ========== */
+:root{
+  --bg: #3b2a2a;
+  --accent-dark:#5c3d3d;
+  --accent-strong:#cc4455;
+  --hot-pink:#ff99aa;
+  --card:#ffe6e9;
+  --subtle:#fff0f0;
+  --text:#ffe6e9;
 }
 
-/* PHONE ICON */
-.phone {
-    width: 130px;
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    animation: ring 1.2s infinite ease-in-out;
-    cursor: pointer;
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:'VT323', monospace;background:linear-gradient(180deg,var(--bg), #2f2222);}
+a{color:var(--accent-strong);text-decoration:none}
+
+/* Page container */
+.page{max-width:960px;margin:28px auto;padding:18px;color:var(--text)}
+.logo{display:inline-block;padding:6px 14px;border-radius:8px;background:linear-gradient(90deg,var(--hot-pink),var(--accent-strong));border:3px solid var(--accent-dark);font-size:28px;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,0.2)}
+
+/* Panel */
+.panel{background:linear-gradient(180deg,var(--card),var(--subtle));border-radius:10px;padding:16px;border:3px solid var(--accent-dark);box-shadow:0 8px 0 rgba(0,0,0,0.12)}
+.panel-inner h2{color:var(--accent-strong);margin:6px 0}
+
+/* socials */
+.socials-row{margin-top:10px}
+.socials-row a{display:inline-block;margin:4px 6px;background:var(--subtle);padding:8px 12px;border-radius:6px;border:2px solid var(--accent-dark);color:var(--accent-strong)}
+
+/* ========== PHONE ICON ========== */
+#phoneButton{
+  position: fixed;
+  right: 24px;
+  bottom: 20px;
+  width: 92px;
+  cursor: pointer;
+  z-index: 99999;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
+  animation: phoneRing 1.3s infinite;
+  image-rendering: pixelated;
+}
+@keyframes phoneRing{
+  0%{transform:translateY(0) rotate(0);}
+  22%{transform:translateY(-6px) rotate(10deg);}
+  44%{transform:translateY(0) rotate(-10deg);}
+  66%{transform:translateY(-3px) rotate(6deg);}
+  100%{transform:translateY(0) rotate(0);}
 }
 
-@keyframes ring {
-    0% { transform: rotate(0deg); }
-    25% { transform: rotate(7deg); }
-    50% { transform: rotate(-7deg); }
-    75% { transform: rotate(7deg); }
-    100% { transform: rotate(0deg); }
+/* ========== VN WINDOW (Style B) ========== */
+.vn{position:fixed;left:50%;bottom:12%;transform:translateX(-50%);width:86%;max-width:780px;background:linear-gradient(180deg,var(--card),#fff7f8);border-radius:12px;border:4px solid var(--accent-dark);padding:12px;z-index:9000;box-shadow:0 20px 60px rgba(0,0,0,0.55)}
+.vn.hidden{display:none}
+.vn-inner{display:flex;gap:14px;align-items:flex-end}
+.vn-left{flex:0 0 260px}
+.tsuki-sprite{width:100%;image-rendering:pixelated;border:3px solid var(--accent-dark);border-radius:8px;background:var(--subtle)}
+.vn-right{flex:1}
+
+/* VN dialogue box */
+.vn-box{background:linear-gradient(180deg,#ffeef2,#fff7f8);border:3px solid var(--accent-strong);padding:12px;border-radius:8px;min-height:120px;display:flex;flex-direction:column;justify-content:space-between}
+.vn-text{font-size:20px;color:var(--accent-dark);min-height:60px;line-height:1.25}
+
+/* choices */
+.vn-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.optionButton{font-family:'VT323', monospace;background:var(--hot-pink);color:#351a1a;border:3px solid var(--accent-dark);padding:10px;border-radius:8px;cursor:pointer;font-size:18px}
+.optionButton:hover{transform:translateX(6px)}
+
+/* close */
+.vn-close{position:absolute;right:8px;top:-20px;background:var(--accent-dark);color:var(--card);border:3px solid var(--accent-strong);padding:6px 8px;border-radius:8px;cursor:pointer;z-index:9050}
+
+/* ========== SPRITE TRANSITION (fade + bounce) ========== */
+.sprite-transition{animation:fadeBounce 0.36s ease-out}
+@keyframes fadeBounce{
+  0%{opacity:0;transform:scale(0.96)}
+  60%{opacity:1;transform:scale(1.04)}
+  100%{opacity:1;transform:scale(1)}
 }
 
-/* VN WINDOW */
-.vn {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    background: #5c3d3d;
-    border: 4px solid #cc4455;
-    padding: 20px;
-    border-radius: 10px;
-}
+/* ========== MODAL (form) ========== */
+.hidden{display:none !important}
+.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:9980;padding:20px}
+.modal-content{background:var(--card);padding:18px;border-radius:10px;border:3px solid var(--accent-strong);max-width:420px;width:100%;color:var(--accent-dark)}
+.modal-title{color:var(--accent-strong);text-align:center;margin:0 0 8px}
+.suggest-form input,.suggest-form textarea{width:100%;padding:8px;border:2px solid var(--accent-dark);border-radius:6px;background:#fff8fb;font-family:'VT323',monospace;font-size:16px;margin:8px 0}
+.modal-buttons{display:flex;gap:8px}
+.submit-btn{flex:1;background:var(--hot-pink);border:2px solid var(--accent-dark);padding:10px;color:#351a1a;font-size:18px;cursor:pointer;border-radius:8px}
+.close-btn{flex:1;background:transparent;border:2px solid var(--accent-dark);padding:10px;color:var(--accent-dark);font-size:18px;cursor:pointer;border-radius:8px}
 
-.hidden {
-    display: none;
-}
+/* ========== TOAST ========== */
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:var(--accent-dark);color:var(--card);padding:10px 14px;border-radius:8px;display:none;z-index:100000;font-family:'VT323',monospace}
+.toast.show{display:block}
 
-.vn-sprite img {
-    width: 250px;
-    image-rendering: pixelated;
-}
-
-.vn-dialogue {
-    background: #ffe6e9;
-    color: #3b2a2a;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 15px;
-    font-size: 24px;
-}
-
-.vn-choices button {
-    background: #ff99aa;
-    color: #3b2a2a;
-    border: 3px solid #cc4455;
-    padding: 10px 20px;
-    margin: 10px 5px;
-    font-size: 22px;
-    cursor: pointer;
-    border-radius: 8px;
-
-    .form-box {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #ffe6e9;
-    padding: 25px;
-    width: 350px;
-    border: 4px solid #cc4455;
-    border-radius: 12px;
-    color: #3b2a2a;
-    font-family: "VT323", monospace;
-    z-index: 9999;
-}
-
-.form-box input,
-.form-box textarea {
-    width: 100%;
-    margin: 10px 0;
-    font-size: 20px;
-    padding: 8px;
-    border-radius: 6px;
-    border: 2px solid #cc4455;
-}
-
-.form-box button {
-    background: #ff99aa;
-    border: 2px solid #cc4455;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-size: 22px;
-    border-radius: 6px;
-}
-
-.close-btn {
-    background: #cc4455;
-    color: white;
-    margin-top: 10px;
-}
-
-.sprite-transition {
-    animation: fadeBounce 0.35s ease-out;
-}
-
-@keyframes fadeBounce {
-    0% { opacity: 0; transform: scale(0.95); }
-    60% { opacity: 1; transform: scale(1.03); }
-    100% { opacity: 1; transform: scale(1); }
-}
-    
+/* responsive */
+@media (max-width:720px){
+  .vn-inner{flex-direction:column;align-items:center}
+  .vn-left{width:160px}
+  .vn-text{font-size:18px}
 }
