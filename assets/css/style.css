@@ -208,4 +208,33 @@ a{color:var(--accent-strong);text-decoration:none}
 /* small responsive tweaks */
 @media (max-width:720px) {
   #petWindow .modal-card { width: 96%; padding: 10px; }
+
+   .pet-shop-window {
+  width: 420px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 12px;
+  background: rgba(20, 8, 8, 0.65);
+  border: 3px solid #4a1f1f;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+}
+
+.pet-shop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.pet-shop-item img {
+  width: 42px;
+  height: 42px;
+  image-rendering: pixelated;
+}
+
 }
