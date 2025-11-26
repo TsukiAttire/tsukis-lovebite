@@ -5,7 +5,7 @@
     <title>Tsuki’s Lovebite.exe</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- GOOGLE FONT -->
+    <!-- PIXEL FONT -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
     <!-- CSS -->
@@ -14,41 +14,40 @@
 
 <body>
 
-    <!-- ★ TITLE BAR ★ -->
-    <header id="siteHeader">
+    <!-- ★ TITLE — TOP CENTER ★ -->
+    <header id="siteTitle">
         <h1>Tsuki’s Lovebite.exe</h1>
     </header>
 
-    <!-- ★ SIDE BUTTONS ★ -->
-    <div id="petButton" class="side-button hidden">
+    <!-- ★ SIDEBUTTON LEFT — PET MENU ★ -->
+    <div id="petButton" class="side-button">
         <img src="assets/ui/paw-icon.png" class="pixel-icon">
     </div>
 
+    <!-- ★ SIDEBUTTON RIGHT — KO-FI ★ -->
     <div id="supportButton" class="side-button-right">
         <a href="#" target="_blank">
             <img src="assets/ui/ko-fi.png" class="pixel-icon">
         </a>
     </div>
 
-    <!-- ★ PHONE ICON (OPENS VN) ★ -->
+    <!-- ★ PHONE ICON — BOTTOM RIGHT ★ -->
     <div id="phoneIcon">
         <img src="assets/image/Phone.png" id="phoneImg">
     </div>
 
     <!-- ★ PET MENU WINDOW ★ -->
-    <div id="petWindow" class="pet-window hidden">
-        <div class="pet-window-header">
-            Pet Menu
-            <span id="closePetWindow">✕</span>
+    <div id="petWindow" class="petWindow hidden">
+        <div class="petHeader">
+            <span>Pet Menu</span>
+            <span id="closePetWindow" class="closeBtn">✕</span>
         </div>
-        <div id="petWindowContent" class="pet-window-content">
-            <!-- JS Injects Content -->
-        </div>
+        <div id="petWindowContent" class="petContent"></div>
     </div>
 
-    <!-- ★ STAR UNLOCK DIALOGUE ★ -->
-    <div id="starIntro" class="star-intro hidden">
-        <div class="star-dialogue">
+    <!-- ★ STAR INTRO DIALOGUE ★ -->
+    <div id="starIntro" class="starIntro hidden">
+        <div class="starBubble">
             <p><strong>Tsuki:</strong> Ooooh… you caught a star! ✦</p>
             <p>Stars here are magical… you can use them to adopt a pet!</p>
             <p>Let me show you how it works.</p>
@@ -56,10 +55,10 @@
         </div>
     </div>
 
-    <!-- ★ VN WINDOW ★ -->
+    <!-- ★ VISUAL NOVEL WINDOW ★ -->
     <div id="vnWindow" class="vn hidden">
         <div id="vnSpriteHolder">
-            <img id="vnSprite" src="">
+            <img id="vnSprite">
         </div>
         <div id="vnDialogueBox">
             <p id="vnText"></p>
@@ -67,8 +66,8 @@
         <div id="vnChoices"></div>
     </div>
 
-    <!-- ★ SUGGESTION FORMS (DARKER TEXT) ★ -->
-    <div id="formContainer" class="hidden form-dark">
+    <!-- ★ FORM PAGE WITH DARKER TEXT ★ -->
+    <div id="formContainer" class="formPage hidden">
         <h2>Submit a Suggestion</h2>
         <form action="https://formspree.io/f/mjkdzyqk" method="POST">
             <label>Your Name</label>
