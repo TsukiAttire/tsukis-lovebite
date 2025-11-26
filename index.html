@@ -11,113 +11,110 @@
 </head>
 <body>
 
-  <!-- Retro window header -->
-  <div class="win-titlebar">
-    <div class="win-left">
-      <div class="win-icon">♡</div>
-      <div class="win-title">Tsuki's Lovebite.exe</div>
+  <!-- TOP NAV (hyper-Y2K glossy) -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">♡</div>
+      <div class="brand-title">Tsuki's Lovebite.exe</div>
     </div>
-    <div class="win-controls">
-      <button class="win-btn">_</button>
-      <button class="win-btn">☐</button>
-      <button class="win-btn close-x">✕</button>
-    </div>
-  </div>
 
-  <!-- Top tabs -->
-  <nav class="top-tabs" role="navigation" aria-label="Main Tabs">
-    <button class="tab active" data-tab="home">Home</button>
-    <button class="tab" data-tab="socials">Socials</button>
-    <button class="tab" data-tab="support">Support Me</button>
-    <button class="tab" data-tab="settings">Settings</button>
-    <button class="tab" data-tab="about">About</button>
-  </nav>
+    <nav class="nav">
+      <button class="nav-tab active" data-tab="home">Home</button>
+      <button class="nav-tab" data-tab="socials">Socials</button>
+      <button class="nav-tab" data-tab="support">Support Me</button>
+      <button class="nav-tab" data-tab="settings">Settings</button>
+      <button class="nav-tab" data-tab="about">About</button>
+    </nav>
+  </header>
 
-  <!-- Content panels (no long bio per request) -->
-  <main class="wrapper">
-    <section id="home" class="panel tab-panel active">
-      <div class="panel-inner">
-        <h1 class="big-title">Tsuki's Lovebite.exe</h1>
-        <p class="subtle">click the ringing phone to open Tsuki's call — talk, suggest, or hang up.</p>
+  <main class="main">
+    <!-- Home -->
+    <section id="home" class="page-panel active">
+      <div class="hero">
+        <h1 class="title-chrome">Tsuki's Lovebite.exe</h1>
+        <p class="tagline">soft chaos • pink tea • pixel love</p>
+        <div class="hero-actions">
+          <button class="cta" id="openVNbtn">Chat with Tsuki ♡</button>
+          <a class="kofi-btn" href="#" target="_blank">Support (Ko-Fi)</a>
+        </div>
       </div>
     </section>
 
-    <section id="socials" class="panel tab-panel">
-      <h2>stay up to date</h2>
-      <div class="socials-list">
-        <a href="#" target="_blank">YouTube</a>
-        <a href="#" target="_blank">TikTok #1</a>
-        <a href="#" target="_blank">TikTok #2</a>
-        <a href="#" target="_blank">TikTok #3</a>
-        <a href="#" target="_blank">Roblox</a>
+    <!-- Socials -->
+    <section id="socials" class="page-panel">
+      <div class="card">
+        <h2>Stay up to date</h2>
+        <div class="links">
+          <a href="#" target="_blank">YouTube</a>
+          <a href="#" target="_blank">TikTok #1</a>
+          <a href="#" target="_blank">TikTok #2</a>
+          <a href="#" target="_blank">TikTok #3</a>
+          <a href="#" target="_blank">Roblox</a>
+        </div>
       </div>
     </section>
 
-    <section id="support" class="panel tab-panel">
-      <h2>Support Me</h2>
-      <p>Coming soon — Ko-Fi link will go here. For now this button is a placeholder.</p>
-      <a class="kofi-btn" href="#" target="_blank">Support on Ko-Fi (placeholder)</a>
-    </section>
-
-    <section id="settings" class="panel tab-panel">
-      <h2>Settings</h2>
-      <p>Small UI toggles for future customization.</p>
-      <div class="settings-grid">
-        <label><input type="checkbox" id="toggle-sfx" /> Enable sound effects (coming soon)</label>
+    <!-- Support -->
+    <section id="support" class="page-panel">
+      <div class="card">
+        <h2>Support Me</h2>
+        <p>Ko-Fi link coming soon — placeholder for future support link.</p>
+        <a class="kofi-btn big" href="#" target="_blank">Ko-Fi (coming soon)</a>
       </div>
     </section>
 
-    <section id="about" class="panel tab-panel">
-      <h2>About</h2>
-      <p>Tsuki's Lovebite.exe — a soft pixel Y2K space for Tsuki content, tea & chaos.</p>
+    <!-- Settings -->
+    <section id="settings" class="page-panel">
+      <div class="card">
+        <h2>Settings</h2>
+        <label><input type="checkbox" id="toggle-sfx" checked> Enable sounds (ring & typing)</label>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="page-panel">
+      <div class="card">
+        <h2>About</h2>
+        <p>Tsuki's Lovebite.exe — a soft, glittery Y2K corner for pixel tea, ranters, and cozy chaos.</p>
+      </div>
     </section>
   </main>
 
-  <!-- PHONE ICON (click to open VN) -->
-  <img id="phoneButton" src="assets/images/Phone.png" alt="Phone icon" />
+  <!-- RINGING PHONE (fixed) -->
+  <img id="phoneButton" src="assets/images/Phone.png" alt="phone" class="phone-icon" />
 
-  <!-- VISUAL NOVEL CONTAINER (hidden until open) -->
+  <!-- VISUAL NOVEL WINDOW -->
   <div id="vnContainer" class="vn hidden" aria-hidden="true">
-    <div class="vn-inner">
-
+    <div class="vn-card">
       <div class="vn-left">
-        <img id="tsukiSprite" class="tsuki-sprite" src="assets/sprites/Thanks.png" alt="Tsuki sprite" />
+        <img id="tsukiSprite" class="tsuki-sprite" src="assets/sprites/Thanks.png" alt="Tsuki sprite">
       </div>
-
       <div class="vn-right">
         <div id="vnBox" class="vn-box">
           <div id="textBox" class="vn-text" aria-live="polite"></div>
           <div id="optionsBox" class="vn-choices"></div>
         </div>
       </div>
-
+      <button id="vnClose" class="vn-close" aria-label="close VN">✕</button>
     </div>
-
-    <button id="vnClose" class="vn-close" aria-label="Close VN">✕</button>
   </div>
 
-  <!-- SUGGESTION FORM MODAL -->
+  <!-- MODAL: suggestion (Formspree) -->
   <div id="suggestModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-modal="true">
-      <h2 class="modal-title">Submit Your Idea</h2>
-
-      <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST" class="suggest-form">
-        <label class="label">Your name</label>
-        <input type="text" name="name" required>
-
-        <label class="label">Your suggestion</label>
-        <textarea name="message" rows="5" required></textarea>
-
-        <div class="modal-buttons">
+    <div class="modal-card">
+      <h3>Submit a suggestion</h3>
+      <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
+        <label>Your name <input type="text" name="name" required></label>
+        <label>Your suggestion <textarea name="message" rows="4" required></textarea></label>
+        <div class="modal-actions">
           <button type="submit" class="submit-btn">Send</button>
-          <button type="button" class="close-btn" id="modalCloseBtn">Cancel</button>
+          <button type="button" id="modalCloseBtn" class="close-btn">Cancel</button>
         </div>
       </form>
-
     </div>
   </div>
 
-  <!-- TOAST -->
+  <!-- toast -->
   <div id="toast" class="toast" aria-hidden="true"></div>
 
   <script src="assets/js/script.js" defer></script>
