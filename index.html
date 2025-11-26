@@ -1,52 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Tsuki’s Lovebite</title>
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tsuki’s Lovebite</title>
+
+  <!-- VT323 pixel font -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
+  <!-- main stylesheet (inside assets folder) -->
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-<div class="wrapper">
+  <main class="page">
 
-    <!-- PHONE ICON -->
-    <img id="phoneIcon" src="assets/images/Phone.png" alt="phone" class="phone">
+    <header class="site-header">
+      <h1 class="logo">Tsuki’s Lovebite</h1>
+    </header>
 
-    <!-- VISUAL NOVEL WINDOW -->
-    <div id="vnWindow" class="vn hidden">
-        
-        <div class="vn-sprite">
-            <img id="tsukiSprite" src="assets/sprites/Holding Wine Smile.png">
+    <section class="panel">
+      <div class="panel-inner">
+        <h2>Welcome ♡</h2>
+        <p>Soft pixel vibes — click the ringing phone to chat with Tsuki!</p>
+      </div>
+
+      <div class="socials-row">
+        <a href="#">YouTube</a>
+        <a href="#">TikTok #1</a>
+        <a href="#">TikTok #2</a>
+        <a href="#">TikTok #3</a>
+        <a href="#">Roblox</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- PHONE (click to open VN) -->
+  <img id="phoneButton" src="assets/images/Phone.png" alt="phone icon" />
+
+  <!-- VISUAL NOVEL CONTAINER (hidden until phone click) -->
+  <div id="vnContainer" class="vn hidden" aria-hidden="true">
+    <div class="vn-inner">
+
+      <div class="vn-left">
+        <img id="tsukiSprite" class="tsuki-sprite" src="" alt="Tsuki sprite" />
+      </div>
+
+      <div class="vn-right">
+        <div id="vnBox" class="vn-box">
+          <div id="textBox" class="vn-text"></div>
+          <div id="optionsBox" class="vn-choices"></div>
         </div>
-
-        <div class="vn-dialogue">
-            <p id="vnText"></p>
-        </div>
-
-        <div id="vnChoices" class="vn-choices"></div>
-
-        <!-- SUGGESTION FORM POPUP -->
-<div id="suggestForm" class="hidden form-box">
-    <h2>Submit Your <span id="formTypeLabel"></span> Idea</h2>
-
-    <form id="tsukiForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
-        <label>Your Name</label>
-        <input type="text" name="name" required>
-
-        <label>Your Suggestion</label>
-        <textarea name="message" required></textarea>
-
-        <button type="submit">Send</button>
-    </form>
-
-    <button class="close-btn" onclick="closeForm()">Close</button>
-</div>
+      </div>
 
     </div>
 
-</div>
+    <button id="vnClose" class="vn-close" aria-label="Close VN">✕</button>
+  </div>
 
-<script src="assets/js/script.js"></script>
+  <!-- SUGGESTION MODAL (hidden by default, uses Formspree) -->
+  <div id="suggestModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <h2 class="modal-title">Submit Your Idea</h2>
+
+      <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST" class="suggest-form">
+        <label class="label">Your name</label>
+        <input type="text" name="name" required>
+
+        <label class="label">Your suggestion</label>
+        <textarea name="message" rows="5" required></textarea>
+
+        <div class="modal-buttons">
+          <button type="submit" class="submit-btn">Send</button>
+          <button type="button" class="close-btn" id="modalCloseBtn">Cancel</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- small toast area for messages -->
+  <div id="toast" class="toast" aria-hidden="true"></div>
+
+  <!-- main script (inside assets folder) -->
+  <script src="assets/js/script.js" defer></script>
 </body>
 </html>
