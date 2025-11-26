@@ -1,4 +1,8 @@
-/* ========== BASE / PALETTE ========== */
+/* =====================
+   Tsuki's Lovebite.exe CSS
+   Retro Windows + Y2K chrome + pixel style
+   ===================== */
+
 :root{
   --bg: #3b2a2a;
   --accent-dark:#5c3d3d;
@@ -10,27 +14,55 @@
 }
 
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:'VT323', monospace;background:linear-gradient(180deg,var(--bg), #2f2222);}
-a{color:var(--accent-strong);text-decoration:none}
+html,body{height:100%;margin:0;font-family:'VT323', monospace;background:linear-gradient(180deg,var(--bg), #2f2222);color:var(--text);-webkit-font-smoothing:antialiased}
 
-/* Page container */
-.page{max-width:960px;margin:28px auto;padding:18px;color:var(--text)}
-.logo{display:inline-block;padding:6px 14px;border-radius:8px;background:linear-gradient(90deg,var(--hot-pink),var(--accent-strong));border:3px solid var(--accent-dark);font-size:28px;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,0.2)}
+/* ---------- Titlebar (chrome + XP feel) ---------- */
+.win-titlebar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  background: linear-gradient(180deg,#ffd7e9,#ff99aa);
+  border-bottom:4px solid var(--accent-dark);
+  box-shadow:0 8px 0 rgba(0,0,0,0.12);
+}
+.win-left{display:flex;align-items:center;gap:12px}
+.win-icon{
+  width:34px;height:34px;border-radius:6px;background:#fff0f0;color:#cc4455;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid var(--accent-dark)
+}
+.win-title{
+  font-size:20px;color:#3b2a2a;font-weight:bold;text-shadow:0 2px 0 rgba(255,255,255,0.2);
+}
+.win-controls{display:flex;gap:8px}
+.win-btn{background:linear-gradient(180deg,#fff,#ffdce6);border:2px solid var(--accent-dark);padding:6px 8px;border-radius:4px;cursor:pointer;font-family:'VT323'}
+.win-btn.close-x{background:linear-gradient(180deg,#cc4455,#a83a4a);color:#fff}
 
-/* Panel */
-.panel{background:linear-gradient(180deg,var(--card),var(--subtle));border-radius:10px;padding:16px;border:3px solid var(--accent-dark);box-shadow:0 8px 0 rgba(0,0,0,0.12)}
-.panel-inner h2{color:var(--accent-strong);margin:6px 0}
+/* ---------- Top Tabs ---------- */
+.top-tabs{display:flex;gap:8px;padding:12px;background:linear-gradient(180deg,#ffeef2,#fff7f8);border-bottom:3px solid var(--accent-dark)}
+.top-tabs .tab{background:#fdf2f6;border:2px solid var(--accent-dark);padding:8px 12px;border-radius:6px;cursor:pointer;color:var(--accent-strong)}
+.top-tabs .tab.active{background:var(--hot-pink);color:#3b2a2a;transform:translateY(-2px)}
 
-/* socials */
-.socials-row{margin-top:10px}
-.socials-row a{display:inline-block;margin:4px 6px;background:var(--subtle);padding:8px 12px;border-radius:6px;border:2px solid var(--accent-dark);color:var(--accent-strong)}
+/* ---------- Main wrapper & panels ---------- */
+.wrapper{max-width:980px;margin:18px auto;padding:12px}
+.panel{background:linear-gradient(180deg,var(--card),var(--subtle));border-radius:10px;padding:16px;border:3px solid var(--accent-dark);box-shadow:0 8px 0 rgba(0,0,0,0.12);margin-bottom:14px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+.big-title{font-size:48px;text-align:center;margin:18px 0;color:#3b2a2a;text-shadow:0 6px 0 rgba(255,255,255,0.12)}
+.subtle{text-align:center;color:#5c3d3d;margin-top:-6px}
 
-/* ========== PHONE ICON ========== */
+/* socials + support */
+.socials-list a{display:inline-block;margin:6px 8px;padding:8px 12px;background:var(--subtle);border:2px solid var(--accent-dark);border-radius:8px;color:var(--accent-strong)}
+.kofi-btn{display:inline-block;margin-top:12px;padding:10px 16px;background:linear-gradient(180deg,var(--hot-pink),#ff7ea0);color:#351a1a;border-radius:8px;border:2px solid var(--accent-dark);text-decoration:none}
+
+/* settings & form */
+.settings-grid label{display:block;margin:8px 0}
+
+/* ---------- PHONE ICON ---------- */
 #phoneButton{
   position: fixed;
-  right: 24px;
+  right: 26px;
   bottom: 20px;
-  width: 92px;
+  width: 96px;
   cursor: pointer;
   z-index: 99999;
   filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45));
@@ -38,34 +70,28 @@ a{color:var(--accent-strong);text-decoration:none}
   image-rendering: pixelated;
 }
 @keyframes phoneRing{
-  0%{transform:translateY(0) rotate(0);}
-  22%{transform:translateY(-6px) rotate(10deg);}
-  44%{transform:translateY(0) rotate(-10deg);}
-  66%{transform:translateY(-3px) rotate(6deg);}
-  100%{transform:translateY(0) rotate(0);}
+  0%{transform:translateY(0) rotate(0)}
+  22%{transform:translateY(-6px) rotate(10deg)}
+  44%{transform:translateY(0) rotate(-10deg)}
+  66%{transform:translateY(-3px) rotate(6deg)}
+  100%{transform:translateY(0) rotate(0)}
 }
 
-/* ========== VN WINDOW (Style B) ========== */
-.vn{position:fixed;left:50%;bottom:12%;transform:translateX(-50%);width:86%;max-width:780px;background:linear-gradient(180deg,var(--card),#fff7f8);border-radius:12px;border:4px solid var(--accent-dark);padding:12px;z-index:9000;box-shadow:0 20px 60px rgba(0,0,0,0.55)}
+/* ---------- VN window (Style B) ---------- */
+.vn{position:fixed;left:50%;bottom:14%;transform:translateX(-50%);width:86%;max-width:760px;background:linear-gradient(180deg,var(--card),#fff7f8);border-radius:12px;border:4px solid var(--accent-dark);padding:12px;z-index:9000;box-shadow:0 24px 60px rgba(0,0,0,0.6)}
 .vn.hidden{display:none}
 .vn-inner{display:flex;gap:14px;align-items:flex-end}
 .vn-left{flex:0 0 260px}
 .tsuki-sprite{width:100%;image-rendering:pixelated;border:3px solid var(--accent-dark);border-radius:8px;background:var(--subtle)}
 .vn-right{flex:1}
-
-/* VN dialogue box */
 .vn-box{background:linear-gradient(180deg,#ffeef2,#fff7f8);border:3px solid var(--accent-strong);padding:12px;border-radius:8px;min-height:120px;display:flex;flex-direction:column;justify-content:space-between}
 .vn-text{font-size:20px;color:var(--accent-dark);min-height:60px;line-height:1.25}
-
-/* choices */
 .vn-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .optionButton{font-family:'VT323', monospace;background:var(--hot-pink);color:#351a1a;border:3px solid var(--accent-dark);padding:10px;border-radius:8px;cursor:pointer;font-size:18px}
 .optionButton:hover{transform:translateX(6px)}
-
-/* close */
 .vn-close{position:absolute;right:8px;top:-20px;background:var(--accent-dark);color:var(--card);border:3px solid var(--accent-strong);padding:6px 8px;border-radius:8px;cursor:pointer;z-index:9050}
 
-/* ========== SPRITE TRANSITION (fade + bounce) ========== */
+/* sprite transition */
 .sprite-transition{animation:fadeBounce 0.36s ease-out}
 @keyframes fadeBounce{
   0%{opacity:0;transform:scale(0.96)}
@@ -73,7 +99,7 @@ a{color:var(--accent-strong);text-decoration:none}
   100%{opacity:1;transform:scale(1)}
 }
 
-/* ========== MODAL (form) ========== */
+/* ---------- Modal ---------- */
 .hidden{display:none !important}
 .modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:9980;padding:20px}
 .modal-content{background:var(--card);padding:18px;border-radius:10px;border:3px solid var(--accent-strong);max-width:420px;width:100%;color:var(--accent-dark)}
@@ -83,7 +109,7 @@ a{color:var(--accent-strong);text-decoration:none}
 .submit-btn{flex:1;background:var(--hot-pink);border:2px solid var(--accent-dark);padding:10px;color:#351a1a;font-size:18px;cursor:pointer;border-radius:8px}
 .close-btn{flex:1;background:transparent;border:2px solid var(--accent-dark);padding:10px;color:var(--accent-dark);font-size:18px;cursor:pointer;border-radius:8px}
 
-/* ========== TOAST ========== */
+/* ---------- Toast ---------- */
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:var(--accent-dark);color:var(--card);padding:10px 14px;border-radius:8px;display:none;z-index:100000;font-family:'VT323',monospace}
 .toast.show{display:block}
 
@@ -92,4 +118,5 @@ a{color:var(--accent-strong);text-decoration:none}
   .vn-inner{flex-direction:column;align-items:center}
   .vn-left{width:160px}
   .vn-text{font-size:18px}
+  .big-title{font-size:36px}
 }
