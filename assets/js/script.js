@@ -1,14 +1,19 @@
 /* assets/js/script.js
-   Hyper-Y2K VN + UI + Star & Pet prototype
-   - Preserves all original VN logic & scenes
-   - Adds falling stars, star collection, first-star intro
-   - Adds left-side Paw button + Pet window (created dynamically)
-   - Uses synth for ring & typing (no external audio required)
-   - Asset fallbacks for Phone / Paw / Ko-fi (small pixel SVGs)
+   Your original VN + UI logic (preserved)
+   PLUS: full-screen background stars (clickable) + pet system
+   - Drop-in replacement: overwrite your current assets/js/script.js
    - Uses localStorage keys: 'stars', 'petUnlocked', 'petChosen'
 */
 
-/* ========= original VN logic + helpers (preserved & reused) ========= */
+/* ==== START ORIGINAL SCRIPT (preserved) ==== */
+/* assets/js/script.js
+   Hyper-Y2K VN + UI
+   - Thanks pair used for happy (no Happy Talking)
+   - WebAudio synthesized ring + typing sounds (no external audio files required)
+   - Formspree integration
+   - Tab navigation (top row)
+   - Typing + talking frames + sprite transitions
+*/
 
 (() => {
   // -------------- CONFIG --------------
@@ -383,32 +388,194 @@
   // expose debug
   window.TsukiDebug = { sprites, openVN, closeVN, openSuggestModal, closeSuggestModal, startRing, stopRing };
 
-  /* ============================
-     NEW ADDITIONS - Stars & Pet System
-     (injects minimal UI elements, non-destructive)
-     ============================ */
+  /* ==== END ORIGINAL SCRIPT (preserved) ==== */
 
+  /* ========== NEW ADDITIONS: GLOBAL STARS + PET SYSTEM ========== */
   // persistent state
   let starCount = parseInt(localStorage.getItem('stars') || '0');
   let petUnlocked = localStorage.getItem('petUnlocked') === 'true';
   let petChosen = localStorage.getItem('petChosen') || null;
 
-  // small pixel SVG placeholders (data URIs)
-  const PAW_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
+  // star layer container (full screen, sits behind content)
+  let starLayer = document.getElementById('starLayerGlobal');
+  if (!starLayer) {
+    starLayer = document.createElement('div');
+    starLayer.id = 'starLayerGlobal';
+    // sits under UI but above background — very low z so it feels like background
+    starLayer.style.position = 'fixed';
+    starLayer.style.inset = '0';
+    starLayer.style.pointerEvents = 'none'; // let stars be individually clickable
+    starLayer.style.zIndex = '2'; // lower than nav/topbars but above background
+    document.body.appendChild(starLayer);
+  }
+
+  // create a pool of decorative background stars that are part of the background.
+  // They will slowly twinkle or drift; a subset are clickable (pointer-events: auto)
+  const STAR_POOL = []; // keep references so we can remove if needed
+  const MAX_STARS = Math.max(20, Math.floor((window.innerWidth * window.innerHeight) / 90000)); // scale with screen
+
+  function createBackgroundStar(xPct, yPct, opts = {}) {
+    // opts: {clickable:boolean, size:number, twinkle:boolean}
+    const s = document.createElement('div');
+    s.className = 'bg-star';
+    s.style.position = 'absolute';
+    s.style.left = (xPct * 100) + 'vw';
+    s.style.top = (yPct * 100) + 'vh';
+    s.style.transform = 'translate(-50%,-50%)';
+    s.style.pointerEvents = opts.clickable ? 'auto' : 'none';
+    s.dataset.clickable = opts.clickable ? '1' : '0';
+    const size = opts.size || (6 + Math.random() * 8);
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.borderRadius = '50%';
+    s.style.background = 'linear-gradient(180deg,#fff5f8,#ffdff0)';
+    s.style.boxShadow = '0 0 6px rgba(255,200,220,0.9)';
+    s.style.opacity = (opts.clickable ? 1 : (0.6 + Math.random()*0.6)).toString();
+    // twinkle animation
+    if (opts.twinkle !== false) {
+      const dur = 3 + Math.random()*5;
+      s.style.animation = `bgStarTwinkle ${dur}s infinite ease-in-out`;
+      s.style.animationDelay = (Math.random()*dur) + 's';
+    }
+    // clickable behavior
+    if (opts.clickable) {
+      s.style.cursor = 'pointer';
+      s.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        collectStarAtElement(s);
+      });
+    }
+    starLayer.appendChild(s);
+    STAR_POOL.push(s);
+    return s;
+  }
+
+  // clickable star effect: on click create a little burst and increment starCount
+  function collectStarAtElement(el) {
+    try {
+      // visual feedback
+      el.style.transform = 'translate(-50%,-50%) scale(0.8)';
+      el.style.transition = 'transform 160ms ease, opacity 260ms ease';
+      el.style.opacity = '0';
+      setTimeout(()=> { try{ el.remove(); } catch(e){} }, 260);
+    } catch(e){}
+    starCount++;
+    localStorage.setItem('stars', String(starCount));
+    if (starCount === 1 && !petUnlocked) {
+      // show intro modal (we'll create one below if missing)
+      showStarIntro();
+    } else {
+      showToast(`Stars: ${starCount}`);
+    }
+  }
+
+  // spawn a single "falling" star that moves across the screen and is clickable
+  function spawnFallingStar() {
+    const el = document.createElement('div');
+    el.className = 'falling-star-collection';
+    el.textContent = '✦';
+    el.style.position = 'fixed';
+    el.style.zIndex = '6';
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.top = (-6 - Math.random()*10) + 'vh';
+    el.style.fontSize = (18 + Math.random()*16) + 'px';
+    el.style.pointerEvents = 'auto';
+    el.style.cursor = 'pointer';
+    el.style.userSelect = 'none';
+    el.style.color = '#fff9ff';
+    el.style.textShadow = '0 0 8px #ffdff0';
+    document.body.appendChild(el);
+
+    // animate down+drift
+    const duration = 4800 + Math.random()*3000;
+    const endLeftPx = Math.random() * window.innerWidth;
+    const endTopPx = window.innerHeight + 80;
+    el.animate([
+      { transform: `translate(0,0)`, opacity: 1 },
+      { transform: `translate(${(Math.random()-0.5)*160}px, ${endTopPx}px)`, opacity: 0.02 }
+    ], { duration: duration, easing: 'linear' });
+
+    // click to collect
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      try { el.remove(); } catch(e){}
+      starCount++;
+      localStorage.setItem('stars', String(starCount));
+      if (starCount === 1 && !petUnlocked) {
+        showStarIntro();
+      } else showToast(`Stars: ${starCount}`);
+    });
+
+    // cleanup
+    setTimeout(() => { try{ el.remove(); } catch(e){} }, duration + 200);
+  }
+
+  // create a pleasant spread of background stars that feel "part of the background"
+  function populateBackgroundStars() {
+    // clear old
+    STAR_POOL.forEach(s => { try{s.remove();}catch(e){} });
+    STAR_POOL.length = 0;
+    // generate stars across viewport
+    for (let i = 0; i < MAX_STARS; i++) {
+      const x = Math.random();
+      const y = Math.random();
+      // small probability to be clickable (rare in background)
+      const clickable = Math.random() < 0.06; // 6% of background stars clickable
+      const twinkle = true;
+      createBackgroundStar(x, y, { clickable, size: (4 + Math.random()*10), twinkle });
+    }
+  }
+
+  // responsive: re-populate on resize (throttle)
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      populateBackgroundStars();
+    }, 220);
+  });
+
+  // start a gentle stream of falling stars (clickable) across screen
+  let fallingStarInterval = setInterval(spawnFallingStar, 3500);
+
+  // begin with populating
+  populateBackgroundStars();
+
+  // star intro modal (first star)
+  let starIntroEl = document.getElementById('starIntroBubble');
+  if (!starIntroEl) {
+    starIntroEl = document.createElement('div');
+    starIntroEl.id = 'starIntroBubble';
+    starIntroEl.className = 'modal hidden';
+    starIntroEl.style.zIndex = 99998;
+    starIntroEl.innerHTML = `
+      <div class="modal-card" style="max-width:420px;text-align:center">
+        <p style="font-size:20px;color:#5c3d3d"><strong>Tsuki:</strong> Ooooh… you caught a star! ✦</p>
+        <p style="color:#5c3d3d">Stars are our little currency — collect more to adopt pets and buy cuteness.</p>
+        <div style="margin-top:12px">
+          <button id="starIntroContinue" class="submit-btn">Continue</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(starIntroEl);
+  }
+
+  function showStarIntro() {
+    if (!starIntroEl) return;
+    starIntroEl.classList.remove('hidden');
+    starIntroEl.setAttribute('aria-hidden','false');
+  }
+
+  // create pet button on left (if missing) - only show if unlocked
+  let petBtnEl = document.getElementById('petButton');
+  const PAW_SVG_DATA = `data:image/svg+xml;utf8,${encodeURIComponent(
     `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
       <g fill="#ff99aa" stroke="#5c3d3d" stroke-width="2">
         <circle cx="20" cy="18" r="6"/><circle cx="32" cy="12" r="6"/><circle cx="44" cy="18" r="6"/>
         <ellipse cx="32" cy="36" rx="16" ry="12"/>
-      </g></svg>` )}`;
+      </g></svg>`
+  )}`;
 
-  const KOFI_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
-      <rect x="6" y="10" width="52" height="36" rx="6" fill="#fff0f0" stroke="#5c3d3d" stroke-width="2"/>
-      <text x="32" y="36" font-size="12" font-family="VT323" text-anchor="middle" fill="#5c3d3d">Ko-Fi</text>
-    </svg>` )}`;
-
-  // create pet button on left (hidden until unlocked)
-  let petBtnEl = document.getElementById('petButton');
   if (!petBtnEl) {
     petBtnEl = document.createElement('div');
     petBtnEl.id = 'petButton';
@@ -418,35 +585,33 @@
     petBtnEl.style.zIndex = '9999';
     petBtnEl.style.cursor = 'pointer';
     petBtnEl.style.display = petUnlocked ? '' : 'none';
-    // img inside
     const img = document.createElement('img');
     img.alt = 'pet';
     img.style.width = '70px';
     img.style.imageRendering = 'pixelated';
-    // try typical paths, fall back to dataURI
-    const pawPaths = [
-      'assets/ui/paw-icon.png',
-      'assets/ui/paw.png',
-      'assets/images/paw.png',
-      'assets/sprites/paw.png'
-    ];
-    (async function setPaw() {
-      for (const p of pawPaths) {
+    // try to find real paw path; fall back to dataURI
+    (async function setPawImg() {
+      const tries = [
+        'assets/ui/paw-icon.png',
+        'assets/ui/paw.png',
+        'assets/images/paw.png',
+        'assets/sprites/paw.png'
+      ];
+      for (const p of tries) {
         try {
           const r = await fetch(p, { method: 'HEAD' }).catch(()=>null);
-          if (r && r.ok) { img.src = p; return; }
+          if (r && r.ok) { img.src = p; petBtnEl.appendChild(img); document.body.appendChild(petBtnEl); return; }
         } catch(e){}
       }
-      img.src = PAW_SVG;
+      img.src = PAW_SVG_DATA;
+      petBtnEl.appendChild(img);
+      document.body.appendChild(petBtnEl);
     })();
-    petBtnEl.appendChild(img);
-    document.body.appendChild(petBtnEl);
   } else {
-    // if element existed, ensure display according to unlocked
     petBtnEl.style.display = petUnlocked ? '' : 'none';
   }
 
-  // create pet window (hidden)
+  // create pet window (modal) if missing
   let petWindowEl = document.getElementById('petWindow');
   if (!petWindowEl) {
     petWindowEl = document.createElement('div');
@@ -465,106 +630,34 @@
     document.body.appendChild(petWindowEl);
   }
 
-  // star intro bubble (shown upon first star collected)
-  let starIntroEl = document.getElementById('starIntroBubble');
-  if (!starIntroEl) {
-    starIntroEl = document.createElement('div');
-    starIntroEl.id = 'starIntroBubble';
-    starIntroEl.className = 'modal hidden';
-    starIntroEl.style.zIndex = 99998;
-    starIntroEl.innerHTML = `
-      <div class="modal-card" style="max-width:420px;text-align:center">
-        <p style="font-size:20px;color:#5c3d3d"><strong>Tsuki:</strong> Ooooh… you caught a star! ✦</p>
-        <p style="color:#5c3d3d">Stars are our little currency — spend them to adopt pets and buy cute things later.</p>
-        <div style="margin-top:12px">
-          <button id="starIntroContinue" class="submit-btn">Continue</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(starIntroEl);
-  }
-
-  // small function to update star counter toast (you can expand later with visible HUD)
-  function updateStarToast() {
-    showToast(`Stars: ${starCount}`, 1200);
-  }
-
-  // spawn falling star element (inline styling so we don't need a CSS change)
-  function spawnStar() {
-    const el = document.createElement('div');
-    el.className = 'falling-star';
-    el.textContent = '✦';
-    el.setAttribute('aria-hidden', 'true');
-    el.style.position = 'fixed';
-    el.style.left = Math.max(8, Math.random() * (window.innerWidth - 48)) + 'px';
-    el.style.top = '-28px';
-    el.style.zIndex = 8000;
-    el.style.fontSize = '26px';
-    el.style.color = '#fff8ff';
-    el.style.textShadow = '0 0 8px rgba(255,255,255,0.9)';
-    el.style.cursor = 'pointer';
-    el.style.userSelect = 'none';
-    el.style.transition = `transform 0.35s ease, opacity 0.4s linear`;
-    document.body.appendChild(el);
-
-    // animate down
-    const fallDuration = 3800 + Math.random() * 1600;
-    requestAnimationFrame(() => {
-      el.style.top = (window.innerHeight + 60) + 'px';
-      el.style.opacity = '0.95';
-    });
-
-    // click handler: collect
-    el.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      try {
-        el.style.transform = 'scale(0.9) translateY(-6px)';
-        el.style.opacity = '0';
-      } catch(e){}
-      setTimeout(()=> { try{ el.remove(); } catch(e){} }, 160);
-      starCount++;
-      localStorage.setItem('stars', String(starCount));
-      if (starCount === 1 && !petUnlocked) {
-        // first star behavior
-        starIntroEl.classList.remove('hidden');
-        starIntroEl.setAttribute('aria-hidden', 'false');
-      } else {
-        updateStarToast();
-      }
-    });
-
-    setTimeout(()=> { try{ el.remove(); } catch(e){} }, fallDuration + 600);
-  }
-
-  // start spawner interval
-  let starSpawnerId = setInterval(spawnStar, 3000);
-
-  // star intro continue -> unlock pet button
-  const starIntroContinueBtn = document.getElementById('starIntroContinue');
-  if (starIntroContinueBtn) {
-    starIntroContinueBtn.addEventListener('click', () => {
+  // star intro continue -> unlock pet and show paw
+  document.addEventListener('click', (e) => {
+    // starIntroContinue may not exist in DOM at load, so delegate
+    if (e.target && e.target.id === 'starIntroContinue') {
       starIntroEl.classList.add('hidden');
-      starIntroEl.setAttribute('aria-hidden', 'true');
+      starIntroEl.setAttribute('aria-hidden','true');
       petUnlocked = true;
       localStorage.setItem('petUnlocked', 'true');
-      // show paw
       if (petBtnEl) petBtnEl.style.display = '';
       showToast('Pet system unlocked! Click the paw to adopt.');
+    }
+  });
+
+  // pet button click opens modal
+  if (petBtnEl) {
+    petBtnEl.addEventListener('click', () => {
+      petWindowEl.classList.remove('hidden');
+      petWindowEl.setAttribute('aria-hidden','false');
+      loadPetWindowContent();
     });
   }
 
-  // pet button click -> open pet window
-  petBtnEl.addEventListener('click', () => {
-    petWindowEl.classList.remove('hidden');
-    petWindowEl.setAttribute('aria-hidden', 'false');
-    loadPetWindowContent();
-  });
-
-  // close pet window
-  const closePetBtn = document.getElementById('closePetWindow');
-  if (closePetBtn) closePetBtn.addEventListener('click', () => {
-    petWindowEl.classList.add('hidden');
-    petWindowEl.setAttribute('aria-hidden', 'true');
+  // close pet window handler
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'closePetWindow') {
+      petWindowEl.classList.add('hidden');
+      petWindowEl.setAttribute('aria-hidden','true');
+    }
   });
 
   function loadPetWindowContent() {
@@ -598,84 +691,35 @@
     loadPetWindowContent();
   }
 
-  // on load: show pet button only if unlocked (in case page refreshed)
-  (function initPetUI() {
+  // init state on load
+  (function initPetAndStars() {
     try {
       if (localStorage.getItem('petUnlocked') === 'true') {
         petUnlocked = true;
         if (petBtnEl) petBtnEl.style.display = '';
-      } else {
-        if (petBtnEl) petBtnEl.style.display = 'none';
+      } else if (petBtnEl) {
+        petBtnEl.style.display = 'none';
       }
-      // show star count if > 0
       if (starCount > 0) showToast(`Stars: ${starCount}`, 1200);
     } catch(e){}
   })();
 
-  // ensure items loaded: phone image fallback if missing -> try several paths then dataURI
-  (async function tryRepairUIImages() {
-    // phone image element id is phoneButton in your HTML; it could be missing or broken
-    const phoneEl = document.getElementById('phoneButton');
-    if (phoneEl && phoneEl.tagName === 'IMG') {
-      const candidates = [
-        'assets/images/Phone.png',
-        'assets/image/Phone.png',
-        'assets/images/phone.png',
-        'assets/image/phone.png',
-        'assets/Phone.png'
-      ];
-      let found = false;
-      for (const p of candidates) {
-        try {
-          const r = await fetch(p, { method: 'HEAD' }).catch(()=>null);
-          if (r && r.ok) { phoneEl.src = p; found = true; break; }
-        } catch(e){}
-      }
-      if (!found) {
-        // fallback tiny phone-looking SVG so UI doesn't break visually
-        const PHONE_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
-          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect rx="10" x="14" y="6" width="36" height="52" fill="#fff0f0" stroke="#5c3d3d" stroke-width="2"/><circle cx="32" cy="46" r="3" fill="#5c3d3d"/></svg>`
-        )}`;
-        phoneEl.src = PHONE_SVG;
-        console.warn('Phone image not found - using inline fallback');
-      }
-    }
-
-    // kofi button image fallback if used (you have a kofi-btn anchor; if inside there's an img try to repair)
-    const kofiImg = document.querySelector('.kofi-btn img');
-    if (kofiImg) {
-      const kPaths = ['assets/ui/ko-fi.png','assets/images/ko-fi.png','assets/ui/kofi.png'];
-      let found = false;
-      for (const p of kPaths) {
-        try { const r = await fetch(p, { method:'HEAD' }).catch(()=>null); if (r && r.ok) { kofiImg.src = p; found=true; break; } } catch(e){}
-      }
-      if (!found) kofiImg.src = KOFI_SVG;
-    }
-  })();
-
-  // expose debug methods to global so you can test easily
+  // expose debug helpers
   window.TsukiDebug = Object.assign(window.TsukiDebug || {}, {
-    spawnStar,
+    spawnFallingStar,
+    createBackgroundStar,
     startRing,
     stopRing,
     getState: () => ({ starCount, petUnlocked, petChosen })
   });
 
-  // keyboard escape to close pet window / modals (non-invasive)
+  // keyboard escape helpers
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      if (petWindowEl && !petWindowEl.classList.contains('hidden')) {
-        petWindowEl.classList.add('hidden');
-      }
-      if (suggestModal && !suggestModal.classList.contains('hidden')) {
-        closeSuggestModal();
-      }
-      if (vnContainer && !vnContainer.classList.contains('hidden')) {
-        closeVN();
-      }
-      if (starIntroEl && !starIntroEl.classList.contains('hidden')) {
-        starIntroEl.classList.add('hidden');
-      }
+      if (petWindowEl && !petWindowEl.classList.contains('hidden')) petWindowEl.classList.add('hidden');
+      if (suggestModal && !suggestModal.classList.contains('hidden')) closeSuggestModal();
+      if (vnContainer && !vnContainer.classList.contains('hidden')) closeVN();
+      if (starIntroEl && !starIntroEl.classList.contains('hidden')) starIntroEl.classList.add('hidden');
     }
   });
 
