@@ -68,7 +68,11 @@ function teaFormStart() {
 
 /* OPEN FORM */
 function openForm(type) {
-    window.open("https://formspree.io/f/mjkdzyqk", "_blank");
+    document.getElementById("formTypeLabel").innerText = type;
+    document.getElementById("suggestForm").classList.remove("hidden");
+}
+function closeForm() {
+    document.getElementById("suggestForm").classList.add("hidden");
 }
 
 /* USER HANGS UP */
