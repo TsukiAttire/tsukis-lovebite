@@ -1,9 +1,14 @@
 /* assets/js/script.js
-   Hyper-Y2K VN + UI (original logic preserved)
-   + robust asset fallbacks (phone, paw, ko-fi) + audio fallback
-   - Uses your original VN script (no logic changes)
-   - Adds "checkAssets()" to handle missing image/audio gracefully
+   Hyper-Y2K VN + UI + Star & Pet prototype
+   - Preserves all original VN logic & scenes
+   - Adds falling stars, star collection, first-star intro
+   - Adds left-side Paw button + Pet window (created dynamically)
+   - Uses synth for ring & typing (no external audio required)
+   - Asset fallbacks for Phone / Paw / Ko-fi (small pixel SVGs)
+   - Uses localStorage keys: 'stars', 'petUnlocked', 'petChosen'
 */
+
+/* ========= original VN logic + helpers (preserved & reused) ========= */
 
 (() => {
   // -------------- CONFIG --------------
@@ -27,7 +32,7 @@
   const sprites = {};
   Object.keys(spriteFiles).forEach(k => sprites[k] = spriteFiles[k].map(fn => encodeURI('assets/sprites/' + fn)));
 
-  // -------------- DOM --------------
+  // -------------- DOM (original) --------------
   const phoneBtn = document.getElementById('phoneButton');
   const vnContainer = document.getElementById('vnContainer');
   const vnClose = document.getElementById('vnClose');
@@ -41,27 +46,54 @@
   const toggleSfx = document.getElementById('toggle-sfx');
   const openVNbtn = document.getElementById('openVNbtn');
 
+  // -------------- small toast helper (defined so original code can use it) --------------
+  function showToast(msg, duration = 1600) {
+    try {
+      if (!toast) {
+        // fallback small injected toast
+        const t = document.createElement('div');
+        t.textContent = msg;
+        t.style.position = 'fixed';
+        t.style.left = '50%';
+        t.style.transform = 'translateX(-50%)';
+        t.style.bottom = '110px';
+        t.style.padding = '10px 14px';
+        t.style.borderRadius = '8px';
+        t.style.background = '#5c3d3d';
+        t.style.color = '#ffe6e9';
+        t.style.zIndex = 999999;
+        t.style.fontFamily = 'VT323, monospace';
+        document.body.appendChild(t);
+        setTimeout(()=>{ try{ t.remove(); } catch(e){} }, duration);
+        return;
+      }
+      toast.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), duration);
+    } catch(e) {
+      console.warn('toast fallback failed', e);
+    }
+  }
+
   // -------------- Audio (WebAudio synth) --------------
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   const audioCtx = AudioCtx ? new AudioCtx() : null;
   let ringOscList = [];
   let ringGain = null;
   let ringIntervalId = null;
-  let typingEnabled = true;
 
   function canPlaySound() {
     return audioCtx && (toggleSfx ? toggleSfx.checked : true);
   }
 
-  // Ring synth (fallback if mp3 missing)
-  function startRingSynth() {
-    if (!audioCtx) return;
-    stopRingSynth();
+  // Ring synth (original behavior)
+  function startRing() {
+    if (!canPlaySound()) return;
+    stopRing();
     ringOscList = [];
     ringGain = audioCtx.createGain();
     ringGain.gain.value = 0;
     ringGain.connect(audioCtx.destination);
-
     const freqs = [520, 660, 780];
     freqs.forEach((f) => {
       const osc = audioCtx.createOscillator();
@@ -74,9 +106,7 @@
       osc.start();
       ringOscList.push({osc,g});
     });
-
     ringGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-
     ringIntervalId = setInterval(() => {
       ringGain.gain.cancelScheduledValues(audioCtx.currentTime);
       ringGain.gain.setValueAtTime(0.01, audioCtx.currentTime);
@@ -84,12 +114,17 @@
       ringGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
     }, 420);
   }
-  function stopRingSynth() {
+
+  function stopRing() {
     try {
       if (ringIntervalId) { clearInterval(ringIntervalId); ringIntervalId = null; }
       if (ringGain) ringGain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 0.06);
       ringOscList.forEach(obj => {
-        try { obj.osc.stop(audioCtx.currentTime + 0.1); obj.osc.disconnect(); obj.g.disconnect(); } catch(e){}
+        try {
+          obj.osc.stop(audioCtx.currentTime + 0.1);
+          obj.osc.disconnect();
+          obj.g.disconnect();
+        } catch (e) { }
       });
       ringOscList = [];
       ringGain = null;
@@ -115,7 +150,7 @@
     o.stop(now + 0.07);
   }
 
-  // -------------- Sprite helpers & typing --------------
+  // -------------- Sprite helpers & typing (preserved) --------------
   let talkInterval = null;
   function safeSetSprite(path) {
     if (!tsukiSprite) return;
@@ -173,7 +208,7 @@
     });
   }
 
-  // -------------- Scenes --------------
+  // -------------- Scenes (preserved) --------------
   async function scene_start() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
@@ -231,7 +266,7 @@
     setTimeout(() => closeVN(), 700);
   }
 
-  // -------------- VN controls --------------
+  // -------------- VN controls (preserved) --------------
   function openVN() {
     vnContainer.classList.remove('hidden');
     vnContainer.setAttribute('aria-hidden', 'false');
@@ -249,7 +284,7 @@
     stopTalking();
   }
 
-  // -------------- modal --------------
+  // -------------- modal (preserved) --------------
   function openSuggestModal(kind = '') {
     if (suggestForm && !suggestForm.querySelector('input[name="type"]')) {
       const hidden = document.createElement('input');
@@ -269,7 +304,7 @@
     suggestModal.setAttribute('aria-hidden', 'true');
   }
 
-  // -------------- Formspree submit --------------
+  // -------------- Formspree submit (preserved) --------------
   if (suggestForm) {
     suggestForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -292,14 +327,12 @@
     });
   }
 
-  // -------------- events --------------
+  // -------------- events (preserved) --------------
   if (phoneBtn) {
     // start soft ring
-    startRing();
+    try { startRing(); } catch(e){ console.warn('startRing error', e); }
     phoneBtn.addEventListener('click', () => {
-      // resume audio context if needed (some browsers require a user gesture)
       if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
-      // stop ring and open VN
       stopRing();
       openVN();
     });
@@ -334,7 +367,7 @@
     });
   });
 
-  // -------------- preload sprites --------------
+  // -------------- preload sprites (preserved, but non-blocking) --------------
   (function preloadAll() {
     const missing = [];
     Object.values(sprites).forEach(arr => arr.forEach(path => {
@@ -351,242 +384,299 @@
   window.TsukiDebug = { sprites, openVN, closeVN, openSuggestModal, closeSuggestModal, startRing, stopRing };
 
   /* ============================
-     NEW: Asset & background fallback / fixes
-     (auto-runs after preload)
+     NEW ADDITIONS - Stars & Pet System
+     (injects minimal UI elements, non-destructive)
      ============================ */
 
-  // small SVG placeholders (pixel style) in data URLs
+  // persistent state
+  let starCount = parseInt(localStorage.getItem('stars') || '0');
+  let petUnlocked = localStorage.getItem('petUnlocked') === 'true';
+  let petChosen = localStorage.getItem('petChosen') || null;
+
+  // small pixel SVG placeholders (data URIs)
   const PAW_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 64 64'>
-      <rect width="100%" height="100%" fill="transparent"/>
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
       <g fill="#ff99aa" stroke="#5c3d3d" stroke-width="2">
-        <circle cx="20" cy="18" r="6"/>
-        <circle cx="32" cy="12" r="6"/>
-        <circle cx="44" cy="18" r="6"/>
+        <circle cx="20" cy="18" r="6"/><circle cx="32" cy="12" r="6"/><circle cx="44" cy="18" r="6"/>
         <ellipse cx="32" cy="36" rx="16" ry="12"/>
-      </g>
-    </svg>` )}`;
+      </g></svg>` )}`;
 
   const KOFI_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 64 64'>
-      <g fill="#ff99aa" stroke="#5c3d3d" stroke-width="2">
-        <rect x="6" y="10" width="52" height="36" rx="6" fill="#fff0f0"/>
-        <text x="32" y="34" font-size="14" font-family="VT323" text-anchor="middle" fill="#5c3d3d">Ko-Fi</text>
-      </g>
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+      <rect x="6" y="10" width="52" height="36" rx="6" fill="#fff0f0" stroke="#5c3d3d" stroke-width="2"/>
+      <text x="32" y="36" font-size="12" font-family="VT323" text-anchor="middle" fill="#5c3d3d">Ko-Fi</text>
     </svg>` )}`;
 
-  // Attempt to repair missing image srcs by trying multiple paths
-  function tryImagePaths(imgEl, possiblePaths, fallbackDataUrl, label) {
-    if (!imgEl) return Promise.resolve(null);
-    return new Promise(resolve => {
-      let i = 0;
-      function tryNext() {
-        if (i >= possiblePaths.length) {
-          // all failed -> set fallback
-          imgEl.src = fallbackDataUrl;
-          console.warn(`All paths failed for ${label}, using fallback.`);
-          showToast(`${label} icon auto-fixed`);
-          return resolve(false);
-        }
-        const p = possiblePaths[i++];
-        const tester = new Image();
-        tester.onload = () => {
-          imgEl.src = p;
-          console.log(`${label} loaded from: ${p}`);
-          return resolve(true);
-        };
-        tester.onerror = () => {
-          tryNext();
-        };
-        tester.src = p;
+  // create pet button on left (hidden until unlocked)
+  let petBtnEl = document.getElementById('petButton');
+  if (!petBtnEl) {
+    petBtnEl = document.createElement('div');
+    petBtnEl.id = 'petButton';
+    petBtnEl.style.position = 'fixed';
+    petBtnEl.style.left = '20px';
+    petBtnEl.style.top = '140px';
+    petBtnEl.style.zIndex = '9999';
+    petBtnEl.style.cursor = 'pointer';
+    petBtnEl.style.display = petUnlocked ? '' : 'none';
+    // img inside
+    const img = document.createElement('img');
+    img.alt = 'pet';
+    img.style.width = '70px';
+    img.style.imageRendering = 'pixelated';
+    // try typical paths, fall back to dataURI
+    const pawPaths = [
+      'assets/ui/paw-icon.png',
+      'assets/ui/paw.png',
+      'assets/images/paw.png',
+      'assets/sprites/paw.png'
+    ];
+    (async function setPaw() {
+      for (const p of pawPaths) {
+        try {
+          const r = await fetch(p, { method: 'HEAD' }).catch(()=>null);
+          if (r && r.ok) { img.src = p; return; }
+        } catch(e){}
       }
-      tryNext();
+      img.src = PAW_SVG;
+    })();
+    petBtnEl.appendChild(img);
+    document.body.appendChild(petBtnEl);
+  } else {
+    // if element existed, ensure display according to unlocked
+    petBtnEl.style.display = petUnlocked ? '' : 'none';
+  }
+
+  // create pet window (hidden)
+  let petWindowEl = document.getElementById('petWindow');
+  if (!petWindowEl) {
+    petWindowEl = document.createElement('div');
+    petWindowEl.id = 'petWindow';
+    petWindowEl.className = 'modal hidden';
+    petWindowEl.style.zIndex = 99999;
+    petWindowEl.innerHTML = `
+      <div class="modal-card" style="max-width:420px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <strong style="font-size:20px;color:#5c3d3d">Pet Menu</strong>
+          <button id="closePetWindow" class="close-btn" type="button">Close</button>
+        </div>
+        <div id="petWindowContent"></div>
+      </div>
+    `;
+    document.body.appendChild(petWindowEl);
+  }
+
+  // star intro bubble (shown upon first star collected)
+  let starIntroEl = document.getElementById('starIntroBubble');
+  if (!starIntroEl) {
+    starIntroEl = document.createElement('div');
+    starIntroEl.id = 'starIntroBubble';
+    starIntroEl.className = 'modal hidden';
+    starIntroEl.style.zIndex = 99998;
+    starIntroEl.innerHTML = `
+      <div class="modal-card" style="max-width:420px;text-align:center">
+        <p style="font-size:20px;color:#5c3d3d"><strong>Tsuki:</strong> Ooooh… you caught a star! ✦</p>
+        <p style="color:#5c3d3d">Stars are our little currency — spend them to adopt pets and buy cute things later.</p>
+        <div style="margin-top:12px">
+          <button id="starIntroContinue" class="submit-btn">Continue</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(starIntroEl);
+  }
+
+  // small function to update star counter toast (you can expand later with visible HUD)
+  function updateStarToast() {
+    showToast(`Stars: ${starCount}`, 1200);
+  }
+
+  // spawn falling star element (inline styling so we don't need a CSS change)
+  function spawnStar() {
+    const el = document.createElement('div');
+    el.className = 'falling-star';
+    el.textContent = '✦';
+    el.setAttribute('aria-hidden', 'true');
+    el.style.position = 'fixed';
+    el.style.left = Math.max(8, Math.random() * (window.innerWidth - 48)) + 'px';
+    el.style.top = '-28px';
+    el.style.zIndex = 8000;
+    el.style.fontSize = '26px';
+    el.style.color = '#fff8ff';
+    el.style.textShadow = '0 0 8px rgba(255,255,255,0.9)';
+    el.style.cursor = 'pointer';
+    el.style.userSelect = 'none';
+    el.style.transition = `transform 0.35s ease, opacity 0.4s linear`;
+    document.body.appendChild(el);
+
+    // animate down
+    const fallDuration = 3800 + Math.random() * 1600;
+    requestAnimationFrame(() => {
+      el.style.top = (window.innerHeight + 60) + 'px';
+      el.style.opacity = '0.95';
+    });
+
+    // click handler: collect
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      try {
+        el.style.transform = 'scale(0.9) translateY(-6px)';
+        el.style.opacity = '0';
+      } catch(e){}
+      setTimeout(()=> { try{ el.remove(); } catch(e){} }, 160);
+      starCount++;
+      localStorage.setItem('stars', String(starCount));
+      if (starCount === 1 && !petUnlocked) {
+        // first star behavior
+        starIntroEl.classList.remove('hidden');
+        starIntroEl.setAttribute('aria-hidden', 'false');
+      } else {
+        updateStarToast();
+      }
+    });
+
+    setTimeout(()=> { try{ el.remove(); } catch(e){} }, fallDuration + 600);
+  }
+
+  // start spawner interval
+  let starSpawnerId = setInterval(spawnStar, 3000);
+
+  // star intro continue -> unlock pet button
+  const starIntroContinueBtn = document.getElementById('starIntroContinue');
+  if (starIntroContinueBtn) {
+    starIntroContinueBtn.addEventListener('click', () => {
+      starIntroEl.classList.add('hidden');
+      starIntroEl.setAttribute('aria-hidden', 'true');
+      petUnlocked = true;
+      localStorage.setItem('petUnlocked', 'true');
+      // show paw
+      if (petBtnEl) petBtnEl.style.display = '';
+      showToast('Pet system unlocked! Click the paw to adopt.');
     });
   }
 
-  // check phone audio file and if missing, use synth ring instead
-  async function ensurePhoneAudio() {
-    const mp3Paths = [
-      'assets/sfx/phone-ring.mp3',
-      'assets/sfx/phone-ring.wav',
-      'assets/phone-ring.mp3'
-    ];
-    let found = false;
-    for (const p of mp3Paths) {
-      try {
-        const req = await fetch(p, { method: 'HEAD' }).catch(()=>null);
-        if (req && req.ok) {
-          // create an <audio> element if not already present and point to this file
-          if (!window._tsuki_phone_audio) {
-            const a = new Audio(p);
-            a.loop = true; a.volume = 0.45;
-            window._tsuki_phone_audio = a;
-          } else {
-            window._tsuki_phone_audio.src = p;
-          }
-          console.log('Phone audio found at', p);
-          found = true; break;
-        }
-      } catch(e){}
-    }
-    if (!found) {
-      console.warn('Phone audio not found - falling back to synth ring.');
-      // start synth ring instead when needed
-      // expose helper to start/stop synth ring
-      window._tsuki_ring_synth = { start: startRingSynth, stop: stopRingSynth };
-      // ensure any code calling startRing() uses synth fallback:
-      window._tsuki_use_synth_ring = true;
+  // pet button click -> open pet window
+  petBtnEl.addEventListener('click', () => {
+    petWindowEl.classList.remove('hidden');
+    petWindowEl.setAttribute('aria-hidden', 'false');
+    loadPetWindowContent();
+  });
+
+  // close pet window
+  const closePetBtn = document.getElementById('closePetWindow');
+  if (closePetBtn) closePetBtn.addEventListener('click', () => {
+    petWindowEl.classList.add('hidden');
+    petWindowEl.setAttribute('aria-hidden', 'true');
+  });
+
+  function loadPetWindowContent() {
+    const content = document.getElementById('petWindowContent');
+    if (!content) return;
+    if (!petChosen) {
+      content.innerHTML = `
+        <p style="font-size:18px;color:#5c3d3d;margin-bottom:8px">Choose your starter pet:</p>
+        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:10px">
+          <button id="petChoosePuppy" class="optionButton">🐶 Puppy</button>
+          <button id="petChooseKitten" class="optionButton">🐱 Kitten</button>
+        </div>
+        <p style="font-size:13px;color:#5c3d3d">You can collect more pets using stars in the shop later.</p>
+      `;
+      const pup = document.getElementById('petChoosePuppy');
+      const kit = document.getElementById('petChooseKitten');
+      if (pup) pup.addEventListener('click', () => choosePet('Puppy'));
+      if (kit) kit.addEventListener('click', () => choosePet('Kitten'));
     } else {
-      window._tsuki_use_synth_ring = false;
+      content.innerHTML = `
+        <p style="font-size:18px;color:#5c3d3d">Your pet: <strong>${petChosen}</strong></p>
+        <p style="font-size:14px;color:#5c3d3d">More interactions (feed, dress, shop) will appear here.</p>
+      `;
     }
   }
 
-  // Small wrapper to start ring that prefers audio file, otherwise synth
-  function startRing() {
-    if (window._tsuki_use_synth_ring) {
-      startRingSynth();
-    } else {
-      if (window._tsuki_phone_audio) {
-        window._tsuki_phone_audio.play().catch(()=>{});
+  function choosePet(name) {
+    petChosen = name;
+    localStorage.setItem('petChosen', petChosen);
+    showToast(`Adopted ${name} — so cute!`);
+    loadPetWindowContent();
+  }
+
+  // on load: show pet button only if unlocked (in case page refreshed)
+  (function initPetUI() {
+    try {
+      if (localStorage.getItem('petUnlocked') === 'true') {
+        petUnlocked = true;
+        if (petBtnEl) petBtnEl.style.display = '';
       } else {
-        // last resort synth
-        startRingSynth();
+        if (petBtnEl) petBtnEl.style.display = 'none';
       }
-    }
-  }
-  function stopRing() {
-    if (window._tsuki_use_synth_ring) {
-      stopRingSynth();
-    } else {
-      if (window._tsuki_phone_audio) {
-        try { window._tsuki_phone_audio.pause(); window._tsuki_phone_audio.currentTime = 0; } catch(e){}
-      } else {
-        stopRingSynth();
-      }
-    }
-  }
+      // show star count if > 0
+      if (starCount > 0) showToast(`Stars: ${starCount}`, 1200);
+    } catch(e){}
+  })();
 
-  // replace previous startRing/stopRing defs if needed (for compatibility)
-  window._tsuki_startRing = startRing;
-  window._tsuki_stopRing = stopRing;
-
-  // background fix: enforce vandyke-like chocolate if CSS not loaded fully
-  function ensureBackground() {
-    // We prefer the CSS variable, but if not applied, set a fallback
-    const body = document.body;
-    const computed = getComputedStyle(body).backgroundImage || '';
-    // if CSS didn't apply (very light bg), force the vandyke brown
-    if (!computed || computed === 'none' || computed.includes('linear-gradient') === false) {
-      body.style.background = 'radial-gradient(circle at 10% 10%, #3b1f1f 0%, #2a1717 40%, #1f1212 100%)';
-    }
-  }
-
-  // top-level asset check that runs after preload
-  async function checkAssetsAndFix() {
-    // ensure background
-    ensureBackground();
-
-    // phone icon element (in your HTML it's id="phoneButton")
-    const phoneImg = document.getElementById('phoneButton');
-    // sometimes the phone element is an <img id="phoneButton"> or an <img id="phoneImg"> - try both
-    let phoneEl = phoneImg;
-    if (!phoneEl) {
-      phoneEl = document.getElementById('phoneImg') || document.querySelector('#phoneIcon img') || document.querySelector('img.phone-icon') || null;
-    }
-    if (phoneEl) {
-      // possible paths to try
-      const phonePaths = [
+  // ensure items loaded: phone image fallback if missing -> try several paths then dataURI
+  (async function tryRepairUIImages() {
+    // phone image element id is phoneButton in your HTML; it could be missing or broken
+    const phoneEl = document.getElementById('phoneButton');
+    if (phoneEl && phoneEl.tagName === 'IMG') {
+      const candidates = [
         'assets/images/Phone.png',
         'assets/image/Phone.png',
         'assets/images/phone.png',
-        'assets/Phone.png',
-        'assets/image/phone.png'
+        'assets/image/phone.png',
+        'assets/Phone.png'
       ];
-      await tryImagePaths(phoneEl, phonePaths, PAW_SVG, 'Phone');
+      let found = false;
+      for (const p of candidates) {
+        try {
+          const r = await fetch(p, { method: 'HEAD' }).catch(()=>null);
+          if (r && r.ok) { phoneEl.src = p; found = true; break; }
+        } catch(e){}
+      }
+      if (!found) {
+        // fallback tiny phone-looking SVG so UI doesn't break visually
+        const PHONE_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(
+          `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect rx="10" x="14" y="6" width="36" height="52" fill="#fff0f0" stroke="#5c3d3d" stroke-width="2"/><circle cx="32" cy="46" r="3" fill="#5c3d3d"/></svg>`
+        )}`;
+        phoneEl.src = PHONE_SVG;
+        console.warn('Phone image not found - using inline fallback');
+      }
     }
 
-    // paw icon (pet button) - might be inside assets/ui/ or assets/images/
-    const pawEl = document.querySelector('#petButton img') || document.querySelector('#petBtn img') || null;
-    if (pawEl) {
-      const pawPaths = [
-        'assets/ui/paw-icon.png',
-        'assets/ui/paw.png',
-        'assets/images/paw.png',
-        'assets/sprites/paw.png'
-      ];
-      await tryImagePaths(pawEl, pawPaths, PAW_SVG, 'Paw');
-    } else {
-      // If the pet button uses a background, ensure the button is visible if unlocked
-      const pb = document.getElementById('petButton');
-      if (pb) pb.style.display = 'none'; // will be turned on by pet unlocked logic
+    // kofi button image fallback if used (you have a kofi-btn anchor; if inside there's an img try to repair)
+    const kofiImg = document.querySelector('.kofi-btn img');
+    if (kofiImg) {
+      const kPaths = ['assets/ui/ko-fi.png','assets/images/ko-fi.png','assets/ui/kofi.png'];
+      let found = false;
+      for (const p of kPaths) {
+        try { const r = await fetch(p, { method:'HEAD' }).catch(()=>null); if (r && r.ok) { kofiImg.src = p; found=true; break; } } catch(e){}
+      }
+      if (!found) kofiImg.src = KOFI_SVG;
     }
+  })();
 
-    // ko-fi icon
-    const kofiEl = document.querySelector('.kofi-btn img') || document.querySelector('#supportButton img') || null;
-    if (kofiEl) {
-      const kofiPaths = [
-        'assets/ui/ko-fi.png',
-        'assets/images/ko-fi.png',
-        'assets/ui/kofi.png',
-        'assets/images/kofi.png'
-      ];
-      await tryImagePaths(kofiEl, kofiPaths, KOFI_SVG, 'Ko-Fi');
+  // expose debug methods to global so you can test easily
+  window.TsukiDebug = Object.assign(window.TsukiDebug || {}, {
+    spawnStar,
+    startRing,
+    stopRing,
+    getState: () => ({ starCount, petUnlocked, petChosen })
+  });
+
+  // keyboard escape to close pet window / modals (non-invasive)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (petWindowEl && !petWindowEl.classList.contains('hidden')) {
+        petWindowEl.classList.add('hidden');
+      }
+      if (suggestModal && !suggestModal.classList.contains('hidden')) {
+        closeSuggestModal();
+      }
+      if (vnContainer && !vnContainer.classList.contains('hidden')) {
+        closeVN();
+      }
+      if (starIntroEl && !starIntroEl.classList.contains('hidden')) {
+        starIntroEl.classList.add('hidden');
+      }
     }
-
-    // ensure audio file or fallback synth is ready
-    await ensurePhoneAudio();
-
-    // start the ring using chosen method
-    try { startRing(); } catch(e){ console.warn(e); }
-
-    // check for sprite load errors: if a key sprite fails, notify in console/toast
-    const checkSprites = Object.values(sprites).flat();
-    const missing = [];
-    await Promise.all(checkSprites.map(p => {
-      return new Promise(res => {
-        const img = new Image();
-        img.onload = () => res(true);
-        img.onerror = () => { missing.push(p); res(false); };
-        img.src = p;
-      });
-    }));
-    if (missing.length) {
-      console.warn('Some sprites not found:', missing);
-      showToast('Some sprites missing — check console', 2500);
-    }
-  }
-
-  // run asset fixer after a short delay (allow preload to start)
-  setTimeout(() => {
-    checkAssetsAndFix().catch(e => console.warn('asset-fix failed', e));
-  }, 420);
-
-  // -------------- small helper: showToast (reused from your code) --------------
-  function showToast(msg, duration=1600) {
-    if (!toast) {
-      // fallback simple toast
-      const t = document.createElement('div');
-      t.textContent = msg;
-      t.style.position = 'fixed';
-      t.style.left = '50%';
-      t.style.transform = 'translateX(-50%)';
-      t.style.bottom = '110px';
-      t.style.padding = '10px 14px';
-      t.style.borderRadius = '8px';
-      t.style.background = '#5c3d3d';
-      t.style.color = '#ffe6e9';
-      t.style.zIndex = 999999;
-      t.style.fontFamily = 'VT323, monospace';
-      document.body.appendChild(t);
-      setTimeout(()=>{ try { t.remove(); } catch(e){} }, duration);
-      return;
-    }
-    toast.innerText = msg;
-    toast.classList.add('show');
-    setTimeout(()=> toast.classList.remove('show'), duration);
-  }
-
-  // expose debug
-  window.TsukiDebug = { sprites, openVN, closeVN, openSuggestModal, closeSuggestModal, startRing, stopRing, checkAssetsAndFix };
+  });
 
 })();
