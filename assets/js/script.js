@@ -728,39 +728,40 @@
 // -------------------- DEBUG BUTTONS --------------------
 function devLog(msg){ console.log("%cDEBUG: "+msg, "color:#ff99aa"); }
 
-const DEBUG_STORAGE_KEYS = [
-  "tsuki_stars",
-  "tsuki_pet",
-  "tsuki_unlocked_pets"
-];
-
 // reset pet + stars only
 document.getElementById("debug-reset")?.addEventListener("click", () => {
-  localStorage.removeItem("tsuki_stars");
-  localStorage.removeItem("tsuki_pet");
+  localStorage.removeItem("stars");
+  localStorage.removeItem("petUnlocked");
+  localStorage.removeItem("petChosen");
   devLog("Pet + star system reset.");
   showToast("Pet system reset!");
+  location.reload();
 });
 
 // +5 stars cheat
 document.getElementById("debug-add-stars")?.addEventListener("click", () => {
-  const s = Number(localStorage.getItem("tsuki_stars") || 0);
-  localStorage.setItem("tsuki_stars", s + 5);
-  devLog("Added 5 stars.");
+  let s = Number(localStorage.getItem("stars") || 0);
+  s += 5;
+  localStorage.setItem("stars", s);
+  devLog("+5 stars.");
   showToast("+5 stars added!");
+  location.reload();
 });
 
-// unlock all pets cheat
+// unlock ALL pets cheat (this just forces petUnlocked + lets user re-choose)
 document.getElementById("debug-unlock-pets")?.addEventListener("click", () => {
-  const all = ["cat", "dog", "bat", "bunny", "fox"];
-  localStorage.setItem("tsuki_unlocked_pets", JSON.stringify(all));
-  devLog("Unlocked all pets.");
-  showToast("All pets unlocked!");
+  localStorage.setItem("petUnlocked", "true");
+  devLog("Unlocked entire pet system.");
+  showToast("Pet system unlocked!");
+  location.reload();
 });
 
-// FULL nuke
+// FULL WIPE
 document.getElementById("debug-full-reset")?.addEventListener("click", () => {
-  DEBUG_STORAGE_KEYS.forEach(k => localStorage.removeItem(k));
+  localStorage.removeItem("stars");
+  localStorage.removeItem("petUnlocked");
+  localStorage.removeItem("petChosen");
   devLog("All Tsuki data cleared.");
-  showToast("All data cleared!");
+  showToast("ALL DATA CLEARED!");
+  location.reload();
 });
