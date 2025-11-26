@@ -26,6 +26,23 @@
 
         <div id="vnChoices" class="vn-choices"></div>
 
+        <!-- SUGGESTION FORM POPUP -->
+<div id="suggestForm" class="hidden form-box">
+    <h2>Submit Your <span id="formTypeLabel"></span> Idea</h2>
+
+    <form id="tsukiForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
+        <label>Your Name</label>
+        <input type="text" name="name" required>
+
+        <label>Your Suggestion</label>
+        <textarea name="message" required></textarea>
+
+        <button type="submit">Send</button>
+    </form>
+
+    <button class="close-btn" onclick="closeForm()">Close</button>
+</div>
+
     </div>
 
 </div>
