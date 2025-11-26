@@ -1,87 +1,122 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Tsuki’s Lovebite.exe</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tsuki's Lovebite.exe</title>
 
-    <!-- PIXEL FONT -->
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+  <!-- Pixel font -->
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
-
 <body>
 
-    <!-- ★ TITLE — TOP CENTER ★ -->
-    <header id="siteTitle">
-        <h1>Tsuki’s Lovebite.exe</h1>
-    </header>
-
-    <!-- ★ SIDEBUTTON LEFT — PET MENU ★ -->
-    <div id="petButton" class="side-button">
-        <img src="assets/ui/paw-icon.png" class="pixel-icon">
+  <!-- TOP NAV (hyper-Y2K glossy) -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon">♡</div>
+      <div class="brand-title">Tsuki's Lovebite.exe</div>
     </div>
 
-    <!-- ★ SIDEBUTTON RIGHT — KO-FI ★ -->
-    <div id="supportButton" class="side-button-right">
-        <a href="#" target="_blank">
-            <img src="assets/ui/ko-fi.png" class="pixel-icon">
-        </a>
-    </div>
+    <nav class="nav">
+      <button class="nav-tab active" data-tab="home">Home</button>
+      <button class="nav-tab" data-tab="socials">Socials</button>
+      <button class="nav-tab" data-tab="support">Support Me</button>
+      <button class="nav-tab" data-tab="settings">Settings</button>
+      <button class="nav-tab" data-tab="about">About</button>
+    </nav>
+  </header>
 
-    <!-- ★ PHONE ICON — BOTTOM RIGHT ★ -->
-    <div id="phoneIcon">
-        <img src="assets/image/Phone.png" id="phoneImg">
-    </div>
-
-    <!-- ★ PET MENU WINDOW ★ -->
-    <div id="petWindow" class="petWindow hidden">
-        <div class="petHeader">
-            <span>Pet Menu</span>
-            <span id="closePetWindow" class="closeBtn">✕</span>
+  <main class="main">
+    <!-- Home -->
+    <section id="home" class="page-panel active">
+      <div class="hero">
+        <h1 class="title-chrome">Tsuki's Lovebite.exe</h1>
+        <p class="tagline">soft chaos • pink tea • pixel love</p>
+        <div class="hero-actions">
+          <button class="cta" id="openVNbtn">Chat with Tsuki ♡</button>
+          <a class="kofi-btn" href="#" target="_blank">Support (Ko-Fi)</a>
         </div>
-        <div id="petWindowContent" class="petContent"></div>
-    </div>
+      </div>
+    </section>
 
-    <!-- ★ STAR INTRO DIALOGUE ★ -->
-    <div id="starIntro" class="starIntro hidden">
-        <div class="starBubble">
-            <p><strong>Tsuki:</strong> Ooooh… you caught a star! ✦</p>
-            <p>Stars here are magical… you can use them to adopt a pet!</p>
-            <p>Let me show you how it works.</p>
-            <button id="starIntroContinue">Continue</button>
+    <!-- Socials -->
+    <section id="socials" class="page-panel">
+      <div class="card">
+        <h2>Stay up to date</h2>
+        <div class="links">
+          <a href="#" target="_blank">YouTube</a>
+          <a href="#" target="_blank">TikTok #1</a>
+          <a href="#" target="_blank">TikTok #2</a>
+          <a href="#" target="_blank">TikTok #3</a>
+          <a href="#" target="_blank">Roblox</a>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <!-- ★ VISUAL NOVEL WINDOW ★ -->
-    <div id="vnWindow" class="vn hidden">
-        <div id="vnSpriteHolder">
-            <img id="vnSprite">
+    <!-- Support -->
+    <section id="support" class="page-panel">
+      <div class="card">
+        <h2>Support Me</h2>
+        <p>Ko-Fi link coming soon — placeholder for future support link.</p>
+        <a class="kofi-btn big" href="#" target="_blank">Ko-Fi (coming soon)</a>
+      </div>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings" class="page-panel">
+      <div class="card">
+        <h2>Settings</h2>
+        <label><input type="checkbox" id="toggle-sfx" checked> Enable sounds (ring & typing)</label>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="page-panel">
+      <div class="card">
+        <h2>About</h2>
+        <p>Tsuki's Lovebite.exe — a soft, glittery Y2K corner for pixel tea, ranters, and cozy chaos.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- RINGING PHONE (fixed) -->
+  <img id="phoneButton" src="assets/images/Phone.png" alt="phone" class="phone-icon" />
+
+  <!-- VISUAL NOVEL WINDOW -->
+  <div id="vnContainer" class="vn hidden" aria-hidden="true">
+    <div class="vn-card">
+      <div class="vn-left">
+        <img id="tsukiSprite" class="tsuki-sprite" src="assets/sprites/Thanks.png" alt="Tsuki sprite">
+      </div>
+      <div class="vn-right">
+        <div id="vnBox" class="vn-box">
+          <div id="textBox" class="vn-text" aria-live="polite"></div>
+          <div id="optionsBox" class="vn-choices"></div>
         </div>
-        <div id="vnDialogueBox">
-            <p id="vnText"></p>
+      </div>
+      <button id="vnClose" class="vn-close" aria-label="close VN">✕</button>
+    </div>
+  </div>
+
+  <!-- MODAL: suggestion (Formspree) -->
+  <div id="suggestModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card">
+      <h3>Submit a suggestion</h3>
+      <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
+        <label>Your name <input type="text" name="name" required></label>
+        <label>Your suggestion <textarea name="message" rows="4" required></textarea></label>
+        <div class="modal-actions">
+          <button type="submit" class="submit-btn">Send</button>
+          <button type="button" id="modalCloseBtn" class="close-btn">Cancel</button>
         </div>
-        <div id="vnChoices"></div>
+      </form>
     </div>
+  </div>
 
-    <!-- ★ FORM PAGE WITH DARKER TEXT ★ -->
-    <div id="formContainer" class="formPage hidden">
-        <h2>Submit a Suggestion</h2>
-        <form action="https://formspree.io/f/mjkdzyqk" method="POST">
-            <label>Your Name</label>
-            <input type="text" name="name" required>
+  <!-- toast -->
+  <div id="toast" class="toast" aria-hidden="true"></div>
 
-            <label>Your Suggestion</label>
-            <textarea name="suggestion" required></textarea>
-
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-
-    <!-- JS -->
-    <script src="assets/js/script.js"></script>
-
+  <script src="assets/js/script.js" defer></script>
 </body>
 </html>
