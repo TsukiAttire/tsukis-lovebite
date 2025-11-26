@@ -194,7 +194,7 @@
       optionsBox.appendChild(b);
     });
   }
-  // Scenes
+   // Scenes – YOUR FINAL VOICELINES + MONSTER HIGH INPUT + BLOOD JOKE PAUSE
   async function scene_start() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
@@ -202,6 +202,7 @@
     stopTalking(sprites.happy[0]);
     setTimeout(scene_whatsUp, 300);
   }
+
   async function scene_whatsUp() {
     startTalking(sprites.happy);
     await typeText("Tsuki: What's up, girl?");
@@ -212,28 +213,11 @@
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
-  async function scene_tea() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.wineSmile);
-    await typeText("Tsuki: Oooh…Spill it!");
-    stopTalking(sprites.wineSmile[0]);
-    showOptions([
-      { label: "Suggest Rant", onClick: () => openSuggestModal('Rant') },
-      { label: "Suggest Game", onClick: () => openSuggestModal('Game') },
-      { label: "Hang up", onClick: scene_hangUpAngry }
-    ]);
-  }
-  async function scene_hangUpAngry() {
-    optionsBox.innerHTML = '';
-    startTalking([...sprites.frown, ...sprites.neutral]);
-    await typeText("Tsuki: Girl..don’t piss me off.");
-    stopTalking(sprites.hangup[1] || sprites.hangup[0]);
-    setTimeout(() => closeVN(), 1100);
-  }
+
   async function scene_identity() {
     optionsBox.innerHTML = '';
     startTalking(sprites.neutral);
-    await typeText("Tsuki: Oh, spill time about me? I'm Tsuki, daughter of Cupid and a vampire—yeah, that mix is as chaotic as it sounds. I live for gossip, pink tea, and obsessing over Monster High. What's the tea you wanna know, boo?");
+    await typeText("Tsuki: Girl..Did you hit your head or something? Its me! Your Bestie? Maybe you just need a refresher..what do ya wanna know?");
     stopTalking(sprites.neutral[0]);
     showOptions([
       { label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore },
@@ -243,10 +227,11 @@
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
+
   async function scene_cupidLore() {
     optionsBox.innerHTML = '';
     startTalking(sprites.rose);
-    await typeText("Tsuki: Being Cupid's kid? It's all arrows and awkward love spells gone wrong. Dad's always meddling in crushes, but I prefer stirring up drama with a wink. Helps with my job—spreading gossip like love potions. Got any crushes I should know about? ♡");
+    await typeText("Tsuki: Dad? Dads fun! Way out of his league now with all the new technology though. It’s alot harder to do the whole arrows and the first person you see is your soulmate thing when everyones online now, y’know?");
     stopTalking(sprites.rose[0]);
     showOptions([
       { label: "More about your job?", onClick: scene_jobLore },
@@ -254,10 +239,11 @@
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
+
   async function scene_vampireLore() {
     optionsBox.innerHTML = '';
     startTalking(sprites.wineScoff);
-    await typeText("Tsuki: Vampire vibes from Mom? Eternal nights, blood lattes, and that immortal glow-up. But I'm more about biting into juicy stories than necks. Keeps things fun—eternal life means endless tea. Thirsty for more details?");
+    await typeText("Tsuki: Believe it or not I wasn’t born a vampire, that’s not how it works. I was turned on my sweet 1600..something about destiny and true love..I dont wanna talk about it..");
     stopTalking(sprites.wineScoff[0]);
     showOptions([
       { label: "Do you drink blood?", onClick: scene_bloodQuestion },
@@ -265,41 +251,77 @@
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
+
   async function scene_monsterHigh() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
-    await typeText("Tsuki: Monster High? Obsessed! Draculaura is my spirit ghoul—pink, vampy, and full of heart. We could totally gossip about her latest outfits. Who's your fave?");
+    await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura and Abby are my spirit ghouls! I could watch just them, forever! Who's your fave?");
     stopTalking(sprites.happy[0]);
-    showOptions([
-      { label: "Back to questions", onClick: scene_identity },
-      { label: "Hang up", onClick: scene_userHangup }
-    ]);
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Type your fave ghoul…';
+    input.style.width = '100%';
+    input.style.padding = '10px';
+    input.style.marginTop = '12px';
+    input.style.borderRadius = '10px';
+    input.style.border = '3px solid var(--accent-dark)';
+    input.style.fontFamily = 'VT323, monospace';
+    input.style.fontSize = '18px';
+    input.style.background = '#fff0f4';
+
+    const submitBtn = document.createElement('button');
+    submitBtn.textContent = 'Tell Tsuki!';
+    submitBtn.className = 'optionButton';
+    submitBtn.style.marginTop = '8px';
+
+    optionsBox.appendChild(input);
+    optionsBox.appendChild(submitBtn);
+
+    submitBtn.onclick = async () => {
+      const fave = input.value.trim() || "someone super cool";
+      optionsBox.innerHTML = '';
+      startTalking(sprites.happy);
+      await typeText(`Tsuki: Girrrrl! I love ${fave} too! We should watch it together some time~`);
+      stopTalking(sprites.happy[0]);
+      setTimeout(() => showOptions([
+        { label: "Back to questions", onClick: scene_identity },
+        { label: "Hang up", onClick: scene_userHangup }
+      ]), 800);
+    };
   }
+
   async function scene_jobLore() {
     optionsBox.innerHTML = '';
     startTalking(sprites.neutral);
-    await typeText("Tsuki: My gig? Hybrid hustle—matchmaking with a gossip twist. Dad's love arrows meet Mom's shadowy secrets. I run a little content corner spilling supernatural tea. Fun, right?");
+    await typeText("Tsuki: You’re seeing it, babe! I do this..I spill tea with you and then tell everyone else about it, you always have the BEST gossip, bestie!");
     stopTalking(sprites.neutral[0]);
     showOptions([
       { label: "Back to questions", onClick: scene_identity },
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
+
   async function scene_bloodQuestion() {
     optionsBox.innerHTML = '';
+    startTalking(sprites.frown);
+    await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?");
+    await new Promise(r => setTimeout(r, 1200)); // dramatic silence
     startTalking(sprites.wineSmile);
-    await typeText("Tsuki: Blood? Only the fancy kind, mixed with strawberry syrup. Keeps the fangs happy without the mess. But shh, that's our little secret~");
+    await typeText("Tsuki: Im kidding! We don’t need to drink blood anymore, my father would kill me if i did..");
     stopTalking(sprites.wineSmile[0]);
     showOptions([
       { label: "Back to questions", onClick: scene_identity },
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
+
   async function scene_userHangup() {
     optionsBox.innerHTML = '';
     safeSetSprite(sprites.hangup[1] || sprites.hangup[0]);
     await typeText("—call ended—");
     setTimeout(() => closeVN(), 700);
+  }
   }
   // VN controls
   function openVN() {
