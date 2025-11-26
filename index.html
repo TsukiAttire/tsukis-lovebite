@@ -3,52 +3,90 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tsuki’s Lovebite</title>
+  <title>Tsuki's Lovebite.exe</title>
 
-  <!-- VT323 pixel font -->
+  <!-- Pixel font -->
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-  <!-- main stylesheet (inside assets folder) -->
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-  <main class="page">
+  <!-- Retro window header -->
+  <div class="win-titlebar">
+    <div class="win-left">
+      <div class="win-icon">♡</div>
+      <div class="win-title">Tsuki's Lovebite.exe</div>
+    </div>
+    <div class="win-controls">
+      <button class="win-btn">_</button>
+      <button class="win-btn">☐</button>
+      <button class="win-btn close-x">✕</button>
+    </div>
+  </div>
 
-    <header class="site-header">
-      <h1 class="logo">Tsuki’s Lovebite</h1>
-    </header>
+  <!-- Top tabs -->
+  <nav class="top-tabs" role="navigation" aria-label="Main Tabs">
+    <button class="tab active" data-tab="home">Home</button>
+    <button class="tab" data-tab="socials">Socials</button>
+    <button class="tab" data-tab="support">Support Me</button>
+    <button class="tab" data-tab="settings">Settings</button>
+    <button class="tab" data-tab="about">About</button>
+  </nav>
 
-    <section class="panel">
+  <!-- Content panels (no long bio per request) -->
+  <main class="wrapper">
+    <section id="home" class="panel tab-panel active">
       <div class="panel-inner">
-        <h2>Welcome ♡</h2>
-        <p>Soft pixel vibes — click the ringing phone to chat with Tsuki!</p>
+        <h1 class="big-title">Tsuki's Lovebite.exe</h1>
+        <p class="subtle">click the ringing phone to open Tsuki's call — talk, suggest, or hang up.</p>
       </div>
+    </section>
 
-      <div class="socials-row">
-        <a href="#">YouTube</a>
-        <a href="#">TikTok #1</a>
-        <a href="#">TikTok #2</a>
-        <a href="#">TikTok #3</a>
-        <a href="#">Roblox</a>
+    <section id="socials" class="panel tab-panel">
+      <h2>stay up to date</h2>
+      <div class="socials-list">
+        <a href="#" target="_blank">YouTube</a>
+        <a href="#" target="_blank">TikTok #1</a>
+        <a href="#" target="_blank">TikTok #2</a>
+        <a href="#" target="_blank">TikTok #3</a>
+        <a href="#" target="_blank">Roblox</a>
       </div>
+    </section>
+
+    <section id="support" class="panel tab-panel">
+      <h2>Support Me</h2>
+      <p>Coming soon — Ko-Fi link will go here. For now this button is a placeholder.</p>
+      <a class="kofi-btn" href="#" target="_blank">Support on Ko-Fi (placeholder)</a>
+    </section>
+
+    <section id="settings" class="panel tab-panel">
+      <h2>Settings</h2>
+      <p>Small UI toggles for future customization.</p>
+      <div class="settings-grid">
+        <label><input type="checkbox" id="toggle-sfx" /> Enable sound effects (coming soon)</label>
+      </div>
+    </section>
+
+    <section id="about" class="panel tab-panel">
+      <h2>About</h2>
+      <p>Tsuki's Lovebite.exe — a soft pixel Y2K space for Tsuki content, tea & chaos.</p>
     </section>
   </main>
 
-  <!-- PHONE (click to open VN) -->
-  <img id="phoneButton" src="assets/images/Phone.png" alt="phone icon" />
+  <!-- PHONE ICON (click to open VN) -->
+  <img id="phoneButton" src="assets/images/Phone.png" alt="Phone icon" />
 
-  <!-- VISUAL NOVEL CONTAINER (hidden until phone click) -->
+  <!-- VISUAL NOVEL CONTAINER (hidden until open) -->
   <div id="vnContainer" class="vn hidden" aria-hidden="true">
     <div class="vn-inner">
 
       <div class="vn-left">
-        <img id="tsukiSprite" class="tsuki-sprite" src="" alt="Tsuki sprite" />
+        <img id="tsukiSprite" class="tsuki-sprite" src="assets/sprites/Thanks.png" alt="Tsuki sprite" />
       </div>
 
       <div class="vn-right">
         <div id="vnBox" class="vn-box">
-          <div id="textBox" class="vn-text"></div>
+          <div id="textBox" class="vn-text" aria-live="polite"></div>
           <div id="optionsBox" class="vn-choices"></div>
         </div>
       </div>
@@ -58,7 +96,7 @@
     <button id="vnClose" class="vn-close" aria-label="Close VN">✕</button>
   </div>
 
-  <!-- SUGGESTION MODAL (hidden by default, uses Formspree) -->
+  <!-- SUGGESTION FORM MODAL -->
   <div id="suggestModal" class="modal hidden" aria-hidden="true">
     <div class="modal-content" role="dialog" aria-modal="true">
       <h2 class="modal-title">Submit Your Idea</h2>
@@ -79,10 +117,9 @@
     </div>
   </div>
 
-  <!-- small toast area for messages -->
+  <!-- TOAST -->
   <div id="toast" class="toast" aria-hidden="true"></div>
 
-  <!-- main script (inside assets folder) -->
   <script src="assets/js/script.js" defer></script>
 </body>
 </html>
