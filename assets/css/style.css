@@ -1,134 +1,234 @@
-/* Hyper-Y2K webcore / aesthetic carrd style
-   Palette: chocolate browns + blush pinks (user palette)
-*/
+/* ============================================
+   GLOBAL STYLE — Y2K PINK PIXEL AESTHETIC
+================================================ */
 
-:root{
-  --bg: #3b2a2a;
-  --accent-dark:#5c3d3d;
-  --accent-strong:#cc4455;
-  --hot-pink:#ff99aa;
-  --card:#ffe6e9;
-  --subtle:#fff0f0;
-  --gloss:#ffb3c6;
-  --text:#3b2a2a;
+body {
+    margin: 0;
+    padding: 0;
+    background: #3b2a2a;
+    font-family: "VT323", monospace;
+    color: #ffe6e9;
+    image-rendering: pixelated;
+    overflow-x: hidden;
 }
 
-/* basic resets */
-*{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:'VT323', monospace;background:
-  radial-gradient(circle at 10% 10%, #3b1f1f 0%, #2a1717 40%, #1f1212 100%);
-color:var(--card);-webkit-font-smoothing:antialiased}
-a{color:var(--accent-strong);text-decoration:none}
+/* ============================================
+   HEADER TITLE
+================================================ */
 
-/* TOPBAR */
-.topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px 20px;
-  gap:18px;
-  background: linear-gradient(180deg, rgba(255,179,198,0.12), rgba(255,153,170,0.06));
-  border-bottom: 2px solid rgba(255,179,198,0.14);
-  position:sticky;top:0;backdrop-filter: blur(6px);
-  z-index:1000;
-}
-.brand{display:flex;align-items:center;gap:12px}
-.brand-icon{
-  width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#fff0f0,#ffdce6);
-  color:var(--accent-strong);display:flex;align-items:center;justify-content:center;
-  border:3px solid var(--accent-dark);font-size:20px;box-shadow:0 8px 20px rgba(255,153,170,0.12)
-}
-.brand-title{font-size:18px;color:var(--card);text-shadow:0 6px 0 rgba(0,0,0,0.25);font-weight:700}
-
-/* NAV */
-.nav{display:flex;gap:8px;align-items:center}
-.nav-tab{
-  background: linear-gradient(180deg,#fff3f6,#ffe6ee);
-  color:var(--accent-strong);
-  border:2px solid var(--accent-dark);
-  padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:700;
-  box-shadow: 0 6px 0 rgba(0,0,0,0.12);
-}
-.nav-tab.active{background:linear-gradient(180deg,var(--hot-pink),#ff7ea0);color:#3b2a2a;transform:translateY(-2px)}
-
-/* MAIN wrapper */
-.main{max-width:1100px;margin:22px auto;padding:10px}
-.page-panel{display:none}
-.page-panel.active{display:block}
-
-/* HERO */
-.hero{display:flex;flex-direction:column;align-items:center;gap:12px;padding:36px}
-.title-chrome{
-  font-size:56px;
-  color:var(--card);
-  background: linear-gradient(90deg,#fff0f6,#ffd7ea 40%, #ff9ebc);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 12px 0 rgba(0,0,0,0.18), 0 1px 0 rgba(255,255,255,0.12);
-  letter-spacing:1px;
-}
-.tagline{color:var(--subtle);opacity:0.9}
-
-/* hero actions */
-.hero-actions{display:flex;gap:12px;align-items:center}
-.cta{
-  background:linear-gradient(180deg,#ffccd5,#ff8fb0);color:#2f1b1b;border:3px solid var(--accent-dark);
-  padding:12px 18px;border-radius:12px;font-weight:800;cursor:pointer;box-shadow: 0 10px 30px rgba(255,102,153,0.12)
-}
-.kofi-btn{background:linear-gradient(180deg,#fff0f0,#ffdce6);padding:10px 14px;border-radius:10px;border:2px solid var(--accent-dark);color:var(--accent-strong)}
-
-/* CARDS */
-.card{background:linear-gradient(180deg,#fff5f7,#fff0f4);padding:18px;border-radius:12px;border:3px solid var(--accent-dark);color:var(--accent-strong);box-shadow:0 12px 40px rgba(0,0,0,0.15)}
-.links a{display:inline-block;margin:8px 10px;padding:8px 12px;border-radius:10px;background:#fff0f3;border:2px solid var(--accent-dark);color:var(--accent-strong)}
-
-/* PHONE ICON */
-.phone-icon{
-  position:fixed;right:28px;bottom:26px;width:96px;z-index:9999;cursor:pointer;image-rendering:pixelated;
-  filter: drop-shadow(0 16px 28px rgba(255,102,153,0.12));
-  animation: ring 1.4s infinite;
-}
-@keyframes ring{
-  0%{transform:translateY(0) rotate(0)}
-  20%{transform:translateY(-6px) rotate(10deg)}
-  40%{transform:translateY(0) rotate(-10deg)}
-  60%{transform:translateY(-3px) rotate(6deg)}
-  100%{transform:translateY(0) rotate(0)}
+#siteHeader {
+    text-align: center;
+    padding: 20px 0;
 }
 
-/* VN window (aesthetic card) */
-.vn{position:fixed;left:50%;bottom:14%;transform:translateX(-50%);width:86%;max-width:760px;border-radius:16px;padding:14px;z-index:9950;display:flex;justify-content:center}
-.vn-card{display:flex;gap:14px;align-items:flex-end;background:linear-gradient(180deg,#fff6f8,#fff0f3);border:4px solid var(--accent-dark);padding:12px;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,0.5)}
-.vn.hidden{display:none}
-.vn-left{flex:0 0 260px}
-.tsuki-sprite{width:100%;image-rendering:pixelated;border-radius:10px;border:3px solid var(--accent-dark);background:linear-gradient(180deg,#fff0f0,#fff7f7)}
-.vn-right{flex:1}
-.vn-box{padding:12px;border-radius:10px;background:linear-gradient(180deg,#fff6f8,#fff0f2);border:3px solid var(--accent-strong);min-height:120px;display:flex;flex-direction:column;justify-content:space-between}
-.vn-text{color:var(--accent-dark);font-size:18px;min-height:56px;line-height:1.26}
-.vn-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-.optionButton{background:linear-gradient(180deg,#ffbfd2,#ff9db8);border:3px solid var(--accent-dark);padding:10px;border-radius:10px;color:#351a1a;font-weight:800;cursor:pointer;font-size:16px}
-.vn-close{position:absolute;right:8px;top:-26px;background:var(--accent-dark);color:var(--card);border:3px solid var(--accent-strong);padding:6px 8px;border-radius:8px;cursor:pointer}
+#siteHeader h1 {
+    font-size: 60px;
+    color: #ffb3c6;
+    text-shadow: 3px 3px #cc4455;
+}
 
-/* transition */
-.sprite-transition{animation:fadeBounce 0.36s ease-out}
-@keyframes fadeBounce{0%{opacity:0;transform:scale(0.96)}60%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+/* ============================================
+   SIDE BUTTONS (KOFI + PET)
+================================================ */
 
-/* MODAL */
-.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.50);z-index:9998;padding:20px}
-.modal.hidden{display:none}
-.modal-card{background:linear-gradient(180deg,#fff6f8,#fff0f4);border-radius:12px;padding:16px;border:3px solid var(--accent-strong);max-width:420px;width:100}
-.modal-card input,.modal-card textarea{width:100%;padding:8px;border-radius:8px;border:2px solid var(--accent-dark);margin:8px 0;font-family:'VT323'}
-.modal-actions{display:flex;gap:8px}
-.submit-btn{flex:1;background:linear-gradient(180deg,#ffb3c6,#ff88af);border:2px solid var(--accent-dark);padding:10px;border-radius:8px;font-weight:800}
-.close-btn{flex:1;background:transparent;border:2px solid var(--accent-dark);padding:10px;border-radius:8px}
+.side-button {
+    position: fixed;
+    left: 20px;
+    bottom: 100px;
+    cursor: pointer;
+    z-index: 9999;
+}
 
-/* toast */
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:var(--accent-dark);color:var(--card);padding:10px 14px;border-radius:8px;display:none;z-index:100000;font-family:'VT323'}
-.toast.show{display:block}
+.side-button-right {
+    position: fixed;
+    right: 20px;
+    bottom: 100px;
+    z-index: 9999;
+}
 
-/* responsive */
-@media (max-width:720px){
-  .title-chrome{font-size:32px}
-  .vn-card{flex-direction:column;align-items:center}
-  .vn-left{width:160px}
+.pixel-icon {
+    width: 65px;
+    image-rendering: pixelated;
+    cursor: pointer;
+}
+
+/* ============================================
+   PHONE ICON (RINGS + SHAKES)
+================================================ */
+
+#phoneIcon {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    z-index: 9000;
+}
+
+#phoneImg {
+    width: 120px;
+    image-rendering: pixelated;
+    transition: transform 0.1s;
+}
+
+/* ============================================
+   PET WINDOW — PIXEL RPG STYLE
+================================================ */
+
+.pet-window {
+    position: fixed;
+    bottom: 180px;
+    left: 20px;
+    width: 260px;
+    background: #ffe6e9;
+    border: 3px solid #cc4455;
+    color: #5c3d3d;
+    font-size: 22px;
+    display: none;
+    z-index: 99999;
+}
+
+.pet-window-header {
+    background: #ff99aa;
+    border-bottom: 3px solid #cc4455;
+    padding: 5px 8px;
+    font-size: 24px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.pet-window-header span {
+    cursor: pointer;
+}
+
+.pet-window-content {
+    padding: 10px;
+}
+
+/* ============================================
+   STAR INTRO POPUP
+================================================ */
+
+.star-intro {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 999999;
+}
+
+.star-dialogue {
+    background: #ffe6e9;
+    border: 3px solid #cc4455;
+    padding: 25px;
+    width: 340px;
+    color: #5c3d3d;
+    font-size: 22px;
+    text-align: center;
+}
+
+.star-dialogue button {
+    background: #ff99aa;
+    border: 2px solid #cc4455;
+    padding: 8px 12px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* ============================================
+   FALLING STARS
+================================================ */
+
+.falling-star {
+    position: fixed;
+    font-size: 32px;
+    color: #ffccd5;
+    pointer-events: auto;
+    animation: star-fall 4s linear forwards;
+    z-index: 999;
+    cursor: pointer;
+}
+
+@keyframes star-fall {
+    from { transform: translateY(-40px); opacity: 1; }
+    to { transform: translateY(110vh); opacity: 0; }
+}
+
+/* ============================================
+   VN STYLES
+================================================ */
+
+.vn {
+    width: 90%;
+    max-width: 850px;
+    background: #ffe6e9;
+    border: 3px solid #cc4455;
+    padding: 20px;
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    z-index: 90000;
+}
+
+#vnSpriteHolder {
+    text-align: center;
+}
+
+#vnSprite {
+    width: 300px;
+    image-rendering: pixelated;
+}
+
+#vnDialogueBox {
+    background: #ffb3c6;
+    padding: 15px;
+    border: 3px solid #cc4455;
+    margin-top: 10px;
+    color: #5c3d3d;
+    font-size: 26px;
+}
+
+#vnChoices button {
+    background: #ff99aa;
+    border: 2px solid #cc4455;
+    padding: 8px 12px;
+    margin: 8px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* ============================================
+   FORMS — DARKER TEXT
+================================================ */
+
+.form-dark {
+    background: #ffe6e9;
+    color: #3b2a2a;
+    border: 3px solid #cc4455;
+    padding: 20px;
+    margin: 20px;
+    font-size: 24px;
+}
+
+.form-dark input,
+.form-dark textarea {
+    width: 100%;
+    background: #fff0f0;
+    color: #3b2a2a;
+    padding: 10px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    border: 2px solid #cc4455;
+}
+
+/* ============================================
+   UTILS
+================================================ */
+
+.hidden {
+    display: none !important;
 }
