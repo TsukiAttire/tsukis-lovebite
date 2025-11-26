@@ -1,17 +1,7 @@
 /* assets/js/script.js
-   Full VN + pet shop + bathing + hats system (Option A pet with 3 variants)
-   Drop-in replacement: overwrite your current assets/js/script.js
-   Persisted keys:
-     - stars
-     - petUnlocked
-     - petChosen
-     - hat_owned (JSON array of hat ids)
-     - hat_equipped (string hat id or "")
-     - petLove (number)
+   Full site JS: VN (Tsuki), stars, pet popup (VN-style) + shop/hats/feed/bathe
+   Drop-in replacement for existing script.js
 */
-
-/* ======== ORIGINAL VN / UI (preserved) ======== */
-/* (all original VN logic kept — typing, sprites, formspree integration, top-nav) */
 
 (() => {
   // -------------- CONFIG --------------
@@ -20,6 +10,7 @@
   const TALK_INTERVAL_MS = 140;
   const SPRITE_TRANSITION_CLASS = 'sprite-transition';
 
+  // sprite filename mapping (happy uses Thanks pair)
   const spriteFiles = {
     happy: ['Thanks.png', 'Thanks 2.png'],
     thanks: ['Thanks.png', 'Thanks 2.png'],
@@ -48,8 +39,22 @@
   const toggleSfx = document.getElementById('toggle-sfx');
   const openVNbtn = document.getElementById('openVNbtn');
 
+  // pet elements
+  const petButton = document.getElementById('petButton');
+  const petButtonImg = document.getElementById('petButtonImg');
+  const petPopup = document.getElementById('petPopup');
+  const petClose = document.getElementById('petClose');
+  const petSpriteEl = document.getElementById('petSprite');
+  const petHatEl = document.getElementById('petHat');
+  const petVariantSel = document.getElementById('petVariant');
+  const starCountDisp = document.getElementById('starCountDisp');
+  const loveFill = document.getElementById('loveFill');
+  const shopScroll = document.getElementById('shopScroll');
+  const feedBtn = document.getElementById('feedBtn');
+  const batheBtn = document.getElementById('batheBtn');
+
   // small toast helper
-  function showToast(msg, duration = 1600) {
+  function showToast(msg, duration = 1400) {
     try {
       if (!toast) {
         const t = document.createElement('div');
@@ -71,12 +76,10 @@
       toast.innerText = msg;
       toast.classList.add('show');
       setTimeout(()=> toast.classList.remove('show'), duration);
-    } catch(e) {
-      console.warn('toast fallback failed', e);
-    }
+    } catch(e) { console.warn('toast err', e); }
   }
 
-  // -------------- Audio (WebAudio synth) --------------
+  // -------------- Audio (WebAudio) --------------
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   const audioCtx = AudioCtx ? new AudioCtx() : null;
   let ringOscList = [];
@@ -131,7 +134,7 @@
     } catch (e) { console.warn(e); }
   }
 
-  // Typing blip
+  // typing blip
   function playTypeBlip() {
     if (!canPlaySound()) return;
     if (!audioCtx) return;
@@ -150,15 +153,15 @@
     o.stop(now + 0.07);
   }
 
-  // -------------- Sprite helpers & typing --------------
+  // ---------- VN (Tsuki) logic (kept) ----------
   let talkInterval = null;
-  function safeSetSprite(path) {
-    if (!tsukiSprite) return;
-    tsukiSprite.classList.add(SPRITE_TRANSITION_CLASS);
-    tsukiSprite.src = path;
-    tsukiSprite.onerror = () => {
+  function safeSetSprite(path, el = tsukiSprite) {
+    if (!el) return;
+    el.classList.add(SPRITE_TRANSITION_CLASS);
+    el.src = path;
+    el.onerror = () => {
       console.warn('Sprite failed to load:', path);
-      tsukiSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhElEQVR4nO2ZQQ6CQBBFz6k9gQdgQdgQdgQdgQdgQdgQdgQd2k1cSaT+3q0v2Y3sWmE1Nn6c4eOBuAnwAegF8AHoBfAHq7Wwq2Lx5WZyQq2y3i8f9y1oSxTuY2Qq2x0i8z8DPXjgq1wq2p2qzQZr3KpB2G1M2wz1m1nNe2xY6l8e4VJ2q8Un6q8N5Xso9V6r+2q3t3Z2L6f4Kq+7X2l9bW6r9bGdV1q7t7q9u7+6vU6r8s7j9w+9+9uA9uAY6gFiwDq4Bq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Bq8F7wG6BzqDxw9w6J3+uX9zR6wQZtYQZsYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwXrxQHz5wz9QuS5V4wAAAABJRU5ErkJggg==';
+      el.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhElEQVR4nO2ZQQ6CQBBFz6k9gQdgQdgQdgQdgQdgQdgQdgQd2k1cSaT+3q0v2Y3sWmE1Nn6c4eOBuAnwAegF8AHoBfAHq7Wwq2Lx5WZyQq2y3i8f9y1oSxTuY2Qq2x0i8z8DPXjgq1wq2p2qzQZr3KpB2G1M2wz1m1nNe2xY6l8e4VJ2q8Un6q8N5Xso9V6r+2q3t3Z2L6f4Kq+7X2l9bW6r9bGdV1q7t7q9u7+6vU6r8s7j9w+9+9uA9uAY6gFiwDq4Bq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Bq8F7wG6BzqDxw9w6J3+uX9zR6wQZtYQZsYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwXrxQHz5wz9QuS5V4wAAAABJRU5ErkJggg==';
     };
   }
 
@@ -208,7 +211,7 @@
     });
   }
 
-  // Scenes (kept)
+  // Scenes
   async function scene_start() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
@@ -283,7 +286,7 @@
     stopTalking();
   }
 
-  // modal (suggest)
+  // Suggest modal
   function openSuggestModal(kind = '') {
     if (suggestForm && !suggestForm.querySelector('input[name="type"]')) {
       const hidden = document.createElement('input');
@@ -303,7 +306,7 @@
     suggestModal.setAttribute('aria-hidden', 'true');
   }
 
-  // Formspree submit
+  // Formspree
   if (suggestForm) {
     suggestForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -326,31 +329,7 @@
     });
   }
 
-  // events
-  if (phoneBtn) {
-    try { startRing(); } catch(e){ console.warn('startRing error', e); }
-    phoneBtn.addEventListener('click', () => {
-      if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
-      stopRing();
-      openVN();
-    });
-  }
-  if (vnClose) vnClose.addEventListener('click', closeVN);
-  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeSuggestModal);
-  if (openVNbtn) openVNbtn.addEventListener('click', () => {
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    stopRing(); openVN();
-  });
-
-  if (toggleSfx) {
-    toggleSfx.addEventListener('change', () => {
-      if (!toggleSfx.checked) { stopRing(); }
-      else { startRing(); }
-    });
-  }
-
-  if (suggestModal) suggestModal.addEventListener('click', (e) => { if (e.target === suggestModal) closeSuggestModal(); });
-
+  // Top nav
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -362,204 +341,226 @@
     });
   });
 
+  // preload sprites
   (function preloadAll() {
-    const missing = [];
     Object.values(sprites).forEach(arr => arr.forEach(path => {
-      const img = new Image(); img.src = path; img.onerror = () => missing.push(path);
+      const img = new Image(); img.src = path;
     }));
-    const phoneTest = new Image(); phoneTest.src = 'assets/images/Phone.png'; phoneTest.onerror = () => console.warn('Phone icon missing: assets/images/Phone.png');
-    if (missing.length) {
-      console.warn('Missing sprites:', missing);
-      setTimeout(() => showToast('Some sprites missing — check console'), 700);
-    }
+    const phoneTest = new Image(); phoneTest.src = 'assets/images/Phone.png';
   })();
 
-  window.TsukiDebug = { sprites, openVN, closeVN, openSuggestModal, closeSuggestModal, startRing, stopRing };
+  // start ring if phone exists
+  if (phoneBtn) {
+    try { startRing(); } catch(e){ console.warn('startRing error', e); }
+    phoneBtn.addEventListener('click', () => {
+      if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); }
+      stopRing();
+      openVN();
+    });
+  }
+  if (vnClose) vnClose.addEventListener('click', closeVN);
+  if (openVNbtn) openVNbtn.addEventListener('click', () => { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); stopRing(); openVN(); });
+  if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeSuggestModal);
 
-  /* ======== END ORIGINAL VN ======== */
+  if (toggleSfx) {
+    toggleSfx.addEventListener('change', () => {
+      if (!toggleSfx.checked) stopRing(); else startRing();
+    });
+  }
 
-  /* ======== PET + SHOP + HATS + BATH ======== */
+  // -------------- STARS SYSTEM (full-screen) --------------
+  // persistent star count key: 'stars'
+  let starCount = Number(localStorage.getItem('stars') || 0);
+  localStorage.setItem('stars', String(starCount));
 
-  // storage keys & initial state
-  let starCount = parseInt(localStorage.getItem('stars') || '0');
+  // star layer (create if not present)
+  let starLayer = document.getElementById('starLayerGlobal');
+  if (!starLayer) {
+    starLayer = document.createElement('div');
+    starLayer.id = 'starLayerGlobal';
+    starLayer.style.pointerEvents = 'none';
+    document.body.appendChild(starLayer);
+  }
+
+  const STAR_POOL = [];
+  const MAX_STARS = Math.max(20, Math.floor((window.innerWidth * window.innerHeight) / 90000));
+
+  // helper to create background star
+  function createBackgroundStar(x, y, opts = {}) {
+    const el = document.createElement('div');
+    el.className = 'bg-star';
+    el.style.left = (x * 100) + 'vw';
+    el.style.top = (y * 100) + 'vh';
+    const size = opts.size || (4 + Math.random() * 8);
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.background = 'linear-gradient(180deg,#fff5f8,#ffdff0)';
+    el.style.opacity = (opts.clickable ? 1 : (0.6 + Math.random()*0.5)).toString();
+    el.style.pointerEvents = opts.clickable ? 'auto' : 'none';
+    el.style.transform = 'translate(-50%,-50%)';
+    if (opts.clickable) {
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        collectStar(el);
+      });
+    }
+    // twinkle
+    const dur = 3 + Math.random()*5;
+    el.style.animation = `bgStarTwinkle ${dur}s infinite ease-in-out`;
+    el.style.animationDelay = Math.random() * dur + 's';
+    starLayer.appendChild(el);
+    STAR_POOL.push(el);
+    return el;
+  }
+
+  // collect star
+  function collectStar(el) {
+    try {
+      el.style.transition = 'transform .18s ease, opacity .28s ease';
+      el.style.transform = 'translate(-50%,-50%) scale(.6)';
+      el.style.opacity = '0';
+      setTimeout(()=>{ try{ el.remove(); }catch(e){} }, 300);
+    } catch(e){}
+    starCount++;
+    localStorage.setItem('stars', String(starCount));
+    updateStarDisplay();
+    if (starCount === 1) {
+      // when first star collected, no auto-open here; pet intro handled elsewhere
+      showToast('First star! ✦');
+    } else {
+      showToast(`Stars: ${starCount}`);
+    }
+  }
+
+  // falling stars spawn (clickable)
+  function spawnFallingStar() {
+    const el = document.createElement('div');
+    el.className = 'falling-star-collection';
+    el.textContent = '✦';
+    el.style.position = 'fixed';
+    el.style.zIndex = 6;
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.top = (-6 - Math.random()*10) + 'vh';
+    el.style.fontSize = (18 + Math.random()*16) + 'px';
+    el.style.pointerEvents = 'auto';
+    el.style.cursor = 'pointer';
+    el.style.userSelect = 'none';
+    el.style.color = '#fff9ff';
+    el.style.textShadow = '0 0 8px #ffdff0';
+    document.body.appendChild(el);
+
+    const duration = 3800 + Math.random()*3000;
+    const endLeft = Math.random() * window.innerWidth;
+    el.animate([
+      { transform: 'translate(0,0)', opacity:1 },
+      { transform: `translate(${(Math.random()-0.5)*160}px, ${window.innerHeight + 120}px)`, opacity:0.02 }
+    ], { duration: duration, easing: 'linear' });
+
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      try{ el.remove(); }catch(e){}
+      starCount++;
+      localStorage.setItem('stars', String(starCount));
+      updateStarDisplay();
+      showToast(`Stars: ${starCount}`);
+    });
+
+    setTimeout(()=>{ try{ el.remove(); }catch(e){} }, duration + 300);
+  }
+
+  function populateBackgroundStars() {
+    STAR_POOL.forEach(s => { try{s.remove();}catch(e){} });
+    STAR_POOL.length = 0;
+    for (let i=0;i<MAX_STARS;i++){
+      const x = Math.random();
+      const y = Math.random();
+      const clickable = Math.random() < 0.06;
+      createBackgroundStar(x,y,{clickable, size: 3 + Math.random()*10});
+    }
+  }
+
+  // start spawning falling stars occasionally
+  let fallingInterval = setInterval(spawnFallingStar, 3500);
+  window.addEventListener('resize', () => {
+    clearTimeout(window._starResizeTimer);
+    window._starResizeTimer = setTimeout(()=> {
+      populateBackgroundStars();
+    }, 220);
+  });
+
+  // initial populate
+  populateBackgroundStars();
+
+  // expose showStarIntro if needed (kept minimal)
+  function showStarIntro(){ /* no-op wrapper (we show pet unlock elsewhere) */ }
+
+  // show star count UI update (pet popup displays)
+  function updateStarDisplay() {
+    if (starCountDisp) starCountDisp.innerText = String(starCount);
+  }
+  updateStarDisplay();
+
+  // -------------- PET SYSTEM (popup VN-style) --------------
+  // storage keys: stars, petUnlocked, petChosen, hat_owned, hat_equipped, petLove
   let petUnlocked = localStorage.getItem('petUnlocked') === 'true';
-  let petChosen = localStorage.getItem('petChosen') || 'Oreo'; // default selection
+  let petChosen = localStorage.getItem('petChosen') || 'Oreo Bunny';
   let hatOwned = (() => { try { return JSON.parse(localStorage.getItem('hat_owned') || '[]'); } catch(e){ return []; }})();
   let hatEquipped = localStorage.getItem('hat_equipped') || '';
-  let petLove = parseInt(localStorage.getItem('petLove') || '0');
+  let petLove = Number(localStorage.getItem('petLove') || 0);
 
-  // ensure basic keys exist
-  localStorage.setItem('stars', String(starCount));
-  localStorage.setItem('petChosen', petChosen);
-  localStorage.setItem('hat_owned', JSON.stringify(hatOwned));
-  localStorage.setItem('hat_equipped', hatEquipped);
-  localStorage.setItem('petLove', String(petLove));
+  // pet sprite file paths (encode spaces)
+  const petSprites = {
+    'Rocky Road Bunny': encodeURI('assets/pets/Rocky Road Bunny.png'),
+    'Oreo Bunny': encodeURI('assets/pets/Oreo Bunny.png'),
+    'Vanilla Bunny': encodeURI('assets/pets/Vanilla Bunny.png')
+  };
 
-  // UI elements (pet button + window) — create if missing
-  let petBtnEl = document.getElementById('petButton');
-  const PAW_SVG_DATA = `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
-      <g fill="#ff99aa" stroke="#5c3d3d" stroke-width="2">
-        <circle cx="20" cy="18" r="6"/><circle cx="32" cy="12" r="6"/><circle cx="44" cy="18" r="6"/>
-        <ellipse cx="32" cy="36" rx="16" ry="12"/>
-      </g></svg>` )}`;
-
-  if (!petBtnEl) {
-    petBtnEl = document.createElement('div');
-    petBtnEl.id = 'petButton';
-    petBtnEl.style.position = 'fixed';
-    petBtnEl.style.left = '20px';
-    petBtnEl.style.top = '140px';
-    petBtnEl.style.zIndex = '9999';
-    petBtnEl.style.cursor = 'pointer';
-    petBtnEl.style.display = petUnlocked ? '' : 'none';
-    const img = document.createElement('img');
-    img.alt = 'pet';
-    img.style.width = '70px';
-    img.style.imageRendering = 'pixelated';
-    img.src = PAW_SVG_DATA;
-    petBtnEl.appendChild(img);
-    document.body.appendChild(petBtnEl);
-  } else {
-    petBtnEl.style.display = petUnlocked ? '' : 'none';
-  }
-
-  // pet modal
-  let petWindowEl = document.getElementById('petWindow');
-  if (!petWindowEl) {
-    petWindowEl = document.createElement('div');
-    petWindowEl.id = 'petWindow';
-    petWindowEl.className = 'modal hidden';
-    petWindowEl.style.zIndex = 99999;
-    petWindowEl.innerHTML = `
-      <div class="modal-card" style="max-width:520px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <strong style="font-size:20px;color:#5c3d3d">Pet Menu</strong>
-          <button id="closePetWindow" class="close-btn" type="button">Close</button>
-        </div>
-        <div id="petWindowContent"></div>
-      </div>
-    `;
-    document.body.appendChild(petWindowEl);
-  }
-
-  // helper: get bunny sprite path given variant (we'll use user's uploaded sprites)
-  function getBunnySpriteForVariant(variant) {
-    // user provided three spritesheets; we only need 1 display frame per variant (standing)
-    // assume the sheets are uploaded as: assets/pets/rocky.png, assets/pets/oreo.png, assets/pets/vanilla.png
-    const map = {
-      'Rocky Road': 'assets/pets/rocky.png',
-      'Oreo': 'assets/pets/oreo.png',
-      'Vanilla': 'assets/pets/vanilla.png'
-    };
-    return map[variant] || map['Oreo'];
-  }
-
-  // hat catalog (each color is a separate item in the shop)
-  // hat id format: kind-color (e.g., witch-black)
+  // hat catalog (id, name, price, svg dataURI)
   const HAT_CATALOG = [
-    // Witch hats
-    { id: 'witch-black',  name: 'Witch Hat (Black)', price: 4, svg: hatSVG('witch', 'black') },
-    { id: 'witch-blue',   name: 'Witch Hat (Blue)', price: 4, svg: hatSVG('witch', 'blue') },
-    { id: 'witch-burg',   name: 'Witch Hat (Burgundy)', price: 4, svg: hatSVG('witch', 'burgundy') },
+    { id:'beret-pink', name:'Beret (Pink)', price:3, svg: hatSVG('beret','pink') },
+    { id:'beret-black', name:'Beret (Black)', price:3, svg: hatSVG('beret','black') },
+    { id:'beret-white', name:'Beret (White)', price:3, svg: hatSVG('beret','white') },
 
-    // Top hats
-    { id: 'top-black',    name: 'Top Hat (Black)', price: 6, svg: hatSVG('top', 'black') },
-    { id: 'top-brown',    name: 'Top Hat (Brown)', price: 6, svg: hatSVG('top', 'brown') },
-    { id: 'top-gray',     name: 'Top Hat (Gray)', price: 6, svg: hatSVG('top', 'gray') },
+    { id:'crown-gold', name:'Crown (Gold)', price:6, svg: hatSVG('crown','gold') },
+    { id:'crown-rose', name:'Crown (Rose)', price:6, svg: hatSVG('crown','rose') },
+    { id:'crown-blue', name:'Crown (Blue)', price:6, svg: hatSVG('crown','blue') },
 
-    // Caps
-    { id: 'cap-red',      name: 'Cap (Red)', price: 3, svg: hatSVG('cap', 'red') },
-    { id: 'cap-blue',     name: 'Cap (Blue)', price: 3, svg: hatSVG('cap', 'blue') },
-    { id: 'cap-pink',     name: 'Cap (Pink)', price: 3, svg: hatSVG('cap', 'pink') },
-
-    // Bows
-    { id: 'bow-pink',     name: 'Bow (Pink)', price: 2, svg: hatSVG('bow', 'pink') },
-    { id: 'bow-purple',   name: 'Bow (Purple)', price: 2, svg: hatSVG('bow', 'purple') },
-    { id: 'bow-teal',     name: 'Bow (Teal)', price: 2, svg: hatSVG('bow', 'teal') },
-
-    // Crowns
-    { id: 'crown-gold',   name: 'Crown (Gold)', price: 8, svg: hatSVG('crown', 'gold') },
-    { id: 'crown-silver', name: 'Crown (Silver)', price: 8, svg: hatSVG('crown', 'silver') },
-    { id: 'crown-rose',   name: 'Crown (Rose)', price: 8, svg: hatSVG('crown', 'rose') },
+    { id:'jester-red', name:'Jester (Red)', price:4, svg: hatSVG('jester','red') },
+    { id:'jester-purple', name:'Jester (Purple)', price:4, svg: hatSVG('jester','purple') },
+    { id:'jester-green', name:'Jester (Green)', price:4, svg: hatSVG('jester','green') }
   ];
 
-  // helper to produce inline SVG data URIs for hats (auto-sized for overlay)
+  // hat SVG generator
   function hatSVG(kind, color) {
-    // simple pixel-ish SVGs that sit on top of bunny head; we tune by kind
-    // returns a data:image/svg+xml;utf8,... string
+    const colorMap = {
+      pink:'#ff99aa', black:'#1b1b1b', white:'#fff8f8',
+      gold:'#f2c94c', rose:'#ffccd5', blue:'#2f6ea6',
+      red:'#d93b3b', purple:'#7a4cae', green:'#2aa36b'
+    };
+    const fill = colorMap[color] || '#ff99aa';
     let svg = '';
-    if (kind === 'witch') {
-      // small pointy hat
-      const fill = colorMap(color);
+    if (kind === 'beret') {
       svg = `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='64' viewBox='0 0 96 64'>
-        <g>
-          <ellipse cx='48' cy='50' rx='40' ry='8' fill='${shade(fill,-10)}' stroke='${shade(fill,-40)}' stroke-width='2'/>
-          <path d='M24 46 L48 8 L72 46 Z' fill='${fill}' stroke='${shade(fill,-40)}' stroke-width='2'/>
-          <rect x='36' y='40' width='24' height='6' fill='${shade(fill,20)}'/>
-        </g>
-      </svg>`;
-    } else if (kind === 'top') {
-      const fill = colorMap(color);
-      svg = `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='64' viewBox='0 0 96 64'>
-        <g>
-          <rect x='28' y='12' width='40' height='20' rx='6' ry='6' fill='${fill}' stroke='${shade(fill,-40)}' stroke-width='2'/>
-          <ellipse cx='48' cy='44' rx='36' ry='8' fill='${shade(fill,-10)}' stroke='${shade(fill,-40)}' stroke-width='2'/>
-          <rect x='34' y='30' width='28' height='6' fill='${shade(fill,20)}'/>
-        </g>
-      </svg>`;
-    } else if (kind === 'cap') {
-      const fill = colorMap(color);
-      svg = `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='64' viewBox='0 0 96 64'>
-        <g>
-          <path d='M14 36 Q48 6 82 36 Z' fill='${fill}' stroke='${shade(fill,-40)}' stroke-width='2'/>
-          <rect x='40' y='36' width='16' height='6' fill='${shade(fill,20)}' rx='3'/>
-          <ellipse cx='48' cy='48' rx='28' ry='6' fill='${shade(fill,-10)}' stroke='${shade(fill,-40)}' stroke-width='2'/>
-        </g>
-      </svg>`;
-    } else if (kind === 'bow') {
-      const fill = colorMap(color);
-      svg = `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='64' viewBox='0 0 96 64'>
-        <g fill='${fill}' stroke='${shade(fill,-40)}' stroke-width='2'>
-          <ellipse cx='34' cy='32' rx='12' ry='8'/>
-          <ellipse cx='62' cy='32' rx='12' ry='8'/>
-          <circle cx='48' cy='32' r='6' fill='${shade(fill,20)}'/>
-        </g>
+        <ellipse cx='48' cy='36' rx='36' ry='16' fill='${fill}' stroke='${shade(fill,-30)}' stroke-width='2'/>
+        <rect x='54' y='22' width='10' height='6' rx='3' fill='${shade(fill,10)}'/>
       </svg>`;
     } else if (kind === 'crown') {
-      const fill = colorMap(color);
       svg = `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='64' viewBox='0 0 96 64'>
-        <g stroke='${shade(fill,-40)}' stroke-width='2' fill='${fill}'>
-          <path d='M8 44 L20 24 L36 40 L48 20 L60 40 L76 24 L88 44 Z'/>
-          <rect x='12' y='44' width='72' height='6' fill='${shade(fill,-10)}' stroke='${shade(fill,-40)}'/>
-        </g>
+        <path d='M8 44 L20 26 L36 40 L48 18 L60 40 L76 26 L88 44 Z' fill='${fill}' stroke='${shade(fill,-30)}' stroke-width='2'/>
+        <rect x='12' y='44' width='72' height='6' fill='${shade(fill,-10)}'/>
+      </svg>`;
+    } else if (kind === 'jester') {
+      svg = `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='64' viewBox='0 0 96 64'>
+        <path d='M48 14 C36 22 40 32 48 32 C56 32 60 22 48 14 Z' fill='${fill}' stroke='${shade(fill,-30)}' stroke-width='2'/>
+        <ellipse cx='48' cy='46' rx='36' ry='10' fill='${shade(fill,-10)}' stroke='${shade(fill,-30)}' stroke-width='2'/>
       </svg>`;
     }
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
 
-  // utility: simple palette mapping
-  function colorMap(name) {
-    const map = {
-      black: '#1b1b1b',
-      blue: '#22477a',
-      burgundy: '#7a2430',
-      brown: '#6b4a3a',
-      gray: '#7f7f7f',
-      red: '#d93b3b',
-      pink: '#ff99aa',
-      purple: '#7a4cae',
-      teal: '#2aa3a3',
-      gold: '#f2c94c',
-      silver: '#cfcfcf',
-      rose: '#ffccd5'
-    };
-    return map[name] || '#ff99aa';
-  }
-
-  // tiny shade helper (adjust hex brightness)
-  function shade(hex, percent) {
-    // percent can be negative or positive
+  // shade helper
+  function shade(hex, percent){
     const c = hex.replace('#','');
     const num = parseInt(c,16);
     let r = (num >> 16) + Math.round(percent/100*255);
@@ -571,410 +572,149 @@
     return '#'+((1<<24) + (r<<16) + (g<<8) + b).toString(16).slice(1);
   }
 
-  // MAIN pet window content builder
-  function loadPetWindowContent() {
-    const content = document.getElementById('petWindowContent');
-    if (!content) return;
-    // build UI: preview (sprite + hat overlay), love meter, feed, bathe, shop, variant selector
-    content.innerHTML = `
-      <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:220px;text-align:center">
-          <div id="petPreview" style="position:relative; width:160px; height:160px; margin:0 auto; background:linear-gradient(180deg,#fff6f8,#fff0f3); border-radius:12px; border:3px solid var(--accent-dark);">
-            <img id="petSpriteDisplay" src="${getBunnySpriteForVariant(petChosen)}" alt="pet" style="width:100%; height:100%; object-fit:contain; image-rendering:pixelated;"/>
-            <img id="petHatOverlay" src="" alt="hat" style="position:absolute; left:50%; top:6%; transform:translateX(-50%); width:72px; pointer-events:none; image-rendering:pixelated"/>
-            <div id="petHeart" style="position:absolute; right:6px; top:6px; display:none; font-size:20px">❤</div>
-          </div>
-          <div style="margin-top:8px">
-            <div style="display:flex;gap:8px;justify-content:center;align-items:center">
-              <button id="petFeedBtn" class="submit-btn" style="padding:8px 10px;">Feed</button>
-              <button id="petBatheBtn" class="submit-btn" style="padding:8px 10px;">Bathe</button>
-            </div>
-            <div style="margin-top:8px; font-size:13px; color:#5c3d3d">Stars: <strong id="petStarCount">${starCount}</strong></div>
-          </div>
-        </div>
+  // set paw icon (try repo paths, fallback to inline)
+  (function setPaw() {
+    const tries = ['assets/ui/paw-icon.png','assets/images/paw.png','assets/sprites/paw.png'];
+    let set = false;
+    tries.forEach(p => {
+      fetch(p, { method:'HEAD' }).then(r => {
+        if (!set && r.ok) { petButtonImg.src = p; set = true; }
+      }).catch(()=>{});
+    });
+    if (!set) petButtonImg.src = `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><g fill="#ff99aa" stroke="#5c3d3d" stroke-width="2"><circle cx="20" cy="18" r="6"/><circle cx="32" cy="12" r="6"/><circle cx="44" cy="18" r="6"/><ellipse cx="32" cy="36" rx="16" ry="12"/></g></svg>`)}`;
+  })();
 
-        <div style="flex:1">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:16px;color:#5c3d3d">Selected Bunny</div>
-              <select id="petVariantSelect" style="margin-top:6px;padding:6px;border-radius:8px;border:2px solid var(--accent-dark);font-family:'VT323'">
-                <option value="Rocky Road">Rocky Road</option>
-                <option value="Oreo">Oreo</option>
-                <option value="Vanilla">Vanilla</option>
-              </select>
-            </div>
+  // open pet popup
+  if (petButton) {
+    petButton.addEventListener('click', () => {
+      if (!petUnlocked) {
+        // unlock if first use? Keep it simple: unlock when clicked
+        petUnlocked = true;
+        localStorage.setItem('petUnlocked', 'true');
+        showToast('Pet system unlocked!');
+      }
+      openPetPopup();
+    });
+  }
 
-            <div style="text-align:right">
-              <div style="font-size:14px;color:#5c3d3d">Love</div>
-              <div id="loveMeterWrap" style="width:140px;height:18px;border:2px solid var(--accent-dark);background:#fff0f0;border-radius:8px;overflow:hidden">
-                <div id="loveMeterFill" style="height:100%; width:0%; background:linear-gradient(90deg,#ffb3c6,#ff99aa)"></div>
-              </div>
-              <div style="font-size:12px;color:#5c3d3d;margin-top:6px">Pet: <strong id="petNameDisplay">${petChosen}</strong></div>
-            </div>
-          </div>
+  if (petClose) petClose.addEventListener('click', closePetPopup);
 
-          <hr style="margin:12px 0; border-color: #ffd6df"/>
+  function openPetPopup() {
+    petPopup.classList.remove('hidden');
+    petPopup.setAttribute('aria-hidden','false');
+    // populate
+    renderPetPopup();
+  }
 
-          <div>
-            <div style="font-size:16px;color:#5c3d3d;margin-bottom:8px">Shop - Hats (each color is a separate item)</div>
-            <div id="hatShopList" style="display:flex;flex-wrap:wrap;gap:8px"></div>
-          </div>
+  function closePetPopup() {
+    petPopup.classList.add('hidden');
+    petPopup.setAttribute('aria-hidden','true');
+  }
 
-        </div>
-      </div>
+  function renderPetPopup() {
+    // sprite
+    petSpriteEl.src = petSprites[petChosen] || petSprites['Oreo Bunny'];
+    // hat
+    const hat = HAT_CATALOG.find(h=>h.id===hatEquipped);
+    petHatEl.src = hat ? hat.svg : '';
+    petHatEl.style.display = hat ? 'block' : 'none';
+    // variant select
+    if (petVariantSel) petVariantSel.value = petChosen;
+    // star count
+    updateStarDisplay();
+    // love fill
+    updateLoveFill();
 
-      <!-- bathing overlay area (hidden by default) -->
-      <div id="bathArea" style="display:none; margin-top:10px;">
-        <div style="display:flex;gap:8px;align-items:center">
-          <div id="soapPile" style="padding:8px;border-radius:10px;background:linear-gradient(180deg,#fff0f0,#ffdce6);border:2px solid var(--accent-dark);cursor:grab">🧼 Drag soap onto pet</div>
-          <button id="rinseBtn" class="submit-btn" style="display:none">Rinse</button>
-          <div id="bathStatus" style="font-size:13px;color:#5c3d3d;margin-left:6px"></div>
-        </div>
-      </div>
-    `;
-
-    // set initial selection
-    document.getElementById('petVariantSelect').value = petChosen;
-    updatePetDisplay();
-
-    // list shop hats
-    const hatShopList = document.getElementById('hatShopList');
+    // build shop items
+    shopScroll.innerHTML = '';
     HAT_CATALOG.forEach(h => {
       const owned = hatOwned.includes(h.id);
-      const card = document.createElement('div');
-      card.style.width = '120px';
-      card.style.border = '2px solid var(--accent-dark)';
-      card.style.background = '#fff0f4';
-      card.style.padding = '8px';
-      card.style.borderRadius = '8px';
-      card.style.textAlign = 'center';
-      card.style.fontSize = '13px';
-      card.style.color = '#5c3d3d';
-      card.innerHTML = `
-        <div style="height:54px; display:flex;align-items:center;justify-content:center">
-          <img src="${h.svg}" style="width:58px; height:auto; image-rendering:pixelated"/>
+      const item = document.createElement('div');
+      item.className = 'pet-shop-item';
+      item.innerHTML = `
+        <div style="height:62px;display:flex;align-items:center;justify-content:center">
+          <img src="${h.svg}" alt="${h.name}" />
         </div>
-        <div style="font-weight:800;margin-top:4px">${h.name}</div>
+        <div style="font-weight:800;margin-top:6px">${h.name}</div>
         <div style="margin-top:6px">${h.price} ✦</div>
       `;
-      const action = document.createElement('button');
-      action.className = 'submit-btn';
-      action.style.marginTop = '6px';
+      const btn = document.createElement('button');
+      btn.className = 'submit-btn';
+      btn.style.marginTop = '6px';
       if (owned) {
-        action.textContent = hatEquipped === h.id ? 'Equipped' : 'Equip';
-        action.addEventListener('click', () => {
+        btn.textContent = hatEquipped === h.id ? 'Equipped' : 'Equip';
+        btn.addEventListener('click', () => {
           hatEquipped = h.id;
           localStorage.setItem('hat_equipped', hatEquipped);
-          showToast('Hat equipped!');
-          updatePetDisplay();
-          loadPetWindowContent(); // refresh shop buttons
+          showToast('Equipped ' + h.name);
+          renderPetPopup();
         });
       } else {
-        action.textContent = 'Buy';
-        action.addEventListener('click', () => {
+        btn.textContent = 'Buy';
+        btn.addEventListener('click', () => {
           if (starCount >= h.price) {
             starCount -= h.price;
             localStorage.setItem('stars', String(starCount));
             hatOwned.push(h.id);
             localStorage.setItem('hat_owned', JSON.stringify(hatOwned));
             showToast('Purchased ' + h.name);
-            loadPetWindowContent(); // re-render
+            updateStarDisplay();
+            renderPetPopup();
           } else {
             showToast('Not enough stars!');
           }
         });
       }
-      card.appendChild(action);
-      hatShopList.appendChild(card);
+      item.appendChild(btn);
+      shopScroll.appendChild(item);
     });
-
-    // events: variant change
-    const variantSelect = document.getElementById('petVariantSelect');
-    variantSelect.addEventListener('change', (e) => {
-      petChosen = e.target.value;
-      localStorage.setItem('petChosen', petChosen);
-      document.getElementById('petNameDisplay').innerText = petChosen;
-      updatePetDisplay();
-    });
-
-    // feed button
-    document.getElementById('petFeedBtn').addEventListener('click', () => {
-      // feeding: small star cost? make it free for now but increases love
-      petLove = Math.min(100, petLove + 6);
-      localStorage.setItem('petLove', String(petLove));
-      showPetHeart();
-      updateLoveMeter();
-      showToast('Yum! +6 love');
-    });
-
-    // bathe button toggles bath area
-    document.getElementById('petBatheBtn').addEventListener('click', () => {
-      const bathArea = document.getElementById('bathArea');
-      if (bathArea.style.display === 'none' || bathArea.style.display === '') {
-        bathArea.style.display = '';
-      } else {
-        bathArea.style.display = 'none';
-      }
-    });
-
-    // soap drag functionality
-    const soapPile = document.getElementById('soapPile');
-    const petPreview = document.getElementById('petPreview');
-    const rinseBtn = document.getElementById('rinseBtn');
-    let draggingSoap = null;
-    let soapEl = null;
-    let cleanProgress = 0;
-    let bubbleEls = [];
-
-    soapPile.addEventListener('pointerdown', (ev) => {
-      ev.preventDefault();
-      soapEl = document.createElement('div');
-      soapEl.textContent = '🧼';
-      soapEl.style.position = 'fixed';
-      soapEl.style.left = ev.clientX + 'px';
-      soapEl.style.top = ev.clientY + 'px';
-      soapEl.style.zIndex = 100000;
-      soapEl.style.fontSize = '22px';
-      soapEl.style.pointerEvents = 'none';
-      document.body.appendChild(soapEl);
-      draggingSoap = true;
-    });
-
-    window.addEventListener('pointermove', (ev) => {
-      if (!draggingSoap || !soapEl) return;
-      soapEl.style.left = (ev.clientX - 10) + 'px';
-      soapEl.style.top = (ev.clientY - 10) + 'px';
-    });
-
-    window.addEventListener('pointerup', (ev) => {
-      if (!draggingSoap) return;
-      draggingSoap = false;
-      if (!soapEl) return;
-      // check overlap with petPreview
-      const rect = petPreview.getBoundingClientRect();
-      if (ev.clientX >= rect.left && ev.clientX <= rect.right && ev.clientY >= rect.top && ev.clientY <= rect.bottom) {
-        // successful soap contact -> spawn bubble and increment progress
-        const bubble = document.createElement('div');
-        bubble.className = 'pet-bubble';
-        bubble.style.position = 'absolute';
-        const localX = ev.clientX - rect.left;
-        const localY = ev.clientY - rect.top;
-        bubble.style.left = (localX) + 'px';
-        bubble.style.top = (localY) + 'px';
-        bubble.style.width = '14px';
-        bubble.style.height = '14px';
-        bubble.style.borderRadius = '50%';
-        bubble.style.background = 'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95), rgba(255,255,255,0.2))';
-        bubble.style.boxShadow = '0 0 8px rgba(255,200,220,0.9)';
-        bubble.style.opacity = '0.0';
-        bubble.style.transform = 'translate(-50%,-50%) scale(0.2)';
-        petPreview.appendChild(bubble);
-        bubbleEls.push(bubble);
-        // animate bubble
-        requestAnimationFrame(()=> {
-          bubble.style.transition = 'transform 260ms ease, opacity 260ms ease';
-          bubble.style.transform = 'translate(-50%,-50%) scale(1)';
-          bubble.style.opacity = '0.95';
-        });
-        cleanProgress++;
-        document.getElementById('bathStatus').innerText = `Cleanse: ${cleanProgress}/3`;
-        if (cleanProgress >= 1) rinseBtn.style.display = ''; // allow rinse once any bubble added
-        showToast('+1 clean');
-      }
-      try { soapEl.remove(); } catch(e) {}
-      soapEl = null;
-    });
-
-    rinseBtn.addEventListener('click', () => {
-      if (bubbleEls.length === 0) {
-        showToast('Drag soap onto the pet first!');
-        return;
-      }
-      // rinse: fade bubbles then remove; increase love based on count
-      bubbleEls.forEach((b, i) => {
-        b.style.transition = 'opacity 400ms ease, transform 400ms ease';
-        b.style.opacity = '0';
-        b.style.transform = 'translate(-50%,-50%) scale(1.3)';
-        setTimeout(()=> { try{ b.remove(); } catch(e){} }, 420);
-      });
-      const gained = Math.min(12, bubbleEls.length * 4);
-      petLove = Math.min(100, petLove + gained);
-      localStorage.setItem('petLove', String(petLove));
-      bubbleEls = [];
-      cleanProgress = 0;
-      document.getElementById('bathStatus').innerText = '';
-      rinseBtn.style.display = 'none';
-      showPetHeart();
-      updateLoveMeter();
-      showToast(`Bathe complete! +${gained} love`);
-    });
-
-    // allow clicking pet sprite to show quick heart
-    document.getElementById('petSpriteDisplay').addEventListener('click', () => {
-      petLove = Math.min(100, petLove + 2);
-      localStorage.setItem('petLove', String(petLove));
-      updateLoveMeter();
-      showPetHeart();
-      showToast('+2 love');
-    });
-
-    updateLoveMeter();
   }
 
-  // show small heart animation
-  function showPetHeart() {
-    const heart = document.getElementById('petHeart');
-    if (!heart) return;
-    heart.style.display = '';
-    heart.style.opacity = '0';
-    heart.style.transition = 'transform 420ms ease, opacity 420ms ease';
-    heart.style.transform = 'translateY(-6px) scale(1.2)';
-    heart.style.opacity = '1';
-    setTimeout(()=> {
-      heart.style.transform = 'translateY(-28px) scale(1.6)';
-      heart.style.opacity = '0';
-    }, 300);
-    setTimeout(()=> { try{ heart.style.display = 'none'; } catch(e){} }, 780);
-  }
+  // variant change
+  petVariantSel?.addEventListener('change', (e) => {
+    petChosen = e.target.value;
+    localStorage.setItem('petChosen', petChosen);
+    renderPetPopup();
+  });
 
-  // update love meter UI
-  function updateLoveMeter() {
+  // feed / bathe - simple increases love
+  feedBtn?.addEventListener('click', () => {
+    petLove = Math.min(100, petLove + 6);
+    localStorage.setItem('petLove', String(petLove));
+    updateLoveFill();
+    showToast('Fed! +6 love');
+  });
+
+  // bathing mechanic: simple toggle for now + small love gain
+  batheBtn?.addEventListener('click', () => {
+    // reveal a quick inline "drag soap" UX could be added; keep simple: instant bubbles -> rinse
+    petLove = Math.min(100, petLove + 8);
+    localStorage.setItem('petLove', String(petLove));
+    updateLoveFill();
+    showToast('Bathe complete! +8 love');
+  });
+
+  function updateLoveFill() {
     const pct = Math.round((petLove / 100) * 100);
-    const fill = document.getElementById('loveMeterFill');
-    if (fill) fill.style.width = pct + '%';
+    if (loveFill) loveFill.style.width = pct + '%';
   }
 
-  // update pet sprite + hat overlay
-  function updatePetDisplay() {
-    const sprite = document.getElementById('petSpriteDisplay');
-    if (sprite) {
-      sprite.src = getBunnySpriteForVariant(petChosen);
-    }
-    const hatOverlay = document.getElementById('petHatOverlay');
-    if (hatOverlay) {
-      if (hatEquipped) {
-        // find hat in catalog
-        const hat = HAT_CATALOG.find(h => h.id === hatEquipped);
-        if (hat) {
-          hatOverlay.src = hat.svg;
-          hatOverlay.style.display = '';
-        } else {
-          hatOverlay.src = '';
-          hatOverlay.style.display = 'none';
-        }
-      } else {
-        hatOverlay.src = '';
-        hatOverlay.style.display = 'none';
-      }
-    }
-    // update star display
-    const starEl = document.getElementById('petStarCount');
-    if (starEl) starEl.innerText = String(starCount);
-    const nameDisplay = document.getElementById('petNameDisplay');
-    if (nameDisplay) nameDisplay.innerText = petChosen;
-  }
-
-  // star intro UI created earlier in main script in other version; keep existing showStarIntro behavior.
-  let starIntroEl = document.getElementById('starIntroBubble');
-  if (!starIntroEl) {
-    starIntroEl = document.createElement('div');
-    starIntroEl.id = 'starIntroBubble';
-    starIntroEl.className = 'modal hidden';
-    starIntroEl.style.zIndex = 99998;
-    starIntroEl.innerHTML = `
-      <div class="modal-card" style="max-width:420px;text-align:center">
-        <p style="font-size:20px;color:#5c3d3d"><strong>Tsuki:</strong> Ooooh… you caught a star! ✦</p>
-        <p style="color:#5c3d3d">Stars are our little currency — collect more to adopt pets and buy cuteness.</p>
-        <div style="margin-top:12px">
-          <button id="starIntroContinue" class="submit-btn">Continue</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(starIntroEl);
-  }
-
-  function showStarIntro() {
-    if (!starIntroEl) return;
-    starIntroEl.classList.remove('hidden');
-    starIntroEl.setAttribute('aria-hidden','false');
-  }
-
-  // star intro Continue unlocks pet if not unlocked
-  document.addEventListener('click', (e) => {
-    if (e.target && e.target.id === 'starIntroContinue') {
-      starIntroEl.classList.add('hidden');
-      starIntroEl.setAttribute('aria-hidden','true');
-      petUnlocked = true;
-      localStorage.setItem('petUnlocked', 'true');
-      if (petBtnEl) petBtnEl.style.display = '';
-      showToast('Pet system unlocked! Click the paw to adopt.');
-    }
-  });
-
-  // pet button click opens modal
-  if (petBtnEl) {
-    petBtnEl.addEventListener('click', () => {
-      petWindowEl.classList.remove('hidden');
-      petWindowEl.setAttribute('aria-hidden','false');
-      loadPetWindowContent();
-    });
-  }
-
-  // close pet window
-  document.addEventListener('click', (e) => {
-    if (e.target && e.target.id === 'closePetWindow') {
-      petWindowEl.classList.add('hidden');
-      petWindowEl.setAttribute('aria-hidden','true');
-    }
-  });
-
-  // init visuals on load
-  (function initPetAndStars() {
-    try {
-      if (localStorage.getItem('petUnlocked') === 'true') {
-        petUnlocked = true;
-        if (petBtnEl) petBtnEl.style.display = '';
-      } else if (petBtnEl) {
-        petBtnEl.style.display = 'none';
-      }
-      // sync variables
-      starCount = parseInt(localStorage.getItem('stars') || '0');
-      petChosen = localStorage.getItem('petChosen') || petChosen;
-      hatOwned = (() => { try { return JSON.parse(localStorage.getItem('hat_owned') || '[]'); } catch(e){ return []; }})();
-      hatEquipped = localStorage.getItem('hat_equipped') || '';
-      petLove = parseInt(localStorage.getItem('petLove') || '0');
-      // show a small toast of stars
-      if (starCount > 0) showToast(`Stars: ${starCount}`, 1200);
-    } catch(e){ console.warn(e); }
+  // init pet state from storage
+  (function initPetState(){
+    petUnlocked = localStorage.getItem('petUnlocked') === 'true';
+    petChosen = localStorage.getItem('petChosen') || petChosen;
+    hatOwned = (() => { try { return JSON.parse(localStorage.getItem('hat_owned') || '[]'); } catch(e){ return []; }})();
+    hatEquipped = localStorage.getItem('hat_equipped') || '';
+    petLove = Number(localStorage.getItem('petLove') || 0);
+    updateStarDisplay();
+    updateLoveFill();
+    // show pet button only if unlocked (but keep it visible to open)
+    if (petButton) petButton.style.display = '';
   })();
 
-  // expose debug helpers
-  window.TsukiDebug = Object.assign(window.TsukiDebug || {}, {
-    spawnFallingStar: window.TsukiDebug?.spawnFallingStar || function(){},
-    createBackgroundStar: window.TsukiDebug?.createBackgroundStar || function(){},
-    startRing,
-    stopRing,
-    getState: () => ({ starCount, petUnlocked, petChosen, hatOwned, hatEquipped, petLove })
-  });
-
-  // keyboard escapes
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      if (petWindowEl && !petWindowEl.classList.contains('hidden')) petWindowEl.classList.add('hidden');
-      if (suggestModal && !suggestModal.classList.contains('hidden')) closeSuggestModal();
-      if (vnContainer && !vnContainer.classList.contains('hidden')) closeVN();
-      if (starIntroEl && !starIntroEl.classList.contains('hidden')) starIntroEl.classList.add('hidden');
-    }
-  });
-
-})(); // end IIFE
-
-/* ========== DEBUG BUTTONS (settings tab) ==========
-   Note: these buttons reflect the same localStorage keys used above
-*/
-(function(){
+  // -------------- Debug buttons (settings) --------------
   function devLog(msg){ console.log("%cDEBUG: "+msg, "color:#ff99aa"); }
-  // reset pet + stars only
+
   document.getElementById("debug-reset")?.addEventListener("click", () => {
     localStorage.removeItem("stars");
     localStorage.removeItem("petUnlocked");
@@ -987,25 +727,23 @@
     setTimeout(()=> location.reload(), 220);
   });
 
-  // +5 stars cheat
   document.getElementById("debug-add-stars")?.addEventListener("click", () => {
     let s = Number(localStorage.getItem("stars") || 0);
     s += 5;
     localStorage.setItem("stars", s);
+    starCount = s;
+    updateStarDisplay();
     devLog("+5 stars.");
     showToast("+5 stars added!");
-    setTimeout(()=> location.reload(), 220);
   });
 
-  // unlock entire pet system
   document.getElementById("debug-unlock-pets")?.addEventListener("click", () => {
     localStorage.setItem("petUnlocked", "true");
-    devLog("Unlocked entire pet system.");
+    petUnlocked = true;
+    devLog("Unlocked pet system.");
     showToast("Pet system unlocked!");
-    setTimeout(()=> location.reload(), 220);
   });
 
-  // FULL WIPE
   document.getElementById("debug-full-reset")?.addEventListener("click", () => {
     localStorage.removeItem("stars");
     localStorage.removeItem("petUnlocked");
@@ -1017,4 +755,28 @@
     showToast("ALL DATA CLEARED!");
     setTimeout(()=> location.reload(), 220);
   });
-})();
+
+  // keyboard escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (petPopup && !petPopup.classList.contains('hidden')) petPopup.classList.add('hidden');
+      if (vnContainer && !vnContainer.classList.contains('hidden')) closeVN();
+      if (suggestModal && !suggestModal.classList.contains('hidden')) closeSuggestModal();
+    }
+  });
+
+  // expose debug helpers
+  window.TsukiDebug = Object.assign(window.TsukiDebug || {}, {
+    spawnFallingStar,
+    createBackgroundStar,
+    petState: () => ({ starCount, petUnlocked, petChosen, hatOwned, hatEquipped, petLove })
+  });
+
+  // small keyframes injected for twinkle
+  const styleSheet = document.createElement('style');
+  styleSheet.innerHTML = `
+  @keyframes bgStarTwinkle { 0% { opacity: .35 } 50% { opacity: 1 } 100% { opacity: .35 } }
+  `;
+  document.head.appendChild(styleSheet);
+
+})(); // IIFE end
