@@ -68,13 +68,15 @@
       <div class="card">
         <h2>Settings</h2>
         <label><input type="checkbox" id="toggle-sfx" checked> Enable sounds (ring & typing)</label>
-        <div class="settings-section">
-  <h2>Debug / Cheats</h2>
-  <button class="debug-btn" id="debug-reset">Reset Pet System</button>
-  <button class="debug-btn" id="debug-add-stars">+5 Stars</button>
-  <button class="debug-btn" id="debug-unlock-pets">Unlock All Pets</button>
-  <button class="debug-btn" id="debug-full-reset">Clear ALL Data</button>
-</div>
+
+        <div class="settings-section" style="margin-top:12px">
+          <h3>Debug / Cheats</h3>
+          <button class="debug-btn" id="debug-reset">Reset Pet System</button>
+          <button class="debug-btn" id="debug-add-stars">+5 Stars</button>
+          <button class="debug-btn" id="debug-unlock-pets">Unlock Pet System</button>
+          <button class="debug-btn" id="debug-full-reset">Clear ALL Data</button>
+        </div>
+
       </div>
     </section>
 
@@ -90,7 +92,12 @@
   <!-- RINGING PHONE (fixed) -->
   <img id="phoneButton" src="assets/images/Phone.png" alt="phone" class="phone-icon" />
 
-  <!-- VISUAL NOVEL WINDOW -->
+  <!-- PET PAW BUTTON (floating) -->
+  <div id="petButton" title="Pets" class="pet-button">
+    <img id="petButtonImg" src="" alt="paw">
+  </div>
+
+  <!-- VISUAL NOVEL WINDOW (Tsuki) -->
   <div id="vnContainer" class="vn hidden" aria-hidden="true">
     <div class="vn-card">
       <div class="vn-left">
@@ -103,6 +110,62 @@
         </div>
       </div>
       <button id="vnClose" class="vn-close" aria-label="close VN">✕</button>
+    </div>
+  </div>
+
+  <!-- PET POPUP (VN-style) -->
+  <div id="petPopup" class="vn hidden" aria-hidden="true" data-type="pet">
+    <div class="vn-card">
+      <div class="vn-left" style="flex:0 0 220px">
+        <div style="width:180px; margin:0 auto">
+          <img id="petSprite" src="" alt="pet" style="width:100%; image-rendering:pixelated; border-radius:10px; border:3px solid var(--accent-dark)">
+          <img id="petHat" src="" alt="hat" style="position:relative; left:50%; transform:translateX(-50%); margin-top:-110px; width:84px; display:block; pointer-events:none; image-rendering:pixelated"/>
+        </div>
+        <div style="text-align:center;margin-top:8px;color:var(--accent-dark)">
+          <div id="petNameTitle">Your Pet</div>
+          <div style="margin-top:6px">Stars: <strong id="starCountDisp">0</strong></div>
+        </div>
+      </div>
+
+      <div class="vn-right">
+        <div class="vn-box" style="min-height:260px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong style="color:var(--accent-dark)">Pet Menu</strong>
+            <div>
+              <button id="feedBtn" class="optionButton" style="margin-right:8px">Feed</button>
+              <button id="batheBtn" class="optionButton">Bathe</button>
+            </div>
+          </div>
+
+          <div style="margin-top:10px">
+            <label style="color:var(--accent-dark)">Choose variant:</label>
+            <div style="margin-top:6px">
+              <select id="petVariant" style="padding:6px;border-radius:8px;border:2px solid var(--accent-dark);font-family:'VT323'">
+                <option>Rocky Road Bunny</option>
+                <option>Oreo Bunny</option>
+                <option>Vanilla Bunny</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div style="color:var(--accent-dark);margin-bottom:6px">Love</div>
+            <div style="width:100%; height:18px; border:2px solid var(--accent-dark); background:#fff0f0; border-radius:8px; overflow:hidden">
+              <div id="loveFill" style="height:100%; width:0%; background:linear-gradient(90deg,#ffb3c6,#ff99aa)"></div>
+            </div>
+          </div>
+
+          <hr style="margin:12px 0; border-color: #ffd6df">
+
+          <div style="color:var(--accent-dark);margin-bottom:8px">Hat Shop</div>
+          <div id="shopScroll" class="pet-shop-window">
+            <!-- shop items populated by JS -->
+          </div>
+
+        </div>
+      </div>
+
+      <button id="petClose" class="vn-close" aria-label="close pet">✕</button>
     </div>
   </div>
 
@@ -120,6 +183,8 @@
       </form>
     </div>
   </div>
+
+  <!-- STAR LAYER (appended by JS if needed) -->
 
   <!-- toast -->
   <div id="toast" class="toast" aria-hidden="true"></div>
