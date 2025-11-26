@@ -1,15 +1,19 @@
-// VN engine + UI glue
-document.addEventListener('DOMContentLoaded', () => {
-  // Tabs
-  document.querySelectorAll('.tab').forEach(tab=>{
-    tab.addEventListener('click', ()=>{
-      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById(tab.dataset.tab).classList.add('active');
-    });
-  });
+/* assets/js/script.js
+   Fully configured with your Formspree endpoint.
+*/
 
+document.addEventListener('DOMContentLoaded', () => {
+  /**************** CONFIG ****************/
+  // ✔ Your Formspree endpoint (works on GitHub Pages)
+  const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
+
+  // Do NOT turn this on for GitHub Pages (PHP doesn't work there)
+  const USE_PHP_ENDPOINT = false;
+
+  const PHP_ENDPOINT = 'assets/forms/submit.php';
+  /****************************************/
+
+  // UI elements
   const phone = document.getElementById('phoneIcon');
   const vnWindow = document.getElementById('vnWindow');
   const vnSprite = document.getElementById('vnSprite');
@@ -18,211 +22,216 @@ document.addEventListener('DOMContentLoaded', () => {
   const vnClose = document.getElementById('vnClose');
   const toast = document.getElementById('toast');
 
-  // Sprite filenames (must match your uploaded files)
-  const sprites = {
-    neutral: 'assets/sprites/tsuki-neutral.png',
-    happy:    'assets/sprites/tsuki-happy.png',
-    annoyed:  'assets/sprites/tsuki-annoyed.png',
-    wine:     'assets/sprites/tsuki-wine.png',
-    hangup:   'assets/sprites/tsuki-hangup.png'
+  // EXACT filenames you supplied (must exist in assets/sprites/)
+  const spriteFiles = {
+    happy: 'Happy Talking.png',
+    neutral: 'Sad Talking.png',
+    annoyed: 'Frown reaction.png',
+    wineSmile: 'Holding Wine Smile.png',
+    wineScoff: 'Holding Wine Scoff.png',
+    hangup: 'Hanging Up the phone.png',
+    rose1: 'Holding Rose Talk 1.png',
+    rose2: 'Holding Rose Talk 2.png',
+    thanks: 'Thanks.png'
   };
 
-  // Scenes (each new tsuki line = new scene with sprite change)
+  const sprites = {};
+  Object.keys(spriteFiles).forEach(k => {
+    sprites[k] = encodeURI('assets/sprites/' + spriteFiles[k]);
+  });
+
+  const phonePath = encodeURI('assets/images/Phone.png');
+
+  const placeholder =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABkCAYAAAD62FJkAAAACXBIWXMAAAsTAAALEwEAmpwYAAABfElEQVR4nO3U0Q2AMAwF0d7/0r1xEo7sSSwqW9/H2D0YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA9u7k3Z11r7d0o3r3u3j5z8+O7fq7W7w0mH/7o6P1zJ/bz7n0d3uT3c/v/Jv7v3s7n3r3c+9v8z9r/36d3v7n9v7t0f2b7n1v1f7y7q3u9yv9+q+zv9n4P7n9v3N8j6jv7Gf6Q3AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgA/4AJQ7kG7pXoSgAAAAASUVORK5CYII=';
+
+  function preloadAll() {
+    const promises = Object.keys(sprites).map(k => {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve({key: k, ok: true});
+        img.onerror = () => resolve({key: k, ok: false});
+        img.src = sprites[k];
+      });
+    });
+
+    return Promise.all(promises);
+  }
+
   const scenes = {
-    start: {
-      sprite: sprites.happy,
-      text: 'Tsuki: Hey Boo! ♥ You finally picked up..',
-      next: 'whatUp'
-    },
-    whatUp: {
-      sprite: sprites.neutral,
-      text: "Tsuki: What's up, girl?",
-      choices: [
-        { id:'opt1', text:"I've got some tea for a video, girl!", next:'opt1Response' },
-        { id:'opt2', text:"Who are you…What are you?", next:'opt2Response' },
-        { id:'opt3', text:"Hang up", next:'userHangup' }
-      ]
-    },
-    opt1Response: {
-      sprite: sprites.wine,
-      text: "Tsuki: Oooh…Spill it!",
-      choices: [
-        { id:'opt1a', text:"Insert the tea (open form)", next:'openForm' },
-        { id:'opt1b', text:"Hang up", next:'opt1Hangup' }
-      ]
-    },
-    opt1Hangup: {
-      sprite: sprites.annoyed,
-      text: "Tsuki: Girl..don’t piss me off.",
-      next: 'endHangup'
-    },
-    opt2Response: {
-      sprite: sprites.neutral,
-      text: "Tsuki: Me?? I'm Tsuki. Cute chaos, and content—duh.",
-      choices: [
-        { id:'opt2a', text:'Back', next:'whatUp' },
-        { id:'opt2b', text:'Hang up', next:'userHangup' }
-      ]
-    },
-    userHangup: {
-      sprite: sprites.hangup,
-      text: "—call ended—",
-      next: null
-    },
-    endHangup: {
-      sprite: sprites.hangup,
-      text: "Tsuki hung up.",
-      next: null
-    }
+    start: { sprite: sprites.happy, text: 'Tsuki: Hey Boo! ♥ You finally picked up..', next: 'whatUp' },
+    whatUp: { sprite: sprites.neutral, text: "Tsuki: What's up, girl?", choices: [
+      { id:'opt1', text:"I've got some tea for a video, girl!", next:'opt1Response' },
+      { id:'opt2', text:"Who are you…What are you?", next:'opt2Response' },
+      { id:'opt3', text:"Hang up", next:'userHangup' }
+    ]},
+    opt1Response: { sprite: sprites.wineSmile, text: "Tsuki: Oooh…Spill it!", choices: [
+      { id:'opt1a', text:"Insert the tea (open form)", next:'openForm' },
+      { id:'opt1b', text:"Hang up", next:'opt1Hangup' }
+    ]},
+    opt1Hangup: { sprite: sprites.annoyed, text: "Tsuki: Girl..don’t piss me off.", next: 'endHangup' },
+    opt2Response: { sprite: sprites.neutral, text: "Tsuki: Me?? I'm Tsuki. Cute chaos, and content—duh.", choices: [
+      { id:'opt2a', text:'Back', next:'whatUp' },
+      { id:'opt2b', text:'Hang up', next:'userHangup' }
+    ]},
+    userHangup: { sprite: sprites.hangup, text: "—call ended—", next: null },
+    endHangup: { sprite: sprites.hangup, text: "Tsuki hung up.", next: null }
   };
 
-  // Open VN window and start at scene.start
-  function openVN(){
-    vnWindow.style.display='block';
-    vnWindow.setAttribute('aria-hidden','false');
+  preloadAll().then(results => {
+    const missing = results.filter(r => !r.ok);
+    if (missing.length) {
+      showToast('Missing sprites: ' + missing.map(m => spriteFiles[m.key]).join(', '));
+    }
+
+    const testPhone = new Image();
+    testPhone.onerror = () => showToast("Phone.png missing");
+    testPhone.src = phonePath;
+
+    phone.src = phonePath;
+    attachUI();
+  });
+
+  function attachUI() {
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    phone.addEventListener('click', openVN);
+    vnClose.addEventListener('click', closeVN);
+  }
+
+  function openVN() {
+    vnWindow.style.display = 'block';
     playScene('start');
   }
 
-  function closeVN(){
-    vnWindow.style.display='none';
-    vnWindow.setAttribute('aria-hidden','true');
-    vnChoices.innerHTML='';
+  function closeVN() {
+    vnWindow.style.display = 'none';
+    vnChoices.innerHTML = '';
   }
 
-  vnClose.addEventListener('click', closeVN);
-
-  phone.addEventListener('click', () => {
-    // stop ring animation while open
-    phone.style.animation = 'none';
-    openVN();
-  });
-
-  // play a scene by key
-  function playScene(key){
-    if(!key){ closeVN(); return; }
+  function playScene(key) {
     const s = scenes[key];
-    if(!s){ console.warn('missing scene',key); return; }
+    if (!s) return;
 
-    // sprite change
-    if(s.sprite) vnSprite.src = s.sprite;
-
-    // text
+    setSpriteSafe(s.sprite);
     vnText.innerText = s.text;
-
-    // choices
     vnChoices.innerHTML = '';
 
-    // if choices exist render them
-    if(s.choices && s.choices.length){
-      s.choices.forEach(ch=>{
+    if (s.choices) {
+      s.choices.forEach(ch => {
         const btn = document.createElement('button');
         btn.className = 'choice-btn';
         btn.innerText = ch.text;
-        btn.addEventListener('click', ()=> {
-          handleChoice(ch.next);
-        });
+        btn.addEventListener('click', () => handleChoice(ch.next));
         vnChoices.appendChild(btn);
       });
-    } else if(s.next){
-      // auto-advance button when there is a next scene but no choices
-      const cont = document.createElement('button');
-      cont.className = 'choice-btn';
-      cont.innerText = 'Continue';
-      cont.addEventListener('click', ()=> handleChoice(s.next));
-      vnChoices.appendChild(cont);
+    } else if (s.next) {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerText = 'Continue';
+      btn.addEventListener('click', () => handleChoice(s.next));
+      vnChoices.appendChild(btn);
     } else {
-      // end scene (show close)
-      const done = document.createElement('button');
-      done.className = 'choice-btn';
-      done.innerText = 'Close';
-      done.addEventListener('click', closeVN);
-      vnChoices.appendChild(done);
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerText = 'Close';
+      btn.addEventListener('click', closeVN);
+      vnChoices.appendChild(btn);
     }
   }
 
-  function handleChoice(nextKey){
-    if(nextKey === 'openForm') {
+  function setSpriteSafe(path) {
+    vnSprite.src = path;
+    vnSprite.onerror = () => {
+      vnSprite.src = placeholder;
+      showToast("Missing sprite: " + decodeURI(path).split('/').pop());
+    };
+  }
+
+  function handleChoice(next) {
+    if (next === 'openForm') {
       openSubmissionForm();
       return;
     }
-    // small delay for dramatic effect and then play next scene
-    playScene(nextKey);
+    playScene(next);
   }
 
-  // Submission form (modal inside the VN)
-  function openSubmissionForm(){
-    vnSprite.src = sprites.neutral;
+  function openSubmissionForm() {
+    setSpriteSafe(sprites.neutral);
     vnText.innerText = "Leave your tea/idea below — only I can see submissions.";
     vnChoices.innerHTML = '';
 
-    // build form
     const form = document.createElement('form');
     form.id = 'tsukiForm';
 
     const name = document.createElement('input');
-    name.type='text';
-    name.name='name';
-    name.placeholder='Your name';
-    name.required=true;
+    name.type = 'text';
+    name.name = 'name';
+    name.placeholder = 'Your name';
+    name.required = true;
 
-    const message = document.createElement('textarea');
-    message.name='message';
-    message.placeholder='Write your tea / suggestion here';
-    message.required=true;
-    message.rows=4;
-    message.style.resize='vertical';
+    const msg = document.createElement('textarea');
+    msg.name = 'message';
+    msg.placeholder = 'Write your tea / idea here';
+    msg.required = true;
+    msg.rows = 4;
 
     const submit = document.createElement('button');
-    submit.type='submit';
-    submit.className='choice-btn';
-    submit.innerText='Submit';
+    submit.type = 'submit';
+    submit.className = 'choice-btn';
+    submit.innerText = 'Submit';
 
     form.appendChild(name);
-    form.appendChild(message);
+    form.appendChild(msg);
     form.appendChild(submit);
 
     vnChoices.appendChild(form);
 
-    form.addEventListener('submit', async (e)=>{
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      submit.disabled = true;
       submit.innerText = 'Sending…';
+      submit.disabled = true;
 
-      // POST to server-side handler (requires PHP/server)
       try {
-        const data = new FormData(form);
-        const resp = await fetch('assets/forms/submit.php', {
-          method:'POST',
-          body: data
+        const fd = new FormData(form);
+        const res = await fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          body: fd,
+          headers: { 'Accept': 'application/json' }
         });
-        const json = await resp.json();
-        if(json.success){
-          showToast('Submitted — thanks babe ♡');
-          vnText.innerText = 'Tsuki: Mmm thanks! I\'ll check it out.';
-          vnChoices.innerHTML = '';
-          const ok = document.createElement('button');
-          ok.className='choice-btn';
-          ok.innerText='Close';
-          ok.addEventListener('click', closeVN);
-          vnChoices.appendChild(ok);
-        } else {
-          throw new Error(json.error || 'Server rejected');
-        }
-      } catch(err){
-        console.error(err);
-        showToast('Submission failed — try again later');
+
+        if (!res.ok) throw new Error('Formspree error');
+
+        showToast('Submitted — thanks babe ♡');
+
+        vnText.innerText = "Tsuki: Mmm thanks! I'll check it out.";
+        vnChoices.innerHTML = '';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'choice-btn';
+        closeBtn.innerText = 'Close';
+        closeBtn.addEventListener('click', closeVN);
+        vnChoices.appendChild(closeBtn);
+
+      } catch (err) {
+        showToast('Submission failed — check your Formspree setup');
         submit.disabled = false;
         submit.innerText = 'Submit';
       }
     });
   }
 
-  // small helper
-  function showToast(msg){
+  function showToast(msg) {
     toast.innerText = msg;
-    toast.style.display='block';
-    setTimeout(()=>toast.style.display='none', 2600);
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3200);
   }
-
-  // initial scene hidden; VN will be opened when phone clicked
 });
