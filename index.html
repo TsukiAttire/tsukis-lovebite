@@ -1,70 +1,35 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Tsuki’s Lovebite</title>
-
-  <!-- VT323 pixel font -->
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="assets/css/style.css">
-  <script defer src="assets/js/script.js"></script>
+    <meta charset="UTF-8">
+    <title>Tsuki’s Lovebite</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 </head>
 <body>
 
-  <main class="page">
-    <header class="site-header">
-      <h1 class="logo">Tsuki’s Lovebite</h1>
-    </header>
+<div class="wrapper">
 
-    <section class="panel tabs-panel">
-      <nav class="tabs">
-        <button class="tab active" data-tab="home">home</button>
-        <button class="tab" data-tab="info">info</button>
-        <button class="tab" data-tab="update">stay up to date</button>
-      </nav>
+    <!-- PHONE ICON -->
+    <img id="phoneIcon" src="assets/images/Phone.png" alt="phone" class="phone">
 
-      <article id="home" class="tab-content active">
-        <h2>welcome ♡</h2>
-        <p>soft pixel vibes • tea • tsuki content</p>
-      </article>
-
-      <article id="info" class="tab-content">
-        <h2>info</h2>
-        <p>this is Tsuki’s corner — more details later.</p>
-      </article>
-
-      <article id="update" class="tab-content">
-        <h2>stay up to date</h2>
-        <div class="socials">
-          <a href="#" target="_blank">YouTube</a>
-          <a href="#" target="_blank">TikTok #1</a>
-          <a href="#" target="_blank">TikTok #2</a>
-          <a href="#" target="_blank">TikTok #3</a>
-          <a href="#" target="_blank">Roblox Profile</a>
+    <!-- VISUAL NOVEL WINDOW -->
+    <div id="vnWindow" class="vn hidden">
+        
+        <div class="vn-sprite">
+            <img id="tsukiSprite" src="assets/sprites/Holding Wine Smile.png">
         </div>
-      </article>
-    </section>
 
-    <!-- Phone icon (rings) - NOTE: exact filename "Phone.png" -->
-    <img id="phoneIcon" class="phone-icon" src="assets/images/Phone.png" alt="Phone icon">
-
-    <!-- Visual Novel Window (Style B) -->
-    <div id="vnWindow" class="vn-window" aria-hidden="true">
-      <div class="vn-inner">
-        <img id="vnSprite" class="vn-sprite" src="assets/sprites/Sad Talking.png" alt="Tsuki">
-        <div id="vnBox" class="vn-box">
-          <div id="vnText" class="vn-text"></div>
-          <div id="vnChoices" class="vn-choices"></div>
+        <div class="vn-dialogue">
+            <p id="vnText"></p>
         </div>
-      </div>
-      <button id="vnClose" class="vn-close" title="Close">✕</button>
+
+        <div id="vnChoices" class="vn-choices"></div>
+
     </div>
 
-  </main>
+</div>
 
-  <!-- Hidden admin/status (not visible to users) -->
-  <div id="toast" class="toast" aria-hidden="true"></div>
+<script src="assets/js/script.js"></script>
 </body>
 </html>
