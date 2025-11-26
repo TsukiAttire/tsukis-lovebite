@@ -2,14 +2,12 @@
    Full site JS: VN (Tsuki), stars, pet popup (VN-style) + shop/hats/feed/bathe
    Drop-in replacement for existing script.js
 */
-
 (() => {
   // -------------- CONFIG --------------
   const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
   const TYPE_SPEED_MS = 24;
   const TALK_INTERVAL_MS = 140;
   const SPRITE_TRANSITION_CLASS = 'sprite-transition';
-
   // sprite filename mapping (happy uses Thanks pair)
   const spriteFiles = {
     happy: ['Thanks.png', 'Thanks 2.png'],
@@ -21,10 +19,8 @@
     rose: ['Holding Rose Talk 1.png', 'Holding Rose Talk 2.png'],
     hangup: ['Hanging Up the phone.png', 'Hanging Up the phone 2.png']
   };
-
   const sprites = {};
   Object.keys(spriteFiles).forEach(k => sprites[k] = spriteFiles[k].map(fn => encodeURI('assets/sprites/' + fn)));
-
   // -------------- DOM --------------
   const phoneBtn = document.getElementById('phoneButton');
   const vnContainer = document.getElementById('vnContainer');
@@ -38,7 +34,6 @@
   const toast = document.getElementById('toast');
   const toggleSfx = document.getElementById('toggle-sfx');
   const openVNbtn = document.getElementById('openVNbtn');
-
   // pet elements
   const petButton = document.getElementById('petButton');
   const petButtonImg = document.getElementById('petButtonImg');
@@ -52,7 +47,6 @@
   const shopScroll = document.getElementById('shopScroll');
   const feedBtn = document.getElementById('feedBtn');
   const batheBtn = document.getElementById('batheBtn');
-
   // small toast helper
   function showToast(msg, duration = 1400) {
     try {
@@ -78,18 +72,15 @@
       setTimeout(()=> toast.classList.remove('show'), duration);
     } catch(e) { console.warn('toast err', e); }
   }
-
   // -------------- Audio (WebAudio) --------------
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   const audioCtx = AudioCtx ? new AudioCtx() : null;
   let ringOscList = [];
   let ringGain = null;
   let ringIntervalId = null;
-
   function canPlaySound() {
     return audioCtx && (toggleSfx ? toggleSfx.checked : true);
   }
-
   function startRing() {
     if (!canPlaySound()) return;
     stopRing();
@@ -117,7 +108,6 @@
       ringGain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.28);
     }, 420);
   }
-
   function stopRing() {
     try {
       if (ringIntervalId) { clearInterval(ringIntervalId); ringIntervalId = null; }
@@ -133,7 +123,6 @@
       ringGain = null;
     } catch (e) { console.warn(e); }
   }
-
   // typing blip
   function playTypeBlip() {
     if (!canPlaySound()) return;
@@ -152,7 +141,6 @@
     o.start(now);
     o.stop(now + 0.07);
   }
-
   // ---------- VN (Tsuki) logic (kept) ----------
   let talkInterval = null;
   function safeSetSprite(path, el = tsukiSprite) {
@@ -161,10 +149,9 @@
     el.src = path;
     el.onerror = () => {
       console.warn('Sprite failed to load:', path);
-      el.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhElEQVR4nO2ZQQ6CQBBFz6k9gQdgQdgQdgQdgQdgQdgQdgQd2k1cSaT+3q0v2Y3sWmE1Nn6c4eOBuAnwAegF8AHoBfAHq7Wwq2Lx5WZyQq2y3i8f9y1oSxTuY2Qq2x0i8z8DPXjgq1wq2p2qzQZr3KpB2G1M2wz1m1nNe2xY6l8e4VJ2q8Un6q8N5Xso9V6r+2q3t3Z2L6f4Kq+7X2l9bW6r9bGdV1q7t7q9u7+6vU6r8s7j9w+9+9uA9uAY6gFiwDq4Bq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Bq8F7wG6BzqDxw9w6J3+uX9zR6wQZtYQZsYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwXrxQHz5wz9QuS5V4wAAAABJRU5ErkJggg==';
+      el.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhElEQVR4nO2ZQQ6CQBBFz6k9gQdgQdgQdgQdgQdgQdgQdgQd2k1cSaT+3q0v2Y3sWmE1Nn6c4eOBuAnwAegF8AHoBfAHq7Wwq2Lx5WZyQq2y3i8f9y1oSxTuY2Qq2x0i8z8DPXjgq1wq2p2qzQZr3KpB2G1M2wz1m1nNe2xY6l8e4VJ2q8Un6q8N5Xso9V6r+2q3t3Z2L6f4Kq+7X2l9bW6r9bGdV1q7t7q9u7+6vU6r8s7j9w+9+9uA9uAY6gFiwDq4Bq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Bq8F7wG6BzqDxw9w6J3+uX9zR6wQZtYQZsYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwXrxQHz5wz9QuS5V4wAAAABJRU5ErkJggg==';
     };
   }
-
   function typeText(text, speed = TYPE_SPEED_MS) {
     return new Promise(resolve => {
       if (!textBox) return resolve();
@@ -183,7 +170,6 @@
       tick();
     });
   }
-
   function startTalking(frames = [], intervalMs = TALK_INTERVAL_MS) {
     stopTalking();
     if (!frames || frames.length === 0) return;
@@ -194,12 +180,10 @@
       idx++;
     }, intervalMs);
   }
-
   function stopTalking(finalPath) {
     if (talkInterval) { clearInterval(talkInterval); talkInterval = null; }
     if (finalPath) safeSetSprite(finalPath);
   }
-
   function showOptions(list = []) {
     optionsBox.innerHTML = '';
     list.forEach(o => {
@@ -210,7 +194,6 @@
       optionsBox.appendChild(b);
     });
   }
-
   // Scenes
   async function scene_start() {
     optionsBox.innerHTML = '';
@@ -219,7 +202,6 @@
     stopTalking(sprites.happy[0]);
     setTimeout(scene_whatsUp, 300);
   }
-
   async function scene_whatsUp() {
     startTalking(sprites.happy);
     await typeText("Tsuki: What's up, girl?");
@@ -230,7 +212,6 @@
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
-
   async function scene_tea() {
     optionsBox.innerHTML = '';
     startTalking(sprites.wineSmile);
@@ -242,7 +223,6 @@
       { label: "Hang up", onClick: scene_hangUpAngry }
     ]);
   }
-
   async function scene_hangUpAngry() {
     optionsBox.innerHTML = '';
     startTalking([...sprites.frown, ...sprites.neutral]);
@@ -250,25 +230,77 @@
     stopTalking(sprites.hangup[1] || sprites.hangup[0]);
     setTimeout(() => closeVN(), 1100);
   }
-
   async function scene_identity() {
     optionsBox.innerHTML = '';
     startTalking(sprites.neutral);
-    await typeText("Tsuki: Me?? I'm Tsuki. Cute chaos, and content—duh.");
+    await typeText("Tsuki: Oh, spill time about me? I'm Tsuki, daughter of Cupid and a vampire—yeah, that mix is as chaotic as it sounds. I live for gossip, pink tea, and obsessing over Monster High. What's the tea you wanna know, boo?");
     stopTalking(sprites.neutral[0]);
     showOptions([
+      { label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore },
+      { label: "What's the vampire side like?", onClick: scene_vampireLore },
+      { label: "Favorite Monster High character?", onClick: scene_monsterHigh },
       { label: "Back", onClick: scene_whatsUp },
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
-
+  async function scene_cupidLore() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.rose);
+    await typeText("Tsuki: Being Cupid's kid? It's all arrows and awkward love spells gone wrong. Dad's always meddling in crushes, but I prefer stirring up drama with a wink. Helps with my job—spreading gossip like love potions. Got any crushes I should know about? ♡");
+    stopTalking(sprites.rose[0]);
+    showOptions([
+      { label: "More about your job?", onClick: scene_jobLore },
+      { label: "Back to questions", onClick: scene_identity },
+      { label: "Hang up", onClick: scene_userHangup }
+    ]);
+  }
+  async function scene_vampireLore() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.wineScoff);
+    await typeText("Tsuki: Vampire vibes from Mom? Eternal nights, blood lattes, and that immortal glow-up. But I'm more about biting into juicy stories than necks. Keeps things fun—eternal life means endless tea. Thirsty for more details?");
+    stopTalking(sprites.wineScoff[0]);
+    showOptions([
+      { label: "Do you drink blood?", onClick: scene_bloodQuestion },
+      { label: "Back to questions", onClick: scene_identity },
+      { label: "Hang up", onClick: scene_userHangup }
+    ]);
+  }
+  async function scene_monsterHigh() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.happy);
+    await typeText("Tsuki: Monster High? Obsessed! Draculaura is my spirit ghoul—pink, vampy, and full of heart. We could totally gossip about her latest outfits. Who's your fave?");
+    stopTalking(sprites.happy[0]);
+    showOptions([
+      { label: "Back to questions", onClick: scene_identity },
+      { label: "Hang up", onClick: scene_userHangup }
+    ]);
+  }
+  async function scene_jobLore() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.neutral);
+    await typeText("Tsuki: My gig? Hybrid hustle—matchmaking with a gossip twist. Dad's love arrows meet Mom's shadowy secrets. I run a little content corner spilling supernatural tea. Fun, right?");
+    stopTalking(sprites.neutral[0]);
+    showOptions([
+      { label: "Back to questions", onClick: scene_identity },
+      { label: "Hang up", onClick: scene_userHangup }
+    ]);
+  }
+  async function scene_bloodQuestion() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.wineSmile);
+    await typeText("Tsuki: Blood? Only the fancy kind, mixed with strawberry syrup. Keeps the fangs happy without the mess. But shh, that's our little secret~");
+    stopTalking(sprites.wineSmile[0]);
+    showOptions([
+      { label: "Back to questions", onClick: scene_identity },
+      { label: "Hang up", onClick: scene_userHangup }
+    ]);
+  }
   async function scene_userHangup() {
     optionsBox.innerHTML = '';
     safeSetSprite(sprites.hangup[1] || sprites.hangup[0]);
     await typeText("—call ended—");
     setTimeout(() => closeVN(), 700);
   }
-
   // VN controls
   function openVN() {
     vnContainer.classList.remove('hidden');
@@ -277,7 +309,6 @@
     stopRing();
     scene_start();
   }
-
   function closeVN() {
     vnContainer.classList.add('hidden');
     vnContainer.setAttribute('aria-hidden', 'true');
@@ -285,7 +316,6 @@
     textBox.innerHTML = '';
     stopTalking();
   }
-
   // Suggest modal
   function openSuggestModal(kind = '') {
     if (suggestForm && !suggestForm.querySelector('input[name="type"]')) {
@@ -300,12 +330,10 @@
     const first = suggestForm.querySelector('input[name="name"], textarea, input');
     if (first) first.focus();
   }
-
   function closeSuggestModal() {
     suggestModal.classList.add('hidden');
     suggestModal.setAttribute('aria-hidden', 'true');
   }
-
   // Formspree
   if (suggestForm) {
     suggestForm.addEventListener('submit', async (e) => {
@@ -328,7 +356,6 @@
       }
     });
   }
-
   // Top nav
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => {
@@ -340,7 +367,6 @@
       if (panel) panel.classList.add('active');
     });
   });
-
   // preload sprites
   (function preloadAll() {
     Object.values(sprites).forEach(arr => arr.forEach(path => {
@@ -348,7 +374,6 @@
     }));
     const phoneTest = new Image(); phoneTest.src = 'assets/images/Phone.png';
   })();
-
   // start ring if phone exists
   if (phoneBtn) {
     try { startRing(); } catch(e){ console.warn('startRing error', e); }
@@ -361,18 +386,15 @@
   if (vnClose) vnClose.addEventListener('click', closeVN);
   if (openVNbtn) openVNbtn.addEventListener('click', () => { if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume(); stopRing(); openVN(); });
   if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeSuggestModal);
-
   if (toggleSfx) {
     toggleSfx.addEventListener('change', () => {
       if (!toggleSfx.checked) stopRing(); else startRing();
     });
   }
-
   // -------------- STARS SYSTEM (full-screen) --------------
   // persistent star count key: 'stars'
   let starCount = Number(localStorage.getItem('stars') || 0);
   localStorage.setItem('stars', String(starCount));
-
   // star layer (create if not present)
   let starLayer = document.getElementById('starLayerGlobal');
   if (!starLayer) {
@@ -381,10 +403,8 @@
     starLayer.style.pointerEvents = 'none';
     document.body.appendChild(starLayer);
   }
-
   const STAR_POOL = [];
   const MAX_STARS = Math.max(20, Math.floor((window.innerWidth * window.innerHeight) / 90000));
-
   // helper to create background star
   function createBackgroundStar(x, y, opts = {}) {
     const el = document.createElement('div');
@@ -413,7 +433,6 @@
     STAR_POOL.push(el);
     return el;
   }
-
   // collect star
   function collectStar(el) {
     try {
@@ -432,7 +451,6 @@
       showToast(`Stars: ${starCount}`);
     }
   }
-
   // falling stars spawn (clickable)
   function spawnFallingStar() {
     const el = document.createElement('div');
@@ -449,14 +467,12 @@
     el.style.color = '#fff9ff';
     el.style.textShadow = '0 0 8px #ffdff0';
     document.body.appendChild(el);
-
     const duration = 3800 + Math.random()*3000;
     const endLeft = Math.random() * window.innerWidth;
     el.animate([
       { transform: 'translate(0,0)', opacity:1 },
       { transform: `translate(${(Math.random()-0.5)*160}px, ${window.innerHeight + 120}px)`, opacity:0.02 }
     ], { duration: duration, easing: 'linear' });
-
     el.addEventListener('click', (ev) => {
       ev.stopPropagation();
       try{ el.remove(); }catch(e){}
@@ -465,10 +481,8 @@
       updateStarDisplay();
       showToast(`Stars: ${starCount}`);
     });
-
     setTimeout(()=>{ try{ el.remove(); }catch(e){} }, duration + 300);
   }
-
   function populateBackgroundStars() {
     STAR_POOL.forEach(s => { try{s.remove();}catch(e){} });
     STAR_POOL.length = 0;
@@ -479,7 +493,6 @@
       createBackgroundStar(x,y,{clickable, size: 3 + Math.random()*10});
     }
   }
-
   // start spawning falling stars occasionally
   let fallingInterval = setInterval(spawnFallingStar, 3500);
   window.addEventListener('resize', () => {
@@ -488,19 +501,15 @@
       populateBackgroundStars();
     }, 220);
   });
-
   // initial populate
   populateBackgroundStars();
-
   // expose showStarIntro if needed (kept minimal)
   function showStarIntro(){ /* no-op wrapper (we show pet unlock elsewhere) */ }
-
   // show star count UI update (pet popup displays)
   function updateStarDisplay() {
     if (starCountDisp) starCountDisp.innerText = String(starCount);
   }
   updateStarDisplay();
-
   // -------------- PET SYSTEM (popup VN-style) --------------
   // storage keys: stars, petUnlocked, petChosen, hat_owned, hat_equipped, petLove
   let petUnlocked = localStorage.getItem('petUnlocked') === 'true';
@@ -508,29 +517,24 @@
   let hatOwned = (() => { try { return JSON.parse(localStorage.getItem('hat_owned') || '[]'); } catch(e){ return []; }})();
   let hatEquipped = localStorage.getItem('hat_equipped') || '';
   let petLove = Number(localStorage.getItem('petLove') || 0);
-
   // pet sprite file paths (encode spaces)
   const petSprites = {
     'Rocky Road Bunny': encodeURI('assets/pets/Rocky Road Bunny.png'),
     'Oreo Bunny': encodeURI('assets/pets/Oreo Bunny.png'),
     'Vanilla Bunny': encodeURI('assets/pets/Vanilla Bunny.png')
   };
-
   // hat catalog (id, name, price, svg dataURI)
   const HAT_CATALOG = [
     { id:'beret-pink', name:'Beret (Pink)', price:3, svg: hatSVG('beret','pink') },
     { id:'beret-black', name:'Beret (Black)', price:3, svg: hatSVG('beret','black') },
     { id:'beret-white', name:'Beret (White)', price:3, svg: hatSVG('beret','white') },
-
     { id:'crown-gold', name:'Crown (Gold)', price:6, svg: hatSVG('crown','gold') },
     { id:'crown-rose', name:'Crown (Rose)', price:6, svg: hatSVG('crown','rose') },
     { id:'crown-blue', name:'Crown (Blue)', price:6, svg: hatSVG('crown','blue') },
-
     { id:'jester-red', name:'Jester (Red)', price:4, svg: hatSVG('jester','red') },
     { id:'jester-purple', name:'Jester (Purple)', price:4, svg: hatSVG('jester','purple') },
     { id:'jester-green', name:'Jester (Green)', price:4, svg: hatSVG('jester','green') }
   ];
-
   // hat SVG generator
   function hatSVG(kind, color) {
     const colorMap = {
@@ -558,7 +562,6 @@
     }
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
-
   // shade helper
   function shade(hex, percent){
     const c = hex.replace('#','');
@@ -571,7 +574,6 @@
     b = Math.max(0,Math.min(255,b));
     return '#'+((1<<24) + (r<<16) + (g<<8) + b).toString(16).slice(1);
   }
-
   // set paw icon (try repo paths, fallback to inline)
   (function setPaw() {
     const tries = ['assets/ui/paw-icon.png','assets/images/paw.png','assets/sprites/paw.png'];
@@ -583,7 +585,6 @@
     });
     if (!set) petButtonImg.src = `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><g fill="#ff99aa" stroke="#5c3d3d" stroke-width="2"><circle cx="20" cy="18" r="6"/><circle cx="32" cy="12" r="6"/><circle cx="44" cy="18" r="6"/><ellipse cx="32" cy="36" rx="16" ry="12"/></g></svg>`)}`;
   })();
-
   // open pet popup
   if (petButton) {
     petButton.addEventListener('click', () => {
@@ -596,21 +597,17 @@
       openPetPopup();
     });
   }
-
   if (petClose) petClose.addEventListener('click', closePetPopup);
-
   function openPetPopup() {
     petPopup.classList.remove('hidden');
     petPopup.setAttribute('aria-hidden','false');
     // populate
     renderPetPopup();
   }
-
   function closePetPopup() {
     petPopup.classList.add('hidden');
     petPopup.setAttribute('aria-hidden','true');
   }
-
   function renderPetPopup() {
     // sprite
     petSpriteEl.src = petSprites[petChosen] || petSprites['Oreo Bunny'];
@@ -624,7 +621,6 @@
     updateStarDisplay();
     // love fill
     updateLoveFill();
-
     // build shop items
     shopScroll.innerHTML = '';
     HAT_CATALOG.forEach(h => {
@@ -669,14 +665,12 @@
       shopScroll.appendChild(item);
     });
   }
-
   // variant change
   petVariantSel?.addEventListener('change', (e) => {
     petChosen = e.target.value;
     localStorage.setItem('petChosen', petChosen);
     renderPetPopup();
   });
-
   // feed / bathe - simple increases love
   feedBtn?.addEventListener('click', () => {
     petLove = Math.min(100, petLove + 6);
@@ -684,7 +678,6 @@
     updateLoveFill();
     showToast('Fed! +6 love');
   });
-
   // bathing mechanic: simple toggle for now + small love gain
   batheBtn?.addEventListener('click', () => {
     // reveal a quick inline "drag soap" UX could be added; keep simple: instant bubbles -> rinse
@@ -693,12 +686,10 @@
     updateLoveFill();
     showToast('Bathe complete! +8 love');
   });
-
   function updateLoveFill() {
     const pct = Math.round((petLove / 100) * 100);
     if (loveFill) loveFill.style.width = pct + '%';
   }
-
   // init pet state from storage
   (function initPetState(){
     petUnlocked = localStorage.getItem('petUnlocked') === 'true';
@@ -711,10 +702,8 @@
     // show pet button only if unlocked (but keep it visible to open)
     if (petButton) petButton.style.display = '';
   })();
-
   // -------------- Debug buttons (settings) --------------
   function devLog(msg){ console.log("%cDEBUG: "+msg, "color:#ff99aa"); }
-
   document.getElementById("debug-reset")?.addEventListener("click", () => {
     localStorage.removeItem("stars");
     localStorage.removeItem("petUnlocked");
@@ -726,7 +715,6 @@
     showToast("Pet system reset!");
     setTimeout(()=> location.reload(), 220);
   });
-
   document.getElementById("debug-add-stars")?.addEventListener("click", () => {
     let s = Number(localStorage.getItem("stars") || 0);
     s += 5;
@@ -736,14 +724,12 @@
     devLog("+5 stars.");
     showToast("+5 stars added!");
   });
-
   document.getElementById("debug-unlock-pets")?.addEventListener("click", () => {
     localStorage.setItem("petUnlocked", "true");
     petUnlocked = true;
     devLog("Unlocked pet system.");
     showToast("Pet system unlocked!");
   });
-
   document.getElementById("debug-full-reset")?.addEventListener("click", () => {
     localStorage.removeItem("stars");
     localStorage.removeItem("petUnlocked");
@@ -755,7 +741,6 @@
     showToast("ALL DATA CLEARED!");
     setTimeout(()=> location.reload(), 220);
   });
-
   // keyboard escape
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -764,19 +749,16 @@
       if (suggestModal && !suggestModal.classList.contains('hidden')) closeSuggestModal();
     }
   });
-
   // expose debug helpers
   window.TsukiDebug = Object.assign(window.TsukiDebug || {}, {
     spawnFallingStar,
     createBackgroundStar,
     petState: () => ({ starCount, petUnlocked, petChosen, hatOwned, hatEquipped, petLove })
   });
-
   // small keyframes injected for twinkle
   const styleSheet = document.createElement('style');
   styleSheet.innerHTML = `
   @keyframes bgStarTwinkle { 0% { opacity: .35 } 50% { opacity: 1 } 100% { opacity: .35 } }
   `;
   document.head.appendChild(styleSheet);
-
 })(); // IIFE end
