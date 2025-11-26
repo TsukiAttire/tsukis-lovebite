@@ -1,105 +1,246 @@
-const phone = document.getElementById("phoneIcon");
-const vn = document.getElementById("vnWindow");
-const textBox = document.getElementById("vnText");
-const spriteBox = document.getElementById("tsukiSprite");
-const choicesBox = document.getElementById("vnChoices");
+// ===========================
+// GLOBAL ELEMENTS
+// ===========================
+const sprite = document.getElementById("tsukiSprite");
+const dialogueBox = document.getElementById("textBox");
+const optionsBox = document.getElementById("optionsBox");
+const phoneBtn = document.getElementById("phoneButton");
+const vnContainer = document.getElementById("vnContainer");
 
-function setSprite(name) {
-    spriteBox.src = `assets/sprites/${name}.png`;
+let talkInterval = null;
+
+// ===========================
+// SPRITE TALKING ANIMATION
+// ===========================
+
+function startTalkingAnimation(s1, s2) {
+    let toggle = false;
+
+    talkInterval = setInterval(() => {
+        sprite.src = toggle ? s1 : s2;
+        sprite.classList.add("sprite-transition");
+        toggle = !toggle;
+    }, 140);
 }
 
-function setText(t) {
-    textBox.innerHTML = t;
+function stopTalkingAnimation(finalSprite) {
+    clearInterval(talkInterval);
+    talkInterval = null;
+
+    if (finalSprite) {
+        sprite.src = finalSprite;
+        sprite.classList.add("sprite-transition");
+    }
 }
 
-function setChoices(arr) {
-    choicesBox.innerHTML = "";
-    arr.forEach(choice => {
-        let btn = document.createElement("button");
-        btn.innerText = choice.label;
-        btn.onclick = choice.action;
-        choicesBox.appendChild(btn);
+// ===========================
+// TYPEWRITER EFFECT
+// ===========================
+function typeText(text, callback) {
+    dialogueBox.innerHTML = "";
+    let i = 0;
+
+    function typing() {
+        if (i < text.length) {
+            dialogueBox.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, 25);
+        } else {
+            if (callback) callback();
+        }
+    }
+
+    typing();
+}
+
+// ===========================
+// MAIN SPEAK FUNCTION
+// ===========================
+function tsukiSpeak(line, spriteTalk1, spriteTalk2, finalSprite, callback) {
+    startTalkingAnimation(
+        `assets/sprites/${spriteTalk1}`,
+        `assets/sprites/${spriteTalk2}`
+    );
+
+    typeText(line, () => {
+        stopTalkingAnimation(`assets/sprites/${finalSprite}`);
+
+        if (callback) callback();
     });
 }
 
-/* OPEN VN ON PHONE CLICK */
-phone.onclick = () => {
-    vn.classList.remove("hidden");
-    startVN();
-};
+// ===========================
+// GAME START
+// ===========================
+phoneBtn.addEventListener("click", () => {
+    vnContainer.style.display = "block";
+    firstScene();
+});
 
-/* VN LOGIC */
+// ===========================
+// SCENE 1 — INTRO
+// ===========================
+function firstScene() {
+    optionsBox.innerHTML = "";
 
-function startVN() {
-    setSprite("Holding Wine Smile");
-    setText("Hey Boo! 🤍 You finally picked up...");
-    setChoices([
-        { label: "Continue", action: scene2 }
-    ]);
+    tsukiSpeak(
+        "Hey Boo! ♡ You finally picked up..",
+        "Happy Talking.png",
+        "Thanks.png",
+        "Happy Talking.png",
+        () => {
+            setTimeout(() => {
+                secondScene();
+            }, 400);
+        }
+    );
 }
 
-function scene2() {
-    setSprite("Happy Talking");
-    setText("What's up, girl?");
-    setChoices([
-        { label: "I've got tea for a video, girl!", action: optionTea },
-        { label: "Who are you…what are you?", action: optionWho },
-        { label: "Hang up", action: hangUp }
-    ]);
+// ===========================
+// SCENE 2 — WHAT'S UP?
+// ===========================
+function secondScene() {
+    tsukiSpeak(
+        "What's up, girl?",
+        "Happy Talking.png",
+        "Thanks.png",
+        "Happy Talking.png",
+        () => {
+            showOptions([
+                { text: "I've got some tea for a video, girl!", action: teaRoute },
+                { text: "Who are you… what ARE you?", action: identityRoute },
+                { text: "Hang up", action: hangUpRoute }
+            ]);
+        }
+    );
 }
 
-function optionTea() {
-    setSprite("Holding Wine Scoff");
-    setText("Oooh… spill it!");
-    setChoices([
-        { label: "Suggest Rant topic or Game", action: teaFormStart },
-        { label: "Hang up", action: hungUpAngry }
-    ]);
+// ===========================
+// OPTION BUTTON MAKER
+// ===========================
+function showOptions(optionList) {
+    optionsBox.innerHTML = "";
+    optionList.forEach(opt => {
+        let b = document.createElement("button");
+        b.textContent = opt.text;
+        b.className = "optionButton";
+        b.onclick = opt.action;
+        optionsBox.appendChild(b);
+    });
 }
 
-function teaFormStart() {
-    setSprite("Happy Talking");
-    setText("Okay boo! What type of tea?");
-    setChoices([
-        { label: "Rant", action: () => openForm("Rant") },
-        { label: "Game", action: () => openForm("Game") }
-    ]);
+// ===========================
+// ROUTE 1 — TEA FOR VIDEO
+// ===========================
+function teaRoute() {
+    optionsBox.innerHTML = "";
+
+    tsukiSpeak(
+        "Oooh… Spill it!",
+        "Holding Wine Smile.png",
+        "Holding Wine Scoff.png",
+        "Holding Wine Smile.png",
+        () => {
+            showOptions([
+                { text: "Suggest Rant", action: suggestRant },
+                { text: "Suggest Game", action: suggestGame },
+                { text: "Hang up", action: hangUpAngry }
+            ]);
+        }
+    );
 }
 
-/* OPEN FORM */
-function openForm(type) {
-    document.getElementById("formTypeLabel").innerText = type;
-    document.getElementById("suggestForm").classList.remove("hidden");
-}
-function closeForm() {
-    document.getElementById("suggestForm").classList.add("hidden");
+// ===========================
+// RANT FORM
+// ===========================
+function suggestRant() {
+    window.location.href = "https://formspree.io/f/mjkdzyqk";
 }
 
-/* USER HANGS UP */
-function hungUpAngry() {
-    setSprite("Frown reaction");
-    setText("Girl… don't piss me off.");
-    setChoices([]);
-    setTimeout(() => {
-        vn.classList.add("hidden");
-    }, 2000);
+// ===========================
+// GAME FORM
+// ===========================
+function suggestGame() {
+    window.location.href = "https://formspree.io/f/mjkdzyqk";
 }
 
-/* OTHER OPTIONS */
+// ===========================
+// ROUTE 1 BAD END
+// ===========================
+function hangUpAngry() {
+    optionsBox.innerHTML = "";
 
-function optionWho() {
-    setSprite("Sad Talking");
-    setText("Girl… that’s rude.");
-    setChoices([
-        { label: "Sorry", action: () => { vn.classList.add("hidden"); } }
-    ]);
+    tsukiSpeak(
+        "Girl… don’t piss me off.",
+        "Frown reaction.png",
+        "Sad Talking.png",
+        "Hanging Up the phone.png",
+        () => {
+            setTimeout(() => {
+                vnContainer.style.display = "none";
+            }, 1200);
+        }
+    );
 }
 
-function hangUp() {
-    setSprite("Hanging Up the phone");
-    setText("*click*");
-    setChoices([]);
-    setTimeout(() => {
-        vn.classList.add("hidden");
-    }, 1500);
+// ===========================
+// ROUTE 2 — WHO ARE YOU?
+// ===========================
+function identityRoute() {
+    optionsBox.innerHTML = "";
+
+    tsukiSpeak(
+        "…Seriously?",
+        "Sad Talking.png",
+        "Frown reaction.png",
+        "Frown reaction.png",
+        () => {
+            showOptions([
+                { text: "Sorry…", action: apologyScene },
+                { text: "No really, what ARE you?", action: pushFurther },
+                { text: "Hang up", action: hangUpRoute }
+            ]);
+        }
+    );
+}
+
+function apologyScene() {
+    optionsBox.innerHTML = "";
+
+    tsukiSpeak(
+        "Mmm… fine. You're forgiven.",
+        "Happy Talking.png",
+        "Thanks.png",
+        "Thanks.png"
+    );
+}
+
+function pushFurther() {
+    optionsBox.innerHTML = "";
+
+    tsukiSpeak(
+        "You're bold asking that.",
+        "Holding Rose Talk 1.png",
+        "Holding Rose Talk 2.png",
+        "Holding Rose Talk 1.png"
+    );
+}
+
+// ===========================
+// ROUTE 3 — HANG UP
+// ===========================
+function hangUpRoute() {
+    optionsBox.innerHTML = "";
+
+    tsukiSpeak(
+        "…Wow.",
+        "Sad Talking.png",
+        "Frown reaction.png",
+        "Hanging Up the phone.png",
+        () => {
+            setTimeout(() => {
+                vnContainer.style.display = "none";
+            }, 1200);
+        }
+    );
 }
