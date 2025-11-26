@@ -132,3 +132,34 @@ a{color:var(--accent-strong);text-decoration:none}
   .vn-card{flex-direction:column;align-items:center}
   .vn-left{width:160px}
 }
+
+/* ===== extra: full-screen background stars + falling star styles ===== */
+
+#starLayerGlobal { 
+  pointer-events: none; /* default; each star controls its own pointer-events */
+}
+
+/* little decorative background star (twinkle) */
+@keyframes bgStarTwinkle {
+  0% { transform: translate(-50%,-50%) scale(0.98); opacity: 0.85; }
+  50% { transform: translate(-50%,-50%) scale(1.08); opacity: 1; }
+  100% { transform: translate(-50%,-50%) scale(0.98); opacity: 0.85; }
+}
+.bg-star {
+  pointer-events: none; /* default; clickable ones set pointer-events:auto inline */
+  mix-blend-mode: screen;
+}
+
+/* falling stars (pop-in collectible) */
+.falling-star-collection {
+  transition: transform 150ms ease, opacity 200ms ease;
+  user-select: none;
+  -webkit-user-select: none;
+  font-family: "VT323", monospace;
+}
+
+/* modal star intro already uses .modal .modal-card from your CSS; keep consistent */
+
+/* ensure petButton and petWindow visuals fit your theme (non-invasive) */
+#petButton img { border-radius: 8px; background: linear-gradient(180deg,#fff0f0,#ffdce6); border: 2px solid var(--accent-dark); padding:6px; }
+#petWindow .modal-card { background: linear-gradient(180deg,#fff6f8,#fff0f4); border: 3px solid var(--accent-strong); border-radius: 12px; }
