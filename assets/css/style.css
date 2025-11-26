@@ -163,3 +163,29 @@ a{color:var(--accent-strong);text-decoration:none}
 /* ensure petButton and petWindow visuals fit your theme (non-invasive) */
 #petButton img { border-radius: 8px; background: linear-gradient(180deg,#fff0f0,#ffdce6); border: 2px solid var(--accent-dark); padding:6px; }
 #petWindow .modal-card { background: linear-gradient(180deg,#fff6f8,#fff0f4); border: 3px solid var(--accent-strong); border-radius: 12px; }
+
+.settings-section {
+  margin-top: 20px;
+  padding: 16px;
+  background: linear-gradient(180deg,#fff2f6,#ffe6f0);
+  border: 3px solid var(--accent-dark);
+  border-radius: 12px;
+}
+
+.debug-btn {
+  display: block;
+  width: 100%;
+  margin: 6px 0;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'VT323';
+  font-size: 18px;
+  background: linear-gradient(180deg,#ffbfd2,#ff9db8);
+  border: 3px solid var(--accent-dark);
+  color:#3b2a2a;
+  font-weight: 800;
+}
+.debug-btn:hover {
+  transform: translateY(-2px);
+}
