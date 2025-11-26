@@ -1,40 +1,34 @@
 /* assets/js/script.js
-   Updated: supports 2-frame talking pairs (e.g. "Thanks.png" + "Thanks 2.png")
-   - Typing effect
-   - Sprite fade + bounce transition
-   - Talking animation (alternates frames while typing)
-   - Formspree integration (https://formspree.io/f/mjkdzyqk)
-   - Modal + VN flow
-   Make sure this file overwrites the old script.js in assets/js/
+   Full VN + UI script for Tsuki's Lovebite.exe
+   - typing + talking frames (2-frame pairs)
+   - phone open/close
+   - tab navigation
+   - modal (Formspree) with AJAX
+   - sprite preloads and fallbacks
 */
 
 (() => {
-  // -------- CONFIG --------
   const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
-  const TALK_INTERVAL_MS = 140;   // frame switch speed while "talking"
-  const TYPE_SPEED_MS = 24;       // typing speed per char
+  const TALK_INTERVAL_MS = 140;
+  const TYPE_SPEED_MS = 24;
   const SPRITE_TRANSITION_CLASS = 'sprite-transition';
 
-  // exact sprite filenames in assets/sprites/ (spaces & caps preserved)
+  // final sprite mapping (happy uses Thanks pair as requested)
   const spriteFiles = {
-    // pairs (talking frames)
-    happy: ['Happy Talking.png', 'Thanks.png'],
+    happy: ['Thanks.png', 'Thanks 2.png'],
     thanks: ['Thanks.png', 'Thanks 2.png'],
     neutral: ['Sad Talking.png', 'Sad Talking 2.png'],
-    frown: ['Frown reaction.png', 'Frown reaction.png'], // single (repeats)
+    frown: ['Frown reaction.png', 'Frown reaction.png'],
     wineSmile: ['Holding Wine Smile.png', 'Holding Wine Smile 2.png'],
     wineScoff: ['Holding Wine Scoff.png', 'Holding Wine Scoff 2.png'],
     rose: ['Holding Rose Talk 1.png', 'Holding Rose Talk 2.png'],
     hangup: ['Hanging Up the phone.png', 'Hanging Up the phone 2.png']
   };
 
-  // Build encoded full paths for each frame pair
   const sprites = {};
-  Object.keys(spriteFiles).forEach(key => {
-    sprites[key] = spriteFiles[key].map(filename => encodeURI(`assets/sprites/${filename}`));
-  });
+  Object.keys(spriteFiles).forEach(k => sprites[k] = spriteFiles[k].map(fn => encodeURI('assets/sprites/' + fn)));
 
-  // ---------- DOM elements ----------
+  // Elements
   const phoneBtn = document.getElementById('phoneButton');
   const vnContainer = document.getElementById('vnContainer');
   const vnClose = document.getElementById('vnClose');
@@ -46,36 +40,27 @@
   const modalCloseBtn = document.getElementById('modalCloseBtn');
   const toast = document.getElementById('toast');
 
-  // talking interval handle
   let talkInterval = null;
 
-  // ---------- Utility / UI Helpers ----------
+  /* ---------- helpers ---------- */
   function showToast(msg, ms = 3000) {
-    if (!toast) return;
     toast.textContent = msg;
     toast.classList.add('show');
     toast.style.display = 'block';
-    setTimeout(() => {
-      toast.classList.remove('show');
-      toast.style.display = 'none';
-    }, ms);
+    setTimeout(() => { toast.classList.remove('show'); toast.style.display = 'none'; }, ms);
   }
 
   function safeSetSprite(path) {
-    if (!tsukiSprite) return;
     tsukiSprite.classList.add(SPRITE_TRANSITION_CLASS);
     tsukiSprite.src = path;
     tsukiSprite.onerror = () => {
       console.warn('Sprite failed to load:', path);
-      // tiny inline placeholder so layout doesn't collapse
       tsukiSprite.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABhElEQVR4nO2ZQQ6CQBBFz6k9gQdgQdgQdgQdgQdgQdgQdgQd2k1cSaT+3q0v2Y3sWmE1Nn6c4eOBuAnwAegF8AHoBfAHq7Wwq2Lx5WZyQq2y3i8f9y1oSxTuY2Qq2x0i8z8DPXjgq1wq2p2qzQZr3KpB2G1M2wz1m1nNe2xY6l8e4VJ2q8Un6q8N5Xso9V6r+2q3t3Z2L6f4Kq+7X2l9bW6r9bGdV1q7t7q9u7+6vU6r8s7j9w+9+9uA9uAY6gFiwDq4Bq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Aq4Bq8F7wG6BzqDxw9w6J3+uX9zR6wQZtYQZsYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwVrYwXrxQHz5wz9QuS5V4wAAAABJRU5ErkJggg==';
     };
   }
 
-  // typing effect returns a promise resolved when typing completes
   function typeText(text, speed = TYPE_SPEED_MS) {
     return new Promise(resolve => {
-      if (!textBox) return resolve();
       textBox.innerHTML = '';
       let i = 0;
       function tick() {
@@ -83,52 +68,45 @@
           textBox.innerHTML += text.charAt(i);
           i++;
           setTimeout(tick, speed);
-        } else {
-          resolve();
-        }
+        } else resolve();
       }
       tick();
     });
   }
 
-  // start talking animation through an array of frames (strings of paths)
   function startTalking(frames = [], intervalMs = TALK_INTERVAL_MS) {
     stopTalking();
     if (!frames || !frames.length) return;
     let idx = 0;
     talkInterval = setInterval(() => {
-      const path = frames[idx % frames.length];
       tsukiSprite.classList.add(SPRITE_TRANSITION_CLASS);
-      tsukiSprite.src = path;
+      tsukiSprite.src = frames[idx % frames.length];
       idx++;
     }, intervalMs);
   }
 
   function stopTalking(finalPath) {
-    if (talkInterval) {
-      clearInterval(talkInterval);
-      talkInterval = null;
-    }
+    if (talkInterval) { clearInterval(talkInterval); talkInterval = null; }
     if (finalPath) safeSetSprite(finalPath);
   }
 
   function showOptions(list = []) {
     optionsBox.innerHTML = '';
-    list.forEach(opt => {
+    list.forEach(o => {
       const b = document.createElement('button');
       b.className = 'optionButton';
-      b.textContent = opt.label;
-      b.onclick = opt.onClick;
+      b.textContent = o.label;
+      b.onclick = o.onClick;
       optionsBox.appendChild(b);
     });
   }
 
-  // ---------- Scenes (each Tsuki line = sprite change) ----------
+  /* ---------- scenes ---------- */
   async function scene_start() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
-    await typeText('Tsuki: Hey Boo! ♡ You finally picked up..');
-    stopTalking(sprites.happy[0]); // show main happy sprite
+    await typeText("Tsuki: Hey Boo! ♡ You finally picked up..");
+    stopTalking(sprites.happy[0]);
     setTimeout(scene_whatsUp, 320);
   }
 
@@ -157,7 +135,7 @@
 
   async function scene_hangUpAngry() {
     optionsBox.innerHTML = '';
-    startTalking(sprites.frown.concat(sprites.neutral)); // fallback alt
+    startTalking([...(sprites.frown || []), ...(sprites.neutral || [])]);
     await typeText("Tsuki: Girl..don’t piss me off.");
     stopTalking(sprites.hangup[1] || sprites.hangup[0]);
     setTimeout(() => closeVN(), 1100);
@@ -181,7 +159,7 @@
     setTimeout(() => closeVN(), 800);
   }
 
-  // ---------- VN controls ----------
+  /* ---------- VN controls ---------- */
   function openVN() {
     vnContainer.classList.remove('hidden');
     vnContainer.setAttribute('aria-hidden', 'false');
@@ -197,9 +175,8 @@
     stopTalking();
   }
 
-  // ---------- Modal (Formspree) ----------
+  /* ---------- modal ---------- */
   function openSuggestModal(kind = '') {
-    // ensure a hidden field 'type' exists to indicate Rant/Game if you want
     if (suggestForm && !suggestForm.querySelector('input[name="type"]')) {
       const hidden = document.createElement('input');
       hidden.type = 'hidden';
@@ -208,10 +185,8 @@
     }
     const typeField = suggestForm.querySelector('input[name="type"]');
     if (typeField) typeField.value = kind;
-
     suggestModal.classList.remove('hidden');
     suggestModal.setAttribute('aria-hidden', 'false');
-    // focus first field
     const first = suggestForm.querySelector('input[name="name"], textarea, input');
     if (first) first.focus();
   }
@@ -221,21 +196,16 @@
     suggestModal.setAttribute('aria-hidden', 'true');
   }
 
-  // ---------- Form submission (AJAX to Formspree, plus regular form fallback) ----------
+  /* ---------- form submit ---------- */
   if (suggestForm) {
     suggestForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(suggestForm);
       try {
-        const res = await fetch(FORM_ENDPOINT, {
-          method: 'POST',
-          body: formData,
-          headers: { 'Accept': 'application/json' }
-        });
+        const res = await fetch(FORM_ENDPOINT, { method: 'POST', body: formData, headers: { 'Accept': 'application/json' }});
         if (res.ok) {
           showToast('Submitted — thanks babe ♡');
           closeSuggestModal();
-          // short VN confirmation
           textBox.innerText = "Tsuki: Mmm thanks! I'll check it out.";
           optionsBox.innerHTML = '';
           setTimeout(() => closeVN(), 1100);
@@ -250,47 +220,49 @@
     });
   }
 
-  // ---------- Events ----------
+  /* ---------- events ---------- */
   if (phoneBtn) {
     phoneBtn.addEventListener('click', () => {
       openVN();
-      phoneBtn.style.animation = 'none'; // stop ring while VN open
+      phoneBtn.style.animation = 'none';
     });
   }
   if (vnClose) vnClose.addEventListener('click', closeVN);
   if (modalCloseBtn) modalCloseBtn.addEventListener('click', closeSuggestModal);
 
-  // close modal on overlay click
   if (suggestModal) {
     suggestModal.addEventListener('click', (e) => {
       if (e.target === suggestModal) closeSuggestModal();
     });
   }
 
-  // ---------- Preload sprites & report missing ----------
+  /* ---------- tab navigation ---------- */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const id = tab.dataset.tab;
+      const panel = document.getElementById(id);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  /* ---------- preload check ---------- */
   (function preloadAll() {
     const missing = [];
-    Object.values(sprites).forEach(arr => {
-      arr.forEach(path => {
-        const img = new Image();
-        img.src = path;
-        img.onerror = () => missing.push(path);
-      });
-    });
-    // also check phone icon path
-    const phone = new Image();
-    phone.src = 'assets/images/Phone.png';
-    phone.onerror = () => console.warn('Phone icon missing: assets/images/Phone.png');
-
+    Object.values(sprites).forEach(arr => arr.forEach(path => {
+      const img = new Image();
+      img.src = path;
+      img.onerror = () => missing.push(path);
+    }));
+    const phone = new Image(); phone.src = 'assets/images/Phone.png'; phone.onerror = () => console.warn('Phone icon missing: assets/images/Phone.png');
     if (missing.length) {
       console.warn('Missing sprite files:', missing);
       setTimeout(() => showToast('Some sprites missing — check console for names'), 700);
     }
   })();
 
-  // debug helper
-  window.TsukiDebug = {
-    sprites,
-    openVN, closeVN, openSuggestModal, closeSuggestModal
-  };
+  window.TsukiDebug = { sprites, openVN, closeVN, openSuggestModal, closeSuggestModal };
+
 })();
