@@ -102,11 +102,6 @@
   <!-- RINGING PHONE (fixed) -->
   <img id="phoneButton" src="assets/images/Phone.png" alt="phone" class="phone-icon" />
 
-  <!-- PET PAW BUTTON (floating) -->
-  <div id="petButton" title="Pets" class="pet-button">
-    <img id="petButtonImg" src="" alt="paw">
-  </div>
-
   <!-- VISUAL NOVEL WINDOW (Tsuki) -->
   <div id="vnContainer" class="vn hidden" aria-hidden="true">
     <div class="vn-card">
@@ -127,9 +122,11 @@
   <div id="petPopup" class="vn hidden" aria-hidden="true" data-type="pet">
     <div class="vn-card">
       <div class="vn-left" style="flex:0 0 220px">
-        <div style="width:180px; margin:0 auto">
+        <!-- container is relative so bubble elements can be placed over the pet -->
+        <div id="petVisualWrap" style="width:180px; margin:0 auto; position:relative;">
           <img id="petSprite" src="" alt="pet" style="width:100%; image-rendering:pixelated; border-radius:10px; border:3px solid var(--accent-dark)">
-          <img id="petHat" src="" alt="hat" style="position:relative; left:50%; transform:translateX(-50%); margin-top:-110px; width:84px; display:block; pointer-events:none; image-rendering:pixelated"/>
+          <img id="petHat" src="" alt="hat" style="position:absolute; left:50%; transform:translateX(-50%); top:6px; width:84px; display:block; pointer-events:none; image-rendering:pixelated"/>
+          <!-- bubble layer will be appended here -->
         </div>
         <div style="text-align:center;margin-top:8px;color:var(--accent-dark)">
           <div id="petNameTitle">Your Pet</div>
@@ -148,12 +145,15 @@
           </div>
 
           <div style="margin-top:10px">
-            <label style="color:var(--accent-dark)">Choose variant:</label>
+            <label style="color:var(--accent-dark)">Choose pet:</label>
             <div style="margin-top:6px">
               <select id="petVariant" style="padding:6px;border-radius:8px;border:2px solid var(--accent-dark);font-family:'VT323'">
-                <option>Rocky Road Bunny</option>
-                <option>Oreo Bunny</option>
-                <option>Vanilla Bunny</option>
+                <option value="Bunny">Bunny</option>
+                <option value="Bear Cub">Bear Cub</option>
+                <option value="Dog">Dog</option>
+                <option value="Frog">Frog</option>
+                <option value="Pony">Pony</option>
+                <option value="Cat">Cat</option>
               </select>
             </div>
           </div>
