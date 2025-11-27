@@ -1,4 +1,4 @@
-/* assets/js/script.js – COMPLETE: VN + STARS + PET SYSTEM w/ BATH */
+/* assets/js/script.js – COMPLETE: VN + STARS + PET SYSTEM + DRAGGABLE EMOJI TOOLS (Option C) */
 (() => {
   // -------------- CONFIG --------------
   const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
@@ -19,7 +19,7 @@
   const sprites = {};
   Object.keys(spriteFiles).forEach(k => sprites[k] = spriteFiles[k].map(fn => encodeURI('assets/sprites/' + fn)));
 
-  // -------------- DOM --------------
+  // -------------- DOM ----------
   const phoneBtn = document.getElementById('phoneButton');
   const vnContainer = document.getElementById('vnContainer');
   const vnClose = document.getElementById('vnClose');
@@ -49,6 +49,9 @@
 
   const firstPetUnlockBox = document.getElementById('firstPetUnlock');
   const petUnlockBtn = document.getElementById('petUnlockBtn');
+
+  // tool container will be created by JS (in petPopup right column)
+  let toolContainer = null;
 
   // toast helper
   function showToast(msg, duration = 1400) {
@@ -172,7 +175,7 @@
     });
   }
 
-  // ==================== VOICELINES (unchanged) ====================
+  // ============ VOICELINES (kept) ============
   async function scene_start() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
@@ -192,7 +195,6 @@
     ]);
   }
 
-  // ... (other VOICELINES unchanged; omitted for brevity in this display but present in original file)
   async function scene_identity() {
     optionsBox.innerHTML = '';
     startTalking(sprites.neutral);
@@ -391,7 +393,6 @@
   // ---------- PRELOAD & BUTTONS ----------
   (function preloadAll() {
     Object.values(sprites).forEach(arr => arr.forEach(p => new Image().src = p));
-    // Preload pet sprites
     ['Bunnie.png','Cubbie.png','Doggie.png','Froggie.png','Horsie.png','Kittie.png']
       .forEach(fn => new Image().src = 'assets/pets/' + fn);
     new Image().src = 'assets/images/Phone.png';
@@ -404,7 +405,7 @@
   if (toggleSfx) toggleSfx.addEventListener('change', () => toggleSfx.checked ? startRing() : stopRing());
 
   /* ---------------------------------------------------------
-     ⭐ REPAIRED STAR SYSTEM
+     ⭐ REPAIRED STAR SYSTEM (unchanged)
   --------------------------------------------------------- */
   let starCount = Number(localStorage.getItem("stars") || 0);
 
@@ -507,17 +508,16 @@
   function revealPetUnlockButton() {
     if (!firstPetUnlockBox) return;
     firstPetUnlockBox.style.display = 'block';
-    // keep text as "Your Pet Awaits…" until clicked once, then change to "Pet"
+    // when clicked the button becomes 'Pet' and opens the popup
     petUnlockBtn.onclick = () => {
       localStorage.setItem('petUnlocked','true');
       openPetPopup();
       petUnlockBtn.innerText = 'Pet';
-      // once opened, keep button as "Pet" (persist)
       firstPetUnlockBox.style.display = 'block';
     };
   }
 
-  // If pet is already unlocked (debug or prior), show Pet button
+  // If pet is already unlocked show button as "Pet"
   if (localStorage.getItem('petUnlocked') === 'true') {
     if (firstPetUnlockBox) {
       firstPetUnlockBox.style.display = 'block';
@@ -527,10 +527,9 @@
   }
 
   /* ---------------------------------------------------------
-     ⭐ PET SYSTEM
+     ⭐ PET SYSTEM (with draggable emoji tools)
   --------------------------------------------------------- */
 
-  // pet asset map (user-provided)
   const PET_ASSETS = {
     'Bunny': 'Bunnie.png',
     'Bear Cub': 'Cubbie.png',
@@ -540,38 +539,69 @@
     'Cat': 'Kittie.png'
   };
 
-  // defaults
-  const DEFAULT_PET = localStorage.getItem('petChosen') || 'Bunny';
-  let currentPet = DEFAULT_PET;
-  // love stored per-pet key
+  const FOOD_EMOJI = [
+    { id: 'apple', emoji: '🍎', label: 'Apple' },
+    { id: 'carrot', emoji: '🥕', label: 'Carrot' },
+    { id: 'fish', emoji: '🐟', label: 'Fish' },
+    { id: 'steak', emoji: '🥩', label: 'Steak' },
+    { id: 'fly', emoji: '🪰', label: 'Fly' } // frog special
+  ];
+
+  // per-pet food preference scoring (positive = loves, neutral = meh, negative = hates)
+  // score used to determine reaction and love gain
+  const FOOD_PREF = {
+    'Bunny':    { apple: 1, carrot: 3, fish: -1, steak: -1, fly:-2 },
+    'Bear Cub': { apple: 3, carrot: 1, fish: -1, steak: 2, fly:-2 },
+    'Dog':      { apple: 1, carrot: 1, fish: 2, steak: 3, fly:-2 },
+    'Frog':     { apple: -1, carrot: 0, fish: 1, steak: -1, fly: 4 },
+    'Pony':     { apple: 3, carrot: 2, fish: -1, steak: 0, fly:-2 },
+    'Cat':      { apple: -1, carrot: -1, fish: 4, steak: 2, fly:-1 }
+  };
+
+  // defaults & storage
   function getLoveKey(petName){ return `petLove::${petName}`; }
   function loadPetLove(petName){ return Number(localStorage.getItem(getLoveKey(petName)) || 0); }
   function savePetLove(petName, val){ localStorage.setItem(getLoveKey(petName), Math.max(0, Math.min(100, Math.round(val)))); }
+  let currentPet = localStorage.getItem('petChosen') || 'Bunny';
 
-  // load UI state
+  // state: mode = 'idle' | 'feed' | 'bathe'
+  let toolMode = 'idle';
+
+  function ensureToolContainer() {
+    if (toolContainer) return toolContainer;
+    // place tool container at bottom of vn-right inside petPopup (or after vn-box)
+    toolContainer = document.createElement('div');
+    toolContainer.id = 'petToolContainer';
+    toolContainer.style.display = 'none';
+    toolContainer.style.marginTop = '12px';
+    toolContainer.style.display = 'flex';
+    toolContainer.style.gap = '8px';
+    toolContainer.style.justifyContent = 'center';
+    toolContainer.style.flexWrap = 'wrap';
+    // find vn-right / vn-box inside petPopup
+    const rightBox = petPopup?.querySelector('.vn-right .vn-box');
+    if (rightBox) rightBox.appendChild(toolContainer);
+    else (petPopup || document.body).appendChild(toolContainer);
+    return toolContainer;
+  }
+
   function renderPetUI() {
-    // ensure variant selection matches current
     if (petVariantSel) petVariantSel.value = currentPet;
     petNameTitle && (petNameTitle.innerText = currentPet);
-    // set sprite
     if (petSpriteEl) {
       const fn = PET_ASSETS[currentPet] || PET_ASSETS['Bunny'];
       petSpriteEl.src = 'assets/pets/' + fn;
       petSpriteEl.alt = currentPet;
     }
-    // love bar
     const love = loadPetLove(currentPet);
     if (loveFill) loveFill.style.width = Math.min(100, love) + '%';
-    // update star display
     updateStarDisplay();
   }
 
-  // open/close
   function openPetPopup() {
     if (!petPopup) return;
     petPopup.classList.remove('hidden');
     petPopup.setAttribute('aria-hidden','false');
-    // ensure the unlock button is labeled "Pet"
     if (petUnlockBtn) petUnlockBtn.innerText = 'Pet';
     renderPetUI();
   }
@@ -579,95 +609,307 @@
     if (!petPopup) return;
     petPopup.classList.add('hidden');
     petPopup.setAttribute('aria-hidden','true');
-    // remove any bubble elements leftover
     cleanupBubbles();
+    hideTools();
   }
   if (petClose) petClose.addEventListener('click', closePetPopup);
+  if (petUnlockBtn) petUnlockBtn.addEventListener('click', () => openPetPopup());
 
-  // variant change
   if (petVariantSel) {
     petVariantSel.addEventListener('change', () => {
       const val = petVariantSel.value;
       if (!val) return;
       currentPet = val;
       localStorage.setItem('petChosen', currentPet);
-      // initialize love if missing
       if (!localStorage.getItem(getLoveKey(currentPet))) savePetLove(currentPet, 0);
       renderPetUI();
       showToast(`${currentPet} selected`);
     });
   }
 
-  // Feed button - small love gain
+  // FEED: instead of button, we show food tools when feed mode active
   if (feedBtn) feedBtn.addEventListener('click', () => {
-    const prev = loadPetLove(currentPet);
-    const gain = 6 + Math.floor(Math.random()*6); // 6-11
-    savePetLove(currentPet, prev + gain);
-    renderPetUI();
-    showToast(`+${gain} love!`);
+    toggleToolMode('feed');
   });
 
-  // Bath flow: press Bathe -> creates soap & bubbles -> batheBtn becomes "Rinse" -> rinse removes bubbles and awards love
-  let bathingState = false;
-  function createBubbles() {
+  // BATH: shows soap/shower/towel tools when active
+  if (batheBtn) batheBtn.addEventListener('click', () => {
+    toggleToolMode('bathe');
+  });
+
+  // tools UI generation
+  function showToolsForMode(mode) {
+    const cont = ensureToolContainer();
+    cont.innerHTML = '';
+    cont.style.display = 'flex';
+    cont.dataset.mode = mode;
+    toolMode = mode;
+
+    if (mode === 'feed') {
+      FOOD_EMOJI.forEach(f => {
+        const b = document.createElement('button');
+        b.className = 'pet-tool tool-food';
+        b.dataset.tool = 'food';
+        b.dataset.foodId = f.id;
+        b.innerText = f.emoji;
+        b.title = f.label;
+        cont.appendChild(b);
+      });
+    } else if (mode === 'bathe') {
+      // soap, shower, towel (emojis)
+      const soap = document.createElement('button');
+      soap.className = 'pet-tool tool-soap';
+      soap.dataset.tool = 'soap';
+      soap.innerText = '🧼';
+      soap.title = 'Soap';
+
+      const shower = document.createElement('button');
+      shower.className = 'pet-tool tool-shower';
+      shower.dataset.tool = 'shower';
+      shower.innerText = '🚿';
+      shower.title = 'Shower (rinse)';
+
+      const towel = document.createElement('button');
+      towel.className = 'pet-tool tool-towel';
+      towel.dataset.tool = 'towel';
+      towel.innerText = '🧻';
+      towel.title = 'Towel';
+
+      cont.appendChild(soap);
+      cont.appendChild(shower);
+      cont.appendChild(towel);
+    }
+    // attach pointer drag handlers
+    attachToolDragHandlers();
+  }
+
+  function hideTools() {
+    if (!toolContainer) return;
+    toolContainer.style.display = 'none';
+    toolMode = 'idle';
+    // restore bathe button label
+    if (batheBtn) batheBtn.innerText = 'Bathe';
+  }
+
+  function toggleToolMode(mode) {
+    if (toolMode === mode) {
+      // clicking same mode toggles it off
+      hideTools();
+      return;
+    }
+    showToolsForMode(mode);
+    // if mode is bathe, change batheBtn to "Exit" or "Close" for clarity
+    if (mode === 'bathe') batheBtn && (batheBtn.innerText = 'Exit Bath');
+    // ensure any bathing visuals prepared
+    if (mode !== 'bathe') cleanupBubbles();
+  }
+
+  // bubbles & bathing helper
+  function createBubblesAt(xPct = 50, yPct = 60) {
     cleanupBubbles();
     if (!petVisualWrap) return;
-    const bubbleCount = 6 + Math.floor(Math.random()*6);
+    const bubbleCount = 6 + Math.floor(Math.random()*8);
     for (let i=0;i<bubbleCount;i++){
       const b = document.createElement('div');
       b.className = 'pet-bubble';
-      // random size and position over the pet
-      const size = 14 + Math.random()*28;
+      const size = 10 + Math.random()*34;
       b.style.width = size + 'px';
       b.style.height = size + 'px';
-      b.style.left = (20 + Math.random()*140) + 'px';
-      b.style.top = (10 + Math.random()*100) + 'px';
-      b.style.background = `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,200,220,0.45))`;
-      b.style.opacity = 0.95;
-      b.style.borderRadius = '50%';
-      b.style.pointerEvents = 'none';
-      b.style.transition = 'transform .6s ease, opacity .6s ease';
-      b.style.transform = 'translateY(0) scale(1)';
+      // position relative to wrapper
+      b.style.position = 'absolute';
+      // compute left/top in px by wrapper dimensions
+      const wrapRect = petVisualWrap.getBoundingClientRect();
+      const left = (xPct/100) * wrapRect.width + (Math.random()*30 - 15);
+      const top = (yPct/100) * wrapRect.height + (Math.random()*30 - 15);
+      b.style.left = Math.max(4, Math.min(wrapRect.width - 8, left)) + 'px';
+      b.style.top = Math.max(4, Math.min(wrapRect.height - 8, top)) + 'px';
       petVisualWrap.appendChild(b);
-      // small float animation
+      // tiny float animation
       setTimeout(()=> {
-        b.style.transform = `translateY(-8px) scale(${1 + Math.random()*0.35})`;
+        b.style.transform = `translateY(-12px) scale(${1 + Math.random()*0.35})`;
         b.style.opacity = 0.9 - Math.random()*0.4;
-      }, 40 + i*40);
+      }, 40 + i*30);
     }
   }
+
   function cleanupBubbles() {
     if (!petVisualWrap) return;
     const existing = petVisualWrap.querySelectorAll('.pet-bubble');
     existing.forEach(n => n.remove());
   }
 
-  if (batheBtn) {
-    batheBtn.addEventListener('click', () => {
-      if (!bathingState) {
-        // start bathing: create soap/bubbles and switch to Rinse
-        createBubbles();
-        bathingState = true;
-        batheBtn.innerText = 'Rinse';
-        showToast('Use the soap — then rinse!');
-      } else {
-        // rinse: remove bubbles and reward love
-        const prev = loadPetLove(currentPet);
-        const gain = 8 + Math.floor(Math.random()*10); // 8-17
-        savePetLove(currentPet, prev + gain);
-        cleanupBubbles();
-        bathingState = false;
-        batheBtn.innerText = 'Bathe';
-        renderPetUI();
-        showToast(`Bath complete! +${gain} love`);
-      }
+  // reactions: speech-bubble style (Option C)
+  function spawnReaction(emoji, kind = 'happy') {
+    if (!petVisualWrap) return;
+    const r = document.createElement('div');
+    r.className = 'reaction-bubble';
+    r.innerText = emoji;
+    // style variations via kind
+    r.dataset.kind = kind;
+    // random start offset
+    r.style.left = (30 + Math.random()*100) + 'px';
+    r.style.top = (10 + Math.random()*30) + 'px';
+    petVisualWrap.appendChild(r);
+    // float & fade
+    requestAnimationFrame(()=> {
+      r.style.transform = 'translateY(-60px) scale(1.1)';
+      r.style.opacity = '0';
+    });
+    setTimeout(()=> r.remove(), 1400);
+  }
+
+  // determine food result
+  function handleFoodDrop(foodId, dropXPct = 50, dropYPct = 60) {
+    const pref = (FOOD_PREF[currentPet] && FOOD_PREF[currentPet][foodId]) || 0;
+    // compute love change: pref * base
+    let delta = 0;
+    if (pref >= 3) delta = 12 + Math.floor(Math.random()*6);
+    else if (pref === 2) delta = 8 + Math.floor(Math.random()*6);
+    else if (pref === 1) delta = 5 + Math.floor(Math.random()*4);
+    else if (pref === 0) delta = 1 + Math.floor(Math.random()*2);
+    else if (pref < 0) delta = - (4 + Math.floor(Math.random()*6));
+
+    const prev = loadPetLove(currentPet);
+    savePetLove(currentPet, prev + delta);
+    renderPetUI();
+
+    // pick reaction emoji
+    let reactionEmoji = '🙂';
+    let kind = 'neutral';
+    if (pref >= 3) { reactionEmoji = '😍'; kind='love'; }
+    else if (pref === 2) { reactionEmoji = '😋'; kind='happy'; }
+    else if (pref === 1) { reactionEmoji = '🙂'; kind='ok'; }
+    else if (pref === 0) { reactionEmoji = '😐'; kind='meh'; }
+    else { reactionEmoji = '😖'; kind='sad'; }
+
+    // spawn speech-bubble reaction near drop point
+    spawnReaction(reactionEmoji, kind);
+    showToast((delta>0?`+${delta} love`:`${delta} love`));
+  }
+
+  // handle soap/shower/towel drop
+  function handleSoapAt(xPct = 50, yPct = 60) {
+    // create bubbles at position (xPct, yPct) relative to petVisualWrap
+    createBubblesAt(xPct, yPct);
+    spawnReaction('🫧','soap');
+    showToast('Bubbles!');
+  }
+  function handleShowerAt() {
+    // rinse: remove bubbles and give medium love
+    const prev = loadPetLove(currentPet);
+    const gain = 8 + Math.floor(Math.random()*8);
+    savePetLove(currentPet, prev + gain);
+    cleanupBubbles();
+    spawnReaction('💦','rinse');
+    renderPetUI();
+    showToast(`Rinsed! +${gain} love`);
+  }
+  function handleTowelAt() {
+    // drying: small love
+    const prev = loadPetLove(currentPet);
+    const gain = 4 + Math.floor(Math.random()*4);
+    savePetLove(currentPet, prev + gain);
+    spawnReaction('✨','towel');
+    renderPetUI();
+    showToast(`Dry & cozy! +${gain} love`);
+  }
+
+  // DRAG / DROP IMPLEMENTATION (pointer events)
+  // We'll create a helper to make tool elements draggable with pointer events and detect drop over petVisualWrap
+  function attachToolDragHandlers() {
+    if (!toolContainer) return;
+    const tools = toolContainer.querySelectorAll('.pet-tool');
+    tools.forEach(tool => {
+      // remove any previous handlers by cloning
+      const newTool = tool.cloneNode(true);
+      tool.replaceWith(newTool);
+      makeDraggable(newTool);
     });
   }
 
+  function makeDraggable(el) {
+    let active = false;
+    let startX=0,startY=0, offsetX=0, offsetY=0;
+    // the drag avatar (floating clone) we'll create on pointerdown
+    let avatar = null;
+
+    function createAvatar(x,y) {
+      avatar = document.createElement('div');
+      avatar.className = 'tool-avatar';
+      avatar.style.position = 'fixed';
+      avatar.style.left = x + 'px';
+      avatar.style.top = y + 'px';
+      avatar.style.zIndex = 20000;
+      avatar.style.pointerEvents = 'none';
+      avatar.innerText = el.innerText;
+      document.body.appendChild(avatar);
+      return avatar;
+    }
+
+    function onPointerDown(e) {
+      e.preventDefault();
+      active = true;
+      const p = getPointerPos(e);
+      startX = p.x; startY = p.y;
+      avatar = createAvatar(startX - 12, startY - 12);
+      document.addEventListener('pointermove', onPointerMove);
+      document.addEventListener('pointerup', onPointerUp);
+      document.addEventListener('pointercancel', onPointerUp);
+    }
+
+    function onPointerMove(e) {
+      if (!active || !avatar) return;
+      const p = getPointerPos(e);
+      avatar.style.left = (p.x - 18) + 'px';
+      avatar.style.top = (p.y - 18) + 'px';
+    }
+
+    function onPointerUp(e) {
+      if (!active) return;
+      const p = getPointerPos(e);
+      // detect if drop over petVisualWrap
+      const wrap = petVisualWrap && petVisualWrap.getBoundingClientRect();
+      if (wrap && p.x >= wrap.left && p.x <= wrap.right && p.y >= wrap.top && p.y <= wrap.bottom) {
+        // compute normalized pct
+        const xPct = ((p.x - wrap.left)/wrap.width)*100;
+        const yPct = ((p.y - wrap.top)/wrap.height)*100;
+        // handle tool type
+        const toolType = el.dataset.tool;
+        if (toolType === 'food') {
+          const foodId = el.dataset.foodId;
+          handleFoodDrop(foodId, xPct, yPct);
+        } else if (toolType === 'soap') {
+          handleSoapAt(xPct, yPct);
+        } else if (toolType === 'shower') {
+          handleShowerAt();
+        } else if (toolType === 'towel') {
+          handleTowelAt();
+        }
+      } else {
+        // not over pet
+        showToast('Missed!');
+      }
+      // cleanup avatar
+      if (avatar && avatar.remove) avatar.remove();
+      avatar = null;
+      active = false;
+      document.removeEventListener('pointermove', onPointerMove);
+      document.removeEventListener('pointerup', onPointerUp);
+      document.removeEventListener('pointercancel', onPointerUp);
+    }
+
+    el.removeEventListener('pointerdown', onPointerDown);
+    el.addEventListener('pointerdown', onPointerDown, {passive:false});
+  }
+
+  function getPointerPos(e) {
+    return { x: (e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX)), y: (e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY)) };
+  }
+
+  // render shop (placeholder) and init
   function renderShop() {
     if (!shopScroll) return;
     shopScroll.innerHTML = '';
-    // placeholder hats/shop items (keeps UI consistent)
     const items = [
       { id: 'hat1', name: 'Pixel Bow', price: 10 },
       { id: 'hat2', name: 'Tiny Crown', price: 18 },
@@ -685,16 +927,11 @@
   }
   renderShop();
 
-  // Make sure the star counter displays properly
-  updateStarDisplay();
-
-  // On initial load, set chosen pet from storage and render
-  currentPet = localStorage.getItem('petChosen') || currentPet;
-  if (!localStorage.getItem(getLoveKey(currentPet))) savePetLove(currentPet, 0);
+  // initial render
   renderPetUI();
 
   /* ---------------------------------------------------------
-     ⭐ DEBUG BUTTONS / CHEATS (preserve style + functions)
+     ⭐ DEBUG BUTTONS / CHEATS
   --------------------------------------------------------- */
   const debugResetBtn = document.getElementById('debug-reset');
   const debugAddStarsBtn = document.getElementById('debug-add-stars');
@@ -703,7 +940,6 @@
 
   if (debugResetBtn) {
     debugResetBtn.addEventListener('click', () => {
-      // reset pet love & selection to defaults
       localStorage.removeItem('petChosen');
       Object.keys(PET_ASSETS).forEach(k => localStorage.removeItem(getLoveKey(k)));
       currentPet = 'Bunny';
@@ -737,7 +973,6 @@
 
   if (debugFullResetBtn) {
     debugFullResetBtn.addEventListener('click', () => {
-      // clear all relevant keys (stars, pet data, firstStarSeen)
       Object.keys(localStorage).forEach(k => {
         if (k.startsWith('petLove::') || k === 'stars' || k === 'firstStarSeen' || k === 'petUnlocked' || k === 'petChosen') {
           localStorage.removeItem(k);
@@ -745,7 +980,6 @@
       });
       starCount = 0;
       updateStarDisplay();
-      // hide unlock box until next first-star event
       if (firstPetUnlockBox) firstPetUnlockBox.style.display = 'none';
       currentPet = 'Bunny';
       savePetLove(currentPet, 0);
@@ -755,10 +989,20 @@
   }
 
   /* ---------------------------------------------------------
-     FINAL keyframes & small helpers
+     CSS keyframes injected for bubbles and reactions
   --------------------------------------------------------- */
   const styleSheet = document.createElement('style');
-  styleSheet.innerHTML = `@keyframes bgStarTwinkle { 0%,100% { opacity:.35 } 50% { opacity:1 } } .pet-bubble{box-shadow:0 0 8px rgba(255,200,220,0.9); transform-origin:center; }`;
+  styleSheet.innerHTML = `
+@keyframes bgStarTwinkle { 0%,100% { opacity:.35 } 50% { opacity:1 } }
+.pet-bubble { transition: transform .6s ease, opacity .6s ease; position:absolute; border-radius:50%; box-shadow:0 0 8px rgba(255,200,220,0.9); background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,200,220,0.45)); pointer-events:none; }
+.reaction-bubble { position:absolute; pointer-events:none; font-size:18px; padding:6px 8px; border-radius:10px; background: linear-gradient(180deg,#fff,#ffeef3); border:2px solid #5c3d3d; color:#351a1a; transform-origin:center; transition: transform 1.2s ease, opacity 1.2s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.12); font-family: VT323, monospace; }
+.tool-avatar { font-size:20px; padding:6px; border-radius:8px; background: linear-gradient(180deg,#fff7f8,#ffeef3); border:2px solid #5c3d3d; }
+.pet-tool { cursor:pointer; font-size:20px; padding:6px 8px; border-radius:10px; background:linear-gradient(180deg,#fff6f8,#fff0f2); border:2px solid #5c3d3d; box-shadow:0 8px 20px rgba(255,153,170,0.08); }
+#petToolContainer { display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px; }
+`;
   document.head.appendChild(styleSheet);
+
+  // expose some helpers for console debugging (optional)
+  window.__tsukiDebug = { openPetPopup, closePetPopup, createBubblesAt, cleanupBubbles, spawnReaction };
 
 })();
