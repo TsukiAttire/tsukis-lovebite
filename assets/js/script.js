@@ -1,4 +1,4 @@
-/* assets/js/script.js – FULLY FIXED + STAR SYSTEM RESTORED + FIRST-STAR EVENT */
+/* assets/js/script.js – COMPLETE: VN + STARS + PET SYSTEM w/ BATH */
 (() => {
   // -------------- CONFIG --------------
   const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
@@ -34,8 +34,6 @@
   const openVNbtn = document.getElementById('openVNbtn');
 
   // pet elements
-  const petButton = document.getElementById('petButton');
-  const petButtonImg = document.getElementById('petButtonImg');
   const petPopup = document.getElementById('petPopup');
   const petClose = document.getElementById('petClose');
   const petSpriteEl = document.getElementById('petSprite');
@@ -46,6 +44,11 @@
   const shopScroll = document.getElementById('shopScroll');
   const feedBtn = document.getElementById('feedBtn');
   const batheBtn = document.getElementById('batheBtn');
+  const petNameTitle = document.getElementById('petNameTitle');
+  const petVisualWrap = document.getElementById('petVisualWrap');
+
+  const firstPetUnlockBox = document.getElementById('firstPetUnlock');
+  const petUnlockBtn = document.getElementById('petUnlockBtn');
 
   // toast helper
   function showToast(msg, duration = 1400) {
@@ -99,7 +102,7 @@
 
   function stopRing() {
     if (ringIntervalId) clearInterval(ringIntervalId);
-    if (ringGain) ringGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.06);
+    if (ringGain && audioCtx) ringGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.06);
     ringOscList.forEach(o => { try { o.osc.stop(audioCtx.currentTime + 0.1); } catch(e) {} });
     ringOscList = []; ringGain = null;
   }
@@ -169,7 +172,7 @@
     });
   }
 
-  // === YOUR VOICELINES (unchanged) ===
+  // ==================== VOICELINES (unchanged) ====================
   async function scene_start() {
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
@@ -189,6 +192,7 @@
     ]);
   }
 
+  // ... (other VOICELINES unchanged; omitted for brevity in this display but present in original file)
   async function scene_identity() {
     optionsBox.innerHTML = '';
     startTalking(sprites.neutral);
@@ -387,6 +391,9 @@
   // ---------- PRELOAD & BUTTONS ----------
   (function preloadAll() {
     Object.values(sprites).forEach(arr => arr.forEach(p => new Image().src = p));
+    // Preload pet sprites
+    ['Bunnie.png','Cubbie.png','Doggie.png','Froggie.png','Horsie.png','Kittie.png']
+      .forEach(fn => new Image().src = 'assets/pets/' + fn);
     new Image().src = 'assets/images/Phone.png';
   })();
 
@@ -397,13 +404,10 @@
   if (toggleSfx) toggleSfx.addEventListener('change', () => toggleSfx.checked ? startRing() : stopRing());
 
   /* ---------------------------------------------------------
-     ⭐ REPAIRED STAR SYSTEM (FULL & WORKING)
+     ⭐ REPAIRED STAR SYSTEM
   --------------------------------------------------------- */
-
-  // GLOBAL STAR COUNT
   let starCount = Number(localStorage.getItem("stars") || 0);
 
-  // MAKE LAYER IF MISSING
   let starLayer = document.getElementById("starLayerGlobal");
   if (!starLayer) {
     starLayer = document.createElement("div");
@@ -416,32 +420,26 @@
   }
   updateStarDisplay();
 
-  /* background star */
   function createBackgroundStar(x, y, opts = {}) {
     const s = document.createElement("div");
     s.className = "bg-star";
-
     const size = opts.size || (Math.random() * 4 + 2);
     s.style.width = size + "px";
     s.style.height = size + "px";
-
     s.style.left = x + "px";
     s.style.top = y + "px";
     s.style.opacity = opts.opacity || 0.35;
     s.style.animation = "bgStarTwinkle 2.4s infinite ease-in-out";
-
     starLayer.appendChild(s);
     return s;
   }
 
-  /* collect falling star */
   function collectStar(el) {
-    el.remove();
+    if (el && el.remove) el.remove();
     starCount++;
     localStorage.setItem("stars", starCount);
     updateStarDisplay();
 
-    // first star special event
     if (!localStorage.getItem("firstStarSeen")) {
       localStorage.setItem("firstStarSeen", "true");
       showFirstStarDialogue();
@@ -450,7 +448,6 @@
     }
   }
 
-  /* falling star */
   function spawnFallingStar() {
     const star = document.createElement("div");
     star.className = "falling-star-collection";
@@ -471,11 +468,9 @@
     );
 
     star.addEventListener("click", () => collectStar(star));
-
     setTimeout(() => (star.parentNode && star.remove()), duration + 50);
   }
 
-  /* populate */
   function populateBackgroundStars() {
     const MAX = Math.max(20, Math.floor((window.innerWidth * window.innerHeight) / 90000));
     for (let i = 0; i < MAX; i++) {
@@ -490,51 +485,280 @@
   setInterval(spawnFallingStar, 3500);
 
   /* ---------------------------------------------------------
-     ⭐ FIRST-STAR SPECIAL EVENT → Tsuki dialogue
+     ⭐ FIRST STAR SPECIAL EVENT (opens VN + reveals pet unlock)
   --------------------------------------------------------- */
-
   function showFirstStarDialogue() {
     if (audioCtx?.state === "suspended") audioCtx.resume();
     stopRing();
-
     vnContainer.classList.remove("hidden");
     vnContainer.setAttribute("aria-hidden", "false");
     optionsBox.innerHTML = "";
-
     safeSetSprite(sprites.happy[0]);
 
     (async () => {
       startTalking(sprites.happy);
       await typeText("Tsuki: Oooh a star! I wonder what it does…");
       stopTalking(sprites.happy[0]);
-
-      revealPetPawButton();
-
+      revealPetUnlockButton();
       showOptions([{ label: "Cute!!", onClick: () => closeVN() }]);
     })();
   }
 
-  /* ---------------------------------------------------------
-     ⭐ REVEAL PAW BUTTON UNDER CTA
-  --------------------------------------------------------- */
+  function revealPetUnlockButton() {
+    if (!firstPetUnlockBox) return;
+    firstPetUnlockBox.style.display = 'block';
+    // keep text as "Your Pet Awaits…" until clicked once, then change to "Pet"
+    petUnlockBtn.onclick = () => {
+      localStorage.setItem('petUnlocked','true');
+      openPetPopup();
+      petUnlockBtn.innerText = 'Pet';
+      // once opened, keep button as "Pet" (persist)
+      firstPetUnlockBox.style.display = 'block';
+    };
+  }
 
-  function revealPetPawButton() {
-    const unlockBox = document.getElementById("firstPetUnlock");
-    if (!unlockBox) return;
-    unlockBox.style.display = "block";
-
-    const btn = document.getElementById("petUnlockBtn");
-    if (btn) {
-      btn.onclick = () => {
-        showToast("Pet system unlocked!");
-        unlockBox.style.display = "none";
-        localStorage.setItem("petUnlocked", "true");
-      };
+  // If pet is already unlocked (debug or prior), show Pet button
+  if (localStorage.getItem('petUnlocked') === 'true') {
+    if (firstPetUnlockBox) {
+      firstPetUnlockBox.style.display = 'block';
+      if (petUnlockBtn) petUnlockBtn.innerText = 'Pet';
+      petUnlockBtn.onclick = () => openPetPopup();
     }
   }
 
-  // ---------- FINAL keyframes ----------
+  /* ---------------------------------------------------------
+     ⭐ PET SYSTEM
+  --------------------------------------------------------- */
+
+  // pet asset map (user-provided)
+  const PET_ASSETS = {
+    'Bunny': 'Bunnie.png',
+    'Bear Cub': 'Cubbie.png',
+    'Dog': 'Doggie.png',
+    'Frog': 'Froggie.png',
+    'Pony': 'Horsie.png',
+    'Cat': 'Kittie.png'
+  };
+
+  // defaults
+  const DEFAULT_PET = localStorage.getItem('petChosen') || 'Bunny';
+  let currentPet = DEFAULT_PET;
+  // love stored per-pet key
+  function getLoveKey(petName){ return `petLove::${petName}`; }
+  function loadPetLove(petName){ return Number(localStorage.getItem(getLoveKey(petName)) || 0); }
+  function savePetLove(petName, val){ localStorage.setItem(getLoveKey(petName), Math.max(0, Math.min(100, Math.round(val)))); }
+
+  // load UI state
+  function renderPetUI() {
+    // ensure variant selection matches current
+    if (petVariantSel) petVariantSel.value = currentPet;
+    petNameTitle && (petNameTitle.innerText = currentPet);
+    // set sprite
+    if (petSpriteEl) {
+      const fn = PET_ASSETS[currentPet] || PET_ASSETS['Bunny'];
+      petSpriteEl.src = 'assets/pets/' + fn;
+      petSpriteEl.alt = currentPet;
+    }
+    // love bar
+    const love = loadPetLove(currentPet);
+    if (loveFill) loveFill.style.width = Math.min(100, love) + '%';
+    // update star display
+    updateStarDisplay();
+  }
+
+  // open/close
+  function openPetPopup() {
+    if (!petPopup) return;
+    petPopup.classList.remove('hidden');
+    petPopup.setAttribute('aria-hidden','false');
+    // ensure the unlock button is labeled "Pet"
+    if (petUnlockBtn) petUnlockBtn.innerText = 'Pet';
+    renderPetUI();
+  }
+  function closePetPopup() {
+    if (!petPopup) return;
+    petPopup.classList.add('hidden');
+    petPopup.setAttribute('aria-hidden','true');
+    // remove any bubble elements leftover
+    cleanupBubbles();
+  }
+  if (petClose) petClose.addEventListener('click', closePetPopup);
+
+  // variant change
+  if (petVariantSel) {
+    petVariantSel.addEventListener('change', () => {
+      const val = petVariantSel.value;
+      if (!val) return;
+      currentPet = val;
+      localStorage.setItem('petChosen', currentPet);
+      // initialize love if missing
+      if (!localStorage.getItem(getLoveKey(currentPet))) savePetLove(currentPet, 0);
+      renderPetUI();
+      showToast(`${currentPet} selected`);
+    });
+  }
+
+  // Feed button - small love gain
+  if (feedBtn) feedBtn.addEventListener('click', () => {
+    const prev = loadPetLove(currentPet);
+    const gain = 6 + Math.floor(Math.random()*6); // 6-11
+    savePetLove(currentPet, prev + gain);
+    renderPetUI();
+    showToast(`+${gain} love!`);
+  });
+
+  // Bath flow: press Bathe -> creates soap & bubbles -> batheBtn becomes "Rinse" -> rinse removes bubbles and awards love
+  let bathingState = false;
+  function createBubbles() {
+    cleanupBubbles();
+    if (!petVisualWrap) return;
+    const bubbleCount = 6 + Math.floor(Math.random()*6);
+    for (let i=0;i<bubbleCount;i++){
+      const b = document.createElement('div');
+      b.className = 'pet-bubble';
+      // random size and position over the pet
+      const size = 14 + Math.random()*28;
+      b.style.width = size + 'px';
+      b.style.height = size + 'px';
+      b.style.left = (20 + Math.random()*140) + 'px';
+      b.style.top = (10 + Math.random()*100) + 'px';
+      b.style.background = `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,200,220,0.45))`;
+      b.style.opacity = 0.95;
+      b.style.borderRadius = '50%';
+      b.style.pointerEvents = 'none';
+      b.style.transition = 'transform .6s ease, opacity .6s ease';
+      b.style.transform = 'translateY(0) scale(1)';
+      petVisualWrap.appendChild(b);
+      // small float animation
+      setTimeout(()=> {
+        b.style.transform = `translateY(-8px) scale(${1 + Math.random()*0.35})`;
+        b.style.opacity = 0.9 - Math.random()*0.4;
+      }, 40 + i*40);
+    }
+  }
+  function cleanupBubbles() {
+    if (!petVisualWrap) return;
+    const existing = petVisualWrap.querySelectorAll('.pet-bubble');
+    existing.forEach(n => n.remove());
+  }
+
+  if (batheBtn) {
+    batheBtn.addEventListener('click', () => {
+      if (!bathingState) {
+        // start bathing: create soap/bubbles and switch to Rinse
+        createBubbles();
+        bathingState = true;
+        batheBtn.innerText = 'Rinse';
+        showToast('Use the soap — then rinse!');
+      } else {
+        // rinse: remove bubbles and reward love
+        const prev = loadPetLove(currentPet);
+        const gain = 8 + Math.floor(Math.random()*10); // 8-17
+        savePetLove(currentPet, prev + gain);
+        cleanupBubbles();
+        bathingState = false;
+        batheBtn.innerText = 'Bathe';
+        renderPetUI();
+        showToast(`Bath complete! +${gain} love`);
+      }
+    });
+  }
+
+  function renderShop() {
+    if (!shopScroll) return;
+    shopScroll.innerHTML = '';
+    // placeholder hats/shop items (keeps UI consistent)
+    const items = [
+      { id: 'hat1', name: 'Pixel Bow', price: 10 },
+      { id: 'hat2', name: 'Tiny Crown', price: 18 },
+      { id: 'hat3', name: 'Party Hat', price: 12 },
+    ];
+    items.forEach(it => {
+      const el = document.createElement('div');
+      el.className = 'pet-shop-item';
+      el.innerHTML = `<img src="data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='#fff0f4'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-size='10' fill='#5c3d3d'>${it.name}</text></svg>`) }" alt="${it.name}"><div style="margin-top:6px">${it.name}</div><div style="font-size:12px;color:#5c3d3d">⭐${it.price}</div>`;
+      el.addEventListener('click', () => {
+        showToast(`${it.name} coming soon!`);
+      });
+      shopScroll.appendChild(el);
+    });
+  }
+  renderShop();
+
+  // Make sure the star counter displays properly
+  updateStarDisplay();
+
+  // On initial load, set chosen pet from storage and render
+  currentPet = localStorage.getItem('petChosen') || currentPet;
+  if (!localStorage.getItem(getLoveKey(currentPet))) savePetLove(currentPet, 0);
+  renderPetUI();
+
+  /* ---------------------------------------------------------
+     ⭐ DEBUG BUTTONS / CHEATS (preserve style + functions)
+  --------------------------------------------------------- */
+  const debugResetBtn = document.getElementById('debug-reset');
+  const debugAddStarsBtn = document.getElementById('debug-add-stars');
+  const debugUnlockPetsBtn = document.getElementById('debug-unlock-pets');
+  const debugFullResetBtn = document.getElementById('debug-full-reset');
+
+  if (debugResetBtn) {
+    debugResetBtn.addEventListener('click', () => {
+      // reset pet love & selection to defaults
+      localStorage.removeItem('petChosen');
+      Object.keys(PET_ASSETS).forEach(k => localStorage.removeItem(getLoveKey(k)));
+      currentPet = 'Bunny';
+      localStorage.setItem('petChosen', currentPet);
+      savePetLove(currentPet, 0);
+      renderPetUI();
+      showToast('Pet system reset');
+    });
+  }
+
+  if (debugAddStarsBtn) {
+    debugAddStarsBtn.addEventListener('click', () => {
+      starCount += 5;
+      localStorage.setItem('stars', starCount);
+      updateStarDisplay();
+      showToast('+5 stars');
+    });
+  }
+
+  if (debugUnlockPetsBtn) {
+    debugUnlockPetsBtn.addEventListener('click', () => {
+      localStorage.setItem('petUnlocked','true');
+      if (firstPetUnlockBox) {
+        firstPetUnlockBox.style.display = 'block';
+        petUnlockBtn.innerText = 'Pet';
+        petUnlockBtn.onclick = () => openPetPopup();
+      }
+      showToast('Pet system unlocked (debug)');
+    });
+  }
+
+  if (debugFullResetBtn) {
+    debugFullResetBtn.addEventListener('click', () => {
+      // clear all relevant keys (stars, pet data, firstStarSeen)
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith('petLove::') || k === 'stars' || k === 'firstStarSeen' || k === 'petUnlocked' || k === 'petChosen') {
+          localStorage.removeItem(k);
+        }
+      });
+      starCount = 0;
+      updateStarDisplay();
+      // hide unlock box until next first-star event
+      if (firstPetUnlockBox) firstPetUnlockBox.style.display = 'none';
+      currentPet = 'Bunny';
+      savePetLove(currentPet, 0);
+      renderPetUI();
+      showToast('All data cleared');
+    });
+  }
+
+  /* ---------------------------------------------------------
+     FINAL keyframes & small helpers
+  --------------------------------------------------------- */
   const styleSheet = document.createElement('style');
-  styleSheet.innerHTML = `@keyframes bgStarTwinkle { 0%,100% { opacity:.35 } 50% { opacity:1 } }`;
+  styleSheet.innerHTML = `@keyframes bgStarTwinkle { 0%,100% { opacity:.35 } 50% { opacity:1 } } .pet-bubble{box-shadow:0 0 8px rgba(255,200,220,0.9); transform-origin:center; }`;
   document.head.appendChild(styleSheet);
+
 })();
