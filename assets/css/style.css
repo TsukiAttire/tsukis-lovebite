@@ -236,5 +236,10 @@ a{color:var(--accent-strong);text-decoration:none}
   visibility: hidden !important;
   opacity: 0 !important;
 }
+/* ===== Hats & Pet Bounce UI ===== */
+.pet-shop-item.shop-hat { width: 120px; padding: 8px; border-radius: 8px; background: linear-gradient(180deg,#fff3f6,#ffeef3); border:2px solid rgba(92,61,61,0.08); text-align:center; }
+.pet-shop-item.shop-hat div { color: var(--accent-dark); font-family: VT323, monospace; }
+.pet-hat-emoji { pointer-events: auto; user-select: none; }
+.pet-bounce { display: inline-block; transform-origin: center; }
 
 }
