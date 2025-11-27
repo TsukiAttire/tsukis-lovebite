@@ -226,3 +226,7 @@ a{color:var(--accent-strong);text-decoration:none}
   box-shadow: 0 10px 30px rgba(0,0,0,0.12); 
   font-family: VT323, monospace; 
 }
+#petHat[src=""],
+#petHat:not([src]) {
+  display: none;
+}
