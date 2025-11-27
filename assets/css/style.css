@@ -174,3 +174,55 @@ a{color:var(--accent-strong);text-decoration:none}
   .vn-left{width:160px}
   .pet-shop-window{ max-height:180px }
 }
+
+/* Pet tools, bubbles & reactions (emoji + speech-bubble style) */
+#petToolContainer { 
+  display:flex; 
+  gap:8px; 
+  justify-content:center; 
+  align-items:center; 
+  margin-top:12px; 
+}
+
+.pet-tool{
+  cursor:pointer; 
+  font-size:20px; 
+  padding:6px 8px; 
+  border-radius:10px; 
+  background:linear-gradient(180deg,#fff6f8,#fff0f2); 
+  border:2px solid rgba(92,61,61,0.14); 
+  color:var(--accent-dark); 
+  box-shadow:0 8px 20px rgba(255,153,170,0.06); 
+}
+
+.tool-avatar{
+  font-size:22px; 
+  padding:6px 8px; 
+  border-radius:10px; 
+  background:linear-gradient(180deg,#fff,#ffeef3); 
+  border:2px solid var(--accent-dark); 
+}
+
+.pet-bubble{
+  transition: transform .6s ease, opacity .6s ease; 
+  position:absolute; 
+  border-radius:50%; 
+  box-shadow:0 0 8px rgba(255,200,220,0.9); 
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,200,220,0.45)); 
+  pointer-events:none; 
+}
+
+.reaction-bubble{
+  position:absolute; 
+  pointer-events:none; 
+  font-size:18px; 
+  padding:6px 8px; 
+  border-radius:10px; 
+  background: linear-gradient(180deg,#fff,#ffeef3); 
+  border:2px solid var(--accent-dark); 
+  color:var(--accent-dark); 
+  transform-origin:center; 
+  transition: transform 1.2s ease, opacity 1.2s ease; 
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12); 
+  font-family: VT323, monospace; 
+}
