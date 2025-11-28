@@ -1,4 +1,4 @@
-/* script.js — Cleaned (B2) | Important logs only | subtle reaction timing improvements */
+/* script.js — FIXED | Includes Tab Switching Logic */
 (() => {
   'use strict';
 
@@ -43,12 +43,12 @@
   const toggleSfx = document.getElementById('toggle-sfx');
 
   /* -------------------------
-     Pet-related DOM (some might be null until HTML present)
+     Pet-related DOM 
   ------------------------- */
   const petPopup = document.getElementById('petPopup');
   const petClose = document.getElementById('petClose');
   const petSpriteEl = document.getElementById('petSprite');
-  const petHatImg = document.getElementById('petHat'); // hidden fallback element
+  const petHatImg = document.getElementById('petHat');
   const petVariantSel = document.getElementById('petVariant');
   const starCountDisp = document.getElementById('starCountDisp');
   const loveFill = document.getElementById('loveFill');
@@ -70,7 +70,6 @@
 
   function showToast(msg = '', duration = 1400) {
     if (!toast) {
-      // fallback simple toast
       const t = document.createElement('div');
       t.textContent = msg;
       Object.assign(t.style, {
@@ -106,7 +105,6 @@
       osc.connect(g); g.connect(audioCtx.destination);
       g.gain.value = 0.0001;
       osc.start();
-      // ramp
       g.gain.linearRampToValueAtTime(0.008, audioCtx.currentTime + 0.05);
       setTimeout(() => {
         g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.15);
@@ -114,7 +112,6 @@
       }, 150);
     };
     tone(520); tone(660); tone(780);
-    // repeat subtle
     ringIntervalId = setInterval(() => { tone(620); }, 900);
   }
 
@@ -191,7 +188,7 @@
   }
 
  /* -------------------------
-   VN Scenes (restored full branches)
+   VN Scenes
 ------------------------- */
 async function scene_start() {
   optionsBox.innerHTML = '';
@@ -270,7 +267,6 @@ async function scene_monsterHigh() {
   await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura and Abby are my spirit ghouls! I could watch just them, forever! Who's your fave?");
   stopTalking(sprites.happy[0]);
 
-  // input sub-view for Monster High fave
   const container = document.createElement('div');
   container.style.marginTop = '14px';
   container.style.pointerEvents = 'auto';
@@ -406,6 +402,32 @@ async function scene_userHangup() {
   /* -------------------------
      UI event wiring
   ------------------------- */
+  /* --- FIX: TAB SWITCHING LOGIC ADDED HERE --- */
+  const navTabs = document.querySelectorAll('.nav-tab');
+  const pagePanels = document.querySelectorAll('.page-panel');
+
+  navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // 1. Remove 'active' from all tabs & panels
+      navTabs.forEach(t => t.classList.remove('active'));
+      pagePanels.forEach(p => p.classList.remove('active'));
+
+      // 2. Activate clicked tab
+      tab.classList.add('active');
+
+      // 3. Show matching panel
+      const targetId = tab.dataset.tab;
+      const targetPanel = document.getElementById(targetId);
+      if (targetPanel) {
+        targetPanel.classList.add('active');
+      }
+
+      // 4. Optional: Click sound
+      if (canPlaySound()) playTypeBlip();
+    });
+  });
+  /* --- END FIX --- */
+
   if (phoneBtn) {
     startRing();
     phoneBtn.addEventListener('click', () => {
@@ -420,7 +442,7 @@ async function scene_userHangup() {
   if (toggleSfx) toggleSfx.addEventListener('change', () => toggleSfx.checked ? startRing() : stopRing());
 
   /* -------------------------
-     STARS: background + falling clickable stars
+     STARS
   ------------------------- */
   let starCount = Number(localStorage.getItem(`${KEY_PREFIX}stars`) || 0);
   function updateStarDisp() { if (starCountDisp) starCountDisp.innerText = starCount; }
@@ -486,9 +508,6 @@ async function scene_userHangup() {
   populateBackgroundStars();
   setInterval(spawnFallingStar, 3500);
 
-  /* -------------------------
-     First-star special: dialogue + reveal pet unlock
-  ------------------------- */
   function showFirstStarDialogue() {
     if (audioCtx?.state === 'suspended') audioCtx.resume();
     stopRing();
@@ -522,11 +541,9 @@ async function scene_userHangup() {
     if (petUnlockBtn) petUnlockBtn.onclick = () => openPetPopup();
   }
 
-  // End of Part 1 — pet system begins in Part 2
-/* Part 2/3 — Pet system, tools, feed/bathe, hats, reactions (improved timing) */
 
 /* -------------------------
-   Pet config & storage helpers
+   Pet system, tools, feed/bathe, hats
 ------------------------- */
 const PET_ASSETS = {
   'Bunny': 'Bunnie.png',
@@ -566,25 +583,16 @@ function saveHat(petName, hatObj) {
   else localStorage.setItem(getHatKey(petName), JSON.stringify(hatObj));
 }
 
-/* -------------------------
-   State
-------------------------- */
 let currentPet = localStorage.getItem(`${KEY_PREFIX}petChosen`) || 'Bunny';
-let toolMode = 'idle'; // 'idle' | 'feed' | 'bathe'
+let toolMode = 'idle';
 let toolContainer = null;
 
-/* -------------------------
-   Preload a few images
-------------------------- */
 (function preload() {
   Object.values(sprites).flat().forEach(u => { const i = new Image(); i.src = u; });
   Object.values(PET_ASSETS).forEach(fn => { const i = new Image(); i.src = `assets/pets/${fn}`; });
   new Image().src = 'assets/images/Phone.png';
 })();
 
-/* -------------------------
-   Pet UI rendering & hat management
-------------------------- */
 function renderPetUI() {
   if (petVariantSel) petVariantSel.value = currentPet;
   if (petNameTitle) petNameTitle.innerText = currentPet;
@@ -599,7 +607,6 @@ function renderPetUI() {
   renderHatForCurrentPet();
 }
 
-/* Hat rendering (emoji element inside petVisualWrap) */
 function renderHatForCurrentPet() {
   if (!petVisualWrap) return;
   let existing = petVisualWrap.querySelector('.pet-hat-emoji');
@@ -620,7 +627,6 @@ function renderHatForCurrentPet() {
   makeHatDraggable(el);
 }
 
-/* Make an existing hat element draggable to reposition and save */
 function makeHatDraggable(hatEl) {
   if (!petVisualWrap) return;
   let active = false;
@@ -646,7 +652,6 @@ function makeHatDraggable(hatEl) {
     hatEl.style.cursor = 'grab';
     document.removeEventListener('pointermove', onMove);
     document.removeEventListener('pointerup', onUp);
-    // save new position
     const wrap = petVisualWrap.getBoundingClientRect();
     const rect = hatEl.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
@@ -661,9 +666,6 @@ function makeHatDraggable(hatEl) {
   hatEl.addEventListener('pointerdown', onDown, { passive: false });
 }
 
-/* -------------------------
-   Tools UI: ensure container and show/hide tools
-------------------------- */
 function ensureToolContainer() {
   if (toolContainer) return toolContainer;
   const rightBox = petPopup?.querySelector('.vn-right .vn-box');
@@ -713,7 +715,6 @@ function hideTools() {
   if (batheBtn) batheBtn.innerText = 'Bathe';
 }
 
-/* Wire feed & bathe buttons */
 if (feedBtn) feedBtn.addEventListener('click', () => toggleToolMode('feed'));
 if (batheBtn) batheBtn.addEventListener('click', () => toggleToolMode('bathe'));
 
@@ -724,9 +725,6 @@ function toggleToolMode(mode) {
   if (mode !== 'bathe') cleanupBubbles();
 }
 
-/* -------------------------
-   Bathing & bubbles
-------------------------- */
 function createBubblesAt(xPct = 50, yPct = 60) {
   cleanupBubbles();
   if (!petVisualWrap) return;
@@ -753,10 +751,6 @@ function cleanupBubbles() {
   petVisualWrap.querySelectorAll('.pet-bubble').forEach(n => n.remove());
 }
 
-/* -------------------------
-   Reactions (speech-bubble style) and pet bounce
-   Slightly smoother timing for bounce & reaction
-------------------------- */
 function spawnReaction(emoji, kind = 'happy') {
   if (!petVisualWrap) return;
   const r = document.createElement('div');
@@ -776,14 +770,11 @@ function spawnReaction(emoji, kind = 'happy') {
 function petBounce() {
   if (!petVisualWrap) return;
   petVisualWrap.classList.remove('pet-bounce');
-  void petVisualWrap.offsetWidth; // reflow to restart
+  void petVisualWrap.offsetWidth;
   petVisualWrap.classList.add('pet-bounce');
   setTimeout(() => petVisualWrap.classList.remove('pet-bounce'), 520);
 }
 
-/* -------------------------
-   Food handling (improved reaction flow)
-------------------------- */
 function handleFoodDrop(foodId, xPct = 50, yPct = 60) {
   const pref = (FOOD_PREF[currentPet] && FOOD_PREF[currentPet][foodId]) || 0;
   let delta = 0;
@@ -804,15 +795,11 @@ function handleFoodDrop(foodId, xPct = 50, yPct = 60) {
   else if (pref === 0) { reactionEmoji = '😐'; kind = 'meh'; }
   else { reactionEmoji = '😖'; kind = 'sad'; }
 
-  // stagger reaction and bounce slightly for nicer feel
   spawnReaction(reactionEmoji, kind);
   setTimeout(() => petBounce(), 80);
   showToast((delta > 0 ? `+${delta} love` : `${delta} love`));
 }
 
-/* -------------------------
-   Bath handlers
-------------------------- */
 function handleSoapAt(xPct = 50, yPct = 60) {
   createBubblesAt(xPct, yPct);
   spawnReaction('🫧', 'soap');
@@ -839,12 +826,6 @@ function handleTowelAt() {
   setTimeout(() => petBounce(), 90);
 }
 
-// End of Part 2 — shop + drag helpers in Part 3
-/* Part 3/3 — Shop rendering, drag helpers, debug, injected CSS, expose debug API */
-
-/* -------------------------
-   Hat shop config
-------------------------- */
 const HAT_EMOJIS = [
   { id: 'crown', emoji: '👑', label: 'Crown', scale: 1.4 },
   { id: 'bow', emoji: '🎀', label: 'Bow', scale: 1.2 },
@@ -852,9 +833,6 @@ const HAT_EMOJIS = [
   { id: 'tophat', emoji: '🎩', label: 'Top Hat', scale: 1.45 }
 ];
 
-/* -------------------------
-   Pointer helper
-------------------------- */
 function getPointerPos(e) {
   if (!e) return { x: 0, y: 0 };
   return {
@@ -863,9 +841,6 @@ function getPointerPos(e) {
   };
 }
 
-/* -------------------------
-   Drag helpers for tools
-------------------------- */
 function makeDraggableTool(el) {
   let avatar = null;
   let active = false;
@@ -907,13 +882,11 @@ function makeDraggableTool(el) {
       else if (toolType === 'soap') handleSoapAt(xPct, yPct);
       else if (toolType === 'shower') handleShowerAt();
       else if (toolType === 'towel') {
-        // remove hat if exists
         const hat = loadHat(currentPet);
         if (hat) {
           saveHat(currentPet, null);
           renderHatForCurrentPet();
           showToast('Hat removed');
-          console.info('Hat removed for', currentPet);
         }
         handleTowelAt();
       }
@@ -925,20 +898,6 @@ function makeDraggableTool(el) {
   el.addEventListener('pointerdown', onDown, { passive: false });
 }
 
-/* Attach handlers to tools in tool container */
-function attachToolDragHandlers() {
-  if (!toolContainer) return;
-  const tools = toolContainer.querySelectorAll('.pet-tool');
-  tools.forEach(tool => {
-    const newTool = tool.cloneNode(true);
-    tool.replaceWith(newTool);
-    makeDraggableTool(newTool);
-  });
-}
-
-/* -------------------------
-   Make shop hats draggable
-------------------------- */
 function makeShopHatDraggable(node, hatObj) {
   let avatar = null, active = false;
   function createAvatar(x, y) {
@@ -979,7 +938,6 @@ function makeShopHatDraggable(node, hatObj) {
       saveHat(currentPet, hat);
       renderHatForCurrentPet();
       showToast('Hat equipped ✨');
-      console.info('Hat equipped', hatObj.id, 'for', currentPet);
     } else showToast('Missed!');
     if (avatar && avatar.remove) avatar.remove(); avatar = null; active = false;
     document.removeEventListener('pointermove', onMove);
@@ -988,9 +946,6 @@ function makeShopHatDraggable(node, hatObj) {
   node.addEventListener('pointerdown', onDown, { passive: false });
 }
 
-/* -------------------------
-   Render shop (hats + placeholders)
-------------------------- */
 function renderShop() {
   if (!shopScroll) return;
   shopScroll.innerHTML = '';
@@ -1006,7 +961,6 @@ function renderShop() {
     shopScroll.appendChild(div);
     makeShopHatDraggable(div, h);
   });
-  // placeholder shop items (keep visual balance)
   const extras = [
     { name: 'Pixel Bow', price: 10 },
     { name: 'Tiny Crown', price: 18 }
@@ -1019,9 +973,6 @@ function renderShop() {
   });
 }
 
-/* -------------------------
-   Attach drag to tools created in toolContainer (if any)
-------------------------- */
 function attachToolDragHandlers() {
   if (!toolContainer) return;
   const tools = toolContainer.querySelectorAll('.pet-tool');
@@ -1032,15 +983,9 @@ function attachToolDragHandlers() {
   });
 }
 
-/* -------------------------
-   Initialize UI, shop, pet
-------------------------- */
 renderShop();
 renderPetUI();
 
-/* -------------------------
-   Debug buttons (important logs only)
-------------------------- */
 const debugResetBtn = document.getElementById('debug-reset');
 const debugAddStarsBtn = document.getElementById('debug-add-stars');
 const debugUnlockPetsBtn = document.getElementById('debug-unlock-pets');
@@ -1055,7 +1000,6 @@ if (debugResetBtn) {
     localStorage.setItem(`${KEY_PREFIX}petChosen`, currentPet);
     savePetLove(currentPet, 0);
     renderPetUI();
-    console.info('Pet system reset (debug)');
     showToast('Pet system reset');
   });
 }
@@ -1066,7 +1010,6 @@ if (debugAddStarsBtn) {
     localStorage.setItem(`${KEY_PREFIX}stars`, starCount);
     updateStarDisp();
     showToast('+5 stars');
-    console.info('+5 stars (debug)');
   });
 }
 
@@ -1075,7 +1018,6 @@ if (debugUnlockPetsBtn) {
     localStorage.setItem(`${KEY_PREFIX}petUnlocked`, 'true');
     if (firstPetUnlockBox) firstPetUnlockBox.style.display = 'block';
     if (petUnlockBtn) { petUnlockBtn.innerText = 'Pet'; petUnlockBtn.onclick = () => openPetPopup(); }
-    console.info('Pet system unlocked (debug)');
     showToast('Pet system unlocked (debug)');
   });
 }
@@ -1093,14 +1035,10 @@ if (debugFullResetBtn) {
     currentPet = 'Bunny';
     savePetLove(currentPet, 0);
     renderPetUI();
-    console.info('All pet data cleared (debug)');
     showToast('All data cleared');
   });
 }
 
-/* -------------------------
-   Inject small runtime CSS for bubbles/reactions/tools
-------------------------- */
 (function injectRuntimeCSS() {
   const s = document.createElement('style');
   s.innerHTML = `
@@ -1117,19 +1055,10 @@ if (debugFullResetBtn) {
   document.head.appendChild(s);
 })();
 
-/* -------------------------
-   Expose small debug utilities
-------------------------- */
 window.__tsukiDebug = {
   openPetPopup, closePetPopup, renderPetUI, saveHat, loadHat, createBubblesAt
 };
 
-/* -------------------------
-   Pet popup wiring & initial render
-------------------------- */
-/* -------------------------
-   Pet popup open/close helpers
-------------------------- */
 function openPetPopup() {
   if (!petPopup) return;
   petPopup.classList.remove('hidden');
@@ -1146,7 +1075,7 @@ function closePetPopup() {
   hideTools();
 }
 
-  if (petClose) petClose.addEventListener('click', closePetPopup);
+if (petClose) petClose.addEventListener('click', closePetPopup);
 if (petUnlockBtn) petUnlockBtn.addEventListener('click', () => openPetPopup());
 
 if (petVariantSel) {
@@ -1161,11 +1090,7 @@ if (petVariantSel) {
   });
 }
 
-/* Initial render call (safety)
-   (already called earlier; calling again to ensure hat & shop present)
-*/
 renderShop();
 renderPetUI();
 
-/* End IIFE wrapper */
 })();
