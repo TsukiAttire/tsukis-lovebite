@@ -190,71 +190,162 @@
     });
   }
 
-  /* -------------------------
-     VN Scenes (trimmed & organized)
-  ------------------------- */
-  async function scene_start() {
+ /* -------------------------
+   VN Scenes (restored full branches)
+------------------------- */
+async function scene_start() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.happy);
+  await typeText("Tsuki: Hey Boo! ♡ You finally picked up..");
+  stopTalking(sprites.happy[0]);
+  setTimeout(scene_whatsUp, 300);
+}
+
+async function scene_whatsUp() {
+  startTalking(sprites.happy);
+  await typeText("Tsuki: What's up, girl?");
+  stopTalking(sprites.happy[0]);
+  showOptions([
+    { label: "I've got some tea for a video, girl!", onClick: scene_tea },
+    { label: "Who are you…What are you?", onClick: scene_identity },
+    { label: "Hang up", onClick: scene_userHangup }
+  ]);
+}
+
+async function scene_identity() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.neutral);
+  await typeText("Tsuki: Girl..Did you hit your head or something? Its me! Your Bestie? Maybe you just need a refresher..what do ya wanna know?");
+  stopTalking(sprites.neutral[0]);
+  showOptions([
+    { label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore },
+    { label: "What's the vampire side like?", onClick: scene_vampireLore },
+    { label: "Favorite Monster High character?", onClick: scene_monsterHigh },
+    { label: "Back", onClick: scene_whatsUp },
+    { label: "Hang up", onClick: scene_userHangup }
+  ]);
+}
+
+async function scene_cupidLore() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.rose);
+  await typeText("Tsuki: Dad? Dads fun! Way out of his league now with all the new technology though. It’s alot harder to do the whole arrows and the first person you see is your soulmate thing when everyones online now, y’know?");
+  stopTalking(sprites.rose[0]);
+  showOptions([
+    { label: "More about your job?", onClick: scene_jobLore },
+    { label: "Back to questions", onClick: scene_identity },
+    { label: "Hang up", onClick: scene_userHangup }
+  ]);
+}
+
+async function scene_vampireLore() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.wineScoff);
+  await typeText("Tsuki: Believe it or not I wasn’t born a vampire, that’s not how it works. I was turned on my sweet 1600..something about destiny and true love..I dont wanna talk about it..");
+  stopTalking(sprites.wineScoff[0]);
+  showOptions([
+    { label: "Do you drink blood?", onClick: scene_bloodQuestion },
+    { label: "Back to questions", onClick: scene_identity },
+    { label: "Hang up", onClick: scene_userHangup }
+  ]);
+}
+
+async function scene_bloodQuestion() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.frown);
+  await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?");
+  await new Promise(r => setTimeout(r, 900));
+  startTalking(sprites.wineSmile);
+  await typeText("Tsuki: Im kidding! We don’t need to drink blood anymore, my father would kill me if i did..");
+  stopTalking(sprites.wineSmile[0]);
+  showOptions([
+    { label: "Back to questions", onClick: scene_identity },
+    { label: "Hang up", onClick: scene_userHangup }
+  ]);
+}
+
+async function scene_monsterHigh() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.happy);
+  await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura and Abby are my spirit ghouls! I could watch just them, forever! Who's your fave?");
+  stopTalking(sprites.happy[0]);
+
+  // input sub-view for Monster High fave
+  const container = document.createElement('div');
+  container.style.marginTop = '14px';
+  container.style.pointerEvents = 'auto';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Type your fave ghoul…';
+  input.style.width = '100%';
+  input.style.padding = '10px';
+  input.style.marginBottom = '8px';
+  input.style.borderRadius = '10px';
+  input.style.border = '3px solid var(--accent-dark)';
+  input.style.fontFamily = 'VT323, monospace';
+  input.style.fontSize = '18px';
+  input.style.background = '#fff0f4';
+
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Tell Tsuki!';
+  submitBtn.className = 'optionButton';
+  submitBtn.style.marginTop = '6px';
+
+  container.appendChild(input);
+  container.appendChild(submitBtn);
+  optionsBox.appendChild(container);
+
+  submitBtn.onclick = async () => {
+    const fave = input.value.trim() || 'someone super cool';
     optionsBox.innerHTML = '';
     startTalking(sprites.happy);
-    await typeText("Tsuki: Hey Boo! ♡ You finally picked up..");
+    await typeText(`Tsuki: Girrrrl! I love ${fave} too! We should watch it together some time~`);
     stopTalking(sprites.happy[0]);
-    setTimeout(scene_whatsUp, 300);
-  }
-
-  async function scene_whatsUp() {
-    startTalking(sprites.happy);
-    await typeText("Tsuki: What's up, girl?");
-    stopTalking(sprites.happy[0]);
-    showOptions([
-      { label: "I've got some tea for a video, girl!", onClick: scene_tea },
-      { label: "Who are you…What are you?", onClick: scene_identity },
+    setTimeout(() => showOptions([
+      { label: "Back to questions", onClick: scene_identity },
       { label: "Hang up", onClick: scene_userHangup }
-    ]);
-  }
+    ]), 800);
+  };
+}
 
-  async function scene_identity() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.neutral);
-    await typeText("Tsuki: Girl..Did you hit your head or something? Its me! Your Bestie?");
-    stopTalking(sprites.neutral[0]);
-    showOptions([
-      { label: "Tell me about Cupid's daughter", onClick: scene_cupidLore },
-      { label: "Back", onClick: scene_whatsUp },
-      { label: "Hang up", onClick: scene_userHangup }
-    ]);
-  }
+async function scene_jobLore() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.neutral);
+  await typeText("Tsuki: You’re seeing it, babe! I do this..I spill tea with you and then tell everyone else about it, you always have the BEST gossip, bestie!");
+  stopTalking(sprites.neutral[0]);
+  showOptions([
+    { label: "Back to questions", onClick: scene_identity },
+    { label: "Hang up", onClick: scene_userHangup }
+  ]);
+}
 
-  async function scene_cupidLore() {
-    startTalking(sprites.rose);
-    await typeText("Tsuki: Dad? Dads fun! Way out of his league now with all the new technology though.");
-    stopTalking(sprites.rose[0]);
-    showOptions([{ label: "Back to questions", onClick: scene_identity },{ label: "Hang up", onClick: scene_userHangup }]);
-  }
+async function scene_tea() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.wineSmile);
+  await typeText("Tsuki: Oooh…Spill it!");
+  stopTalking(sprites.wineSmile[0]);
+  showOptions([
+    { label: "Suggest Rant", onClick: () => openSuggestModal('Rant') },
+    { label: "Suggest Game", onClick: () => openSuggestModal('Game') },
+    { label: "Hang up", onClick: scene_hangUpAngry }
+  ]);
+}
 
-  async function scene_tea() {
-    startTalking(sprites.wineSmile);
-    await typeText("Tsuki: Oooh…Spill it!");
-    stopTalking(sprites.wineSmile[0]);
-    showOptions([
-      { label: "Suggest Rant", onClick: () => openSuggestModal('Rant') },
-      { label: "Suggest Game", onClick: () => openSuggestModal('Game') },
-      { label: "Hang up", onClick: scene_hangUpAngry }
-    ]);
-  }
+async function scene_hangUpAngry() {
+  optionsBox.innerHTML = '';
+  startTalking([...(sprites.frown || []), ...(sprites.neutral || [])]);
+  await typeText("Tsuki: Girl..don’t piss me off.");
+  stopTalking(sprites.hangup[1] || sprites.hangup[0]);
+  setTimeout(closeVN, 900);
+}
 
-  async function scene_hangUpAngry() {
-    startTalking(sprites.frown);
-    await typeText("Tsuki: Girl..don’t piss me off.");
-    stopTalking(sprites.hangup[1] || sprites.hangup[0]);
-    setTimeout(closeVN, 900);
-  }
-
-  async function scene_userHangup() {
-    optionsBox.innerHTML = '';
-    safeSetSprite(sprites.hangup[1] || sprites.hangup[0]);
-    await typeText("—call ended—");
-    setTimeout(closeVN, 600);
-  }
+async function scene_userHangup() {
+  optionsBox.innerHTML = '';
+  safeSetSprite(sprites.hangup[1] || sprites.hangup[0]);
+  await typeText("—call ended—");
+  setTimeout(closeVN, 600);
+}
 
   /* -------------------------
      VN open/close & suggest modal
@@ -1036,7 +1127,26 @@ window.__tsukiDebug = {
 /* -------------------------
    Pet popup wiring & initial render
 ------------------------- */
-if (petClose) petClose.addEventListener('click', closePetPopup);
+/* -------------------------
+   Pet popup open/close helpers
+------------------------- */
+function openPetPopup() {
+  if (!petPopup) return;
+  petPopup.classList.remove('hidden');
+  petPopup.setAttribute('aria-hidden', 'false');
+  if (petUnlockBtn) petUnlockBtn.innerText = 'Pet';
+  renderPetUI();
+}
+
+function closePetPopup() {
+  if (!petPopup) return;
+  petPopup.classList.add('hidden');
+  petPopup.setAttribute('aria-hidden', 'true');
+  cleanupBubbles();
+  hideTools();
+}
+
+  if (petClose) petClose.addEventListener('click', closePetPopup);
 if (petUnlockBtn) petUnlockBtn.addEventListener('click', () => openPetPopup());
 
 if (petVariantSel) {
