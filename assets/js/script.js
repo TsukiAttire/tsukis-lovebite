@@ -1,4 +1,4 @@
-/* script.js — FIXED | Includes Tab Switching Logic */
+/* script.js — UPDATED | Gifts, Themes, Fortune Teller */
 (() => {
   'use strict';
 
@@ -10,15 +10,21 @@
   const TALK_INTERVAL_MS = 140;
   const SPRITE_TRANSITION_CLASS = 'sprite-transition';
 
+  // Sprites configuration
   const spriteFiles = {
-    happy: ['Thanks.png', 'Thanks 2.png'],
+    happy: ['Thanks.png', 'Thanks 2.png'], // Used for Neutral/Thanks
     neutral: ['Sad Talking.png', 'Sad Talking 2.png'],
     frown: ['Frown reaction.png'],
     wineSmile: ['Holding Wine Smile.png', 'Holding Wine Smile 2.png'],
     wineScoff: ['Holding Wine Scoff.png', 'Holding Wine Scoff 2.png'],
     rose: ['Holding Rose Talk 1.png', 'Holding Rose Talk 2.png'],
-    hangup: ['Hanging Up the phone.png', 'Hanging Up the phone 2.png']
+    hangup: ['Hanging Up the phone.png', 'Hanging Up the phone 2.png'],
+    
+    // NEW SPRITES
+    flirty: ['Flirty 1.png', 'Flirty 2.png'],
+    giftedRose: ['Gifted Rose 1.png', 'Gifted Rose 2.png']
   };
+  
   const sprites = {};
   Object.keys(spriteFiles).forEach(k => {
     sprites[k] = spriteFiles[k].map(fn => `assets/sprites/${fn}`);
@@ -48,7 +54,6 @@
   const petPopup = document.getElementById('petPopup');
   const petClose = document.getElementById('petClose');
   const petSpriteEl = document.getElementById('petSprite');
-  const petHatImg = document.getElementById('petHat');
   const petVariantSel = document.getElementById('petVariant');
   const starCountDisp = document.getElementById('starCountDisp');
   const loveFill = document.getElementById('loveFill');
@@ -67,6 +72,25 @@
   const KEY_PREFIX = 'tsuki::';
   const getLoveKey = petName => `${KEY_PREFIX}petLove::${petName}`;
   const getHatKey = petName => `${KEY_PREFIX}petHat::${petName}`;
+
+  /* --- STAR SYSTEM --- */
+  let starCount = Number(localStorage.getItem(`${KEY_PREFIX}stars`) || 0);
+  
+  function updateStarDisp() { 
+    if (starCountDisp) starCountDisp.innerText = starCount; 
+    // Also update any other star counters in settings if we add them
+  }
+  
+  function spendStars(amount) {
+    if (starCount >= amount) {
+      starCount -= amount;
+      localStorage.setItem(`${KEY_PREFIX}stars`, starCount);
+      updateStarDisp();
+      return true;
+    }
+    showToast(`Need ${amount} stars!`);
+    return false;
+  }
 
   function showToast(msg = '', duration = 1400) {
     if (!toast) {
@@ -87,7 +111,7 @@
   }
 
   /* -------------------------
-     Audio: minimal, graceful
+     Audio
   ------------------------- */
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
   const audioCtx = AudioCtx ? new AudioCtx() : null;
@@ -188,7 +212,7 @@
   }
 
  /* -------------------------
-   VN Scenes
+   VN Scenes (Updated with Gifts & Fortune)
 ------------------------- */
 async function scene_start() {
   optionsBox.innerHTML = '';
@@ -205,10 +229,167 @@ async function scene_whatsUp() {
   showOptions([
     { label: "I've got some tea for a video, girl!", onClick: scene_tea },
     { label: "Who are you…What are you?", onClick: scene_identity },
+    { label: "🎁 Give Gift...", onClick: scene_giftSelection }, // NEW
+    { label: "🔮 Ask Fortune (10★)", onClick: scene_fortuneTeller }, // NEW
     { label: "Hang up", onClick: scene_userHangup }
   ]);
 }
 
+/* --- NEW: FORTUNE TELLER --- */
+async function scene_fortuneTeller() {
+  optionsBox.innerHTML = '';
+  
+  if (!spendStars(10)) {
+    // Not enough stars
+    startTalking(sprites.neutral);
+    await typeText("Tsuki: Bestie, the spirits require payment.. (You need 10 stars)");
+    stopTalking(sprites.neutral[0]);
+    setTimeout(() => showOptions([{label: "Back", onClick: scene_whatsUp}]), 500);
+    return;
+  }
+
+  // Determine fortune
+  const fortunes = [
+    "The stars say... girl, no.",
+    "My dad Cupid says YES! Go for it!",
+    "It's giving... chaotic energy.",
+    "Outlook is sparkly! ✨",
+    "Don't bet your soulmate on it.",
+    "The spirits are ghosting me rn...",
+    "Absolutely! Manifest it! ♡"
+  ];
+  const result = fortunes[Math.floor(Math.random() * fortunes.length)];
+
+  startTalking(sprites.rose); // Mystical vibes?
+  await typeText("Tsuki: *Close eyes* Hmmm... tapping into the vibes...");
+  await new Promise(r => setTimeout(r, 1000));
+  
+  await typeText(`Tsuki: ${result}`);
+  stopTalking(sprites.rose[0]);
+  
+  showOptions([
+    { label: "Ask another? (10★)", onClick: scene_fortuneTeller },
+    { label: "Back to Chat", onClick: scene_whatsUp }
+  ]);
+}
+
+/* --- NEW: GIFT SELECTION MENU --- */
+async function scene_giftSelection() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.happy);
+  await typeText("Tsuki: Omg, for me? You shouldn't have! What is it?");
+  stopTalking(sprites.happy[0]);
+
+  // Create custom buttons for gifts
+  const gifts = [
+    { id: 'rose', name: 'Red Rose 🌹', cost: 20, func: scene_giftRose },
+    { id: 'teddy', name: 'Teddy Bear 🧸', cost: 40, func: scene_giftTeddy },
+    { id: 'purse', name: 'Designer Purse 👜', cost: 50, func: scene_giftPurse },
+    { id: 'choco', name: 'Dark Chocolate 🍫', cost: 15, func: scene_giftChoco },
+    { id: 'boba',  name: 'Bubble Tea 🧋', cost: 15, func: scene_giftBoba },
+  ];
+
+  gifts.forEach(g => {
+    const btn = document.createElement('div');
+    btn.className = 'gift-btn';
+    btn.innerHTML = `<span>${g.name}</span> <span class="gift-cost">${g.cost}★</span>`;
+    btn.onclick = () => {
+      if (spendStars(g.cost)) {
+        g.func();
+      }
+    };
+    optionsBox.appendChild(btn);
+  });
+  
+  const backBtn = document.createElement('button');
+  backBtn.className = 'optionButton';
+  backBtn.textContent = 'Nevermind';
+  backBtn.onclick = scene_whatsUp;
+  optionsBox.appendChild(backBtn);
+}
+
+/* --- GIFT REACTIONS --- */
+
+// 1. ROSE
+async function scene_giftRose() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.giftedRose);
+  await typeText("Tsuki: Oh my gosh! I love roses, is that basic of me? Thank you so much! My dad would lose his head if he saw this! Don’t tell anyone, okay?");
+  stopTalking(sprites.giftedRose[0]);
+  setTimeout(() => showOptions([{ label: "You're welcome!", onClick: scene_whatsUp }]), 1000);
+}
+
+// 2. TEDDY BEAR (Requires Naming)
+async function scene_giftTeddy() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.flirty);
+  await typeText("Tsuki: Awwww! Oh my fang! Thank you, Thank you, Thank you! Hmm..I don’t know what to name it…Got any ideas?");
+  stopTalking(sprites.flirty[0]);
+
+  // Input for naming
+  const container = document.createElement('div');
+  container.style.marginTop = '14px';
+  container.style.pointerEvents = 'auto';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Name the bear...';
+  input.style.width = '100%';
+  input.style.padding = '10px';
+  input.style.marginBottom = '8px';
+  input.style.borderRadius = '10px';
+  input.style.border = '3px solid var(--accent-dark)';
+  input.style.fontFamily = 'VT323, monospace';
+  input.style.fontSize = '18px';
+  input.style.background = '#fff0f4';
+
+  const submitBtn = document.createElement('button');
+  submitBtn.textContent = 'Name it!';
+  submitBtn.className = 'optionButton';
+  submitBtn.style.marginTop = '6px';
+
+  container.appendChild(input);
+  container.appendChild(submitBtn);
+  optionsBox.appendChild(container);
+
+  submitBtn.onclick = async () => {
+    const bearName = input.value.trim() || 'Mr. Cuddles';
+    optionsBox.innerHTML = '';
+    startTalking(sprites.flirty);
+    await typeText(`Tsuki: ${bearName}? Omg that is PERFECT! We are going to sleep together every night!`);
+    stopTalking(sprites.flirty[0]);
+    setTimeout(() => showOptions([{ label: "<3", onClick: scene_whatsUp }]), 1500);
+  };
+}
+
+// 3. PURSE
+async function scene_giftPurse() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.flirty);
+  await typeText("Tsuki: Ooohh~ I always need a new purse! Thank you so much, bestie! We should get matching ones some time~");
+  stopTalking(sprites.flirty[0]);
+  setTimeout(() => showOptions([{ label: "Yess matching!", onClick: scene_whatsUp }]), 1000);
+}
+
+// 4. CHOCOLATE (Neutral/Happy)
+async function scene_giftChoco() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.happy);
+  await typeText("Tsuki: Oh my goth! I haven’t had chocolate in..fang-ever! Thank you so much, bestie <3");
+  stopTalking(sprites.happy[0]);
+  setTimeout(() => showOptions([{ label: "Enjoy!", onClick: scene_whatsUp }]), 1000);
+}
+
+// 5. BUBBLE TEA (Neutral/Happy)
+async function scene_giftBoba() {
+  optionsBox.innerHTML = '';
+  startTalking(sprites.happy);
+  await typeText("Tsuki: Oooooh~ I love bubble tea! It sucks when the boba’s get stuck on my fangs though..such a pain.");
+  stopTalking(sprites.happy[0]);
+  setTimeout(() => showOptions([{ label: "Haha same", onClick: scene_whatsUp }]), 1000);
+}
+
+/* --- EXISTING SCENES --- */
 async function scene_identity() {
   optionsBox.innerHTML = '';
   startTalking(sprites.neutral);
@@ -402,31 +583,22 @@ async function scene_userHangup() {
   /* -------------------------
      UI event wiring
   ------------------------- */
-  /* --- FIX: TAB SWITCHING LOGIC ADDED HERE --- */
   const navTabs = document.querySelectorAll('.nav-tab');
   const pagePanels = document.querySelectorAll('.page-panel');
 
   navTabs.forEach(tab => {
     tab.addEventListener('click', () => {
-      // 1. Remove 'active' from all tabs & panels
       navTabs.forEach(t => t.classList.remove('active'));
       pagePanels.forEach(p => p.classList.remove('active'));
-
-      // 2. Activate clicked tab
       tab.classList.add('active');
-
-      // 3. Show matching panel
       const targetId = tab.dataset.tab;
       const targetPanel = document.getElementById(targetId);
       if (targetPanel) {
         targetPanel.classList.add('active');
       }
-
-      // 4. Optional: Click sound
       if (canPlaySound()) playTypeBlip();
     });
   });
-  /* --- END FIX --- */
 
   if (phoneBtn) {
     startRing();
@@ -444,10 +616,6 @@ async function scene_userHangup() {
   /* -------------------------
      STARS
   ------------------------- */
-  let starCount = Number(localStorage.getItem(`${KEY_PREFIX}stars`) || 0);
-  function updateStarDisp() { if (starCountDisp) starCountDisp.innerText = starCount; }
-  updateStarDisp();
-
   let starLayer = document.getElementById('starLayerGlobal');
   if (!starLayer) {
     starLayer = document.createElement('div');
@@ -986,6 +1154,86 @@ function attachToolDragHandlers() {
 renderShop();
 renderPetUI();
 
+/* -------------------------
+   NEW: THEME SYSTEM IN SETTINGS
+------------------------- */
+const settingsPanel = document.getElementById('settings');
+if (settingsPanel) {
+  // Add Theme Header
+  const themeHeader = document.createElement('h3');
+  themeHeader.innerText = 'System Themes';
+  themeHeader.style.marginTop = '16px';
+  // Insert before debug section
+  const debugSection = settingsPanel.querySelector('.settings-section');
+  if (debugSection) {
+    settingsPanel.insertBefore(themeHeader, debugSection);
+    
+    // Theme Config
+    const themes = [
+      { id: 'default', label: 'Default (Lovebite)', cost: 0, class: '' },
+      { id: 'vampire', label: 'Vampire Mode', cost: 50, class: 'theme-vampire' },
+      { id: 'midnight', label: 'Midnight System', cost: 30, class: 'theme-midnight' }
+    ];
+
+    const currentTheme = localStorage.getItem(`${KEY_PREFIX}theme`) || 'default';
+    if (currentTheme !== 'default') {
+      const t = themes.find(x => x.id === currentTheme);
+      if (t) document.body.classList.add(t.class);
+    }
+
+    // Render Buttons
+    const themeContainer = document.createElement('div');
+    themeContainer.style.marginBottom = '20px';
+
+    themes.forEach(theme => {
+      const btn = document.createElement('button');
+      const isUnlocked = theme.cost === 0 || localStorage.getItem(`${KEY_PREFIX}themeUnlock::${theme.id}`);
+      
+      btn.className = 'theme-btn';
+      if (currentTheme === theme.id) btn.classList.add('active-theme');
+      
+      if (isUnlocked) {
+        btn.innerText = `● ${theme.label}`;
+        btn.onclick = () => {
+           // Clear all themes
+           themes.forEach(t => t.class && document.body.classList.remove(t.class));
+           // Set new
+           if (theme.class) document.body.classList.add(theme.class);
+           localStorage.setItem(`${KEY_PREFIX}theme`, theme.id);
+           
+           // Update UI
+           themeContainer.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active-theme'));
+           btn.classList.add('active-theme');
+           showToast(`Theme loaded: ${theme.label}`);
+        };
+      } else {
+        btn.innerHTML = `🔒 ${theme.label} <span style="float:right;color:var(--accent-strong)">${theme.cost}★</span>`;
+        btn.onclick = () => {
+          if (spendStars(theme.cost)) {
+            localStorage.setItem(`${KEY_PREFIX}themeUnlock::${theme.id}`, 'true');
+            showToast('Theme Unlocked!');
+            // Re-render (lazy way: reload or just update text)
+            btn.innerText = `● ${theme.label}`;
+            btn.onclick = () => {
+               themes.forEach(t => t.class && document.body.classList.remove(t.class));
+               if (theme.class) document.body.classList.add(theme.class);
+               localStorage.setItem(`${KEY_PREFIX}theme`, theme.id);
+               themeContainer.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active-theme'));
+               btn.classList.add('active-theme');
+            };
+            btn.click(); // Auto apply
+          }
+        };
+      }
+      themeContainer.appendChild(btn);
+    });
+    settingsPanel.insertBefore(themeContainer, debugSection);
+  }
+}
+
+/* -------------------------
+   DEBUG BUTTONS
+------------------------- */
 const debugResetBtn = document.getElementById('debug-reset');
 const debugAddStarsBtn = document.getElementById('debug-add-stars');
 const debugUnlockPetsBtn = document.getElementById('debug-unlock-pets');
@@ -1006,10 +1254,10 @@ if (debugResetBtn) {
 
 if (debugAddStarsBtn) {
   debugAddStarsBtn.addEventListener('click', () => {
-    starCount += 5;
+    starCount += 50; // increased for testing
     localStorage.setItem(`${KEY_PREFIX}stars`, starCount);
     updateStarDisp();
-    showToast('+5 stars');
+    showToast('+50 stars');
   });
 }
 
@@ -1025,9 +1273,7 @@ if (debugUnlockPetsBtn) {
 if (debugFullResetBtn) {
   debugFullResetBtn.addEventListener('click', () => {
     Object.keys(localStorage).forEach(k => {
-      if (k.startsWith(`${KEY_PREFIX}petLove::`) || k === `${KEY_PREFIX}stars` || k === `${KEY_PREFIX}firstStarSeen` || k === `${KEY_PREFIX}petUnlocked` || k === `${KEY_PREFIX}petChosen` || k.startsWith(`${KEY_PREFIX}petHat::`)) {
-        localStorage.removeItem(k);
-      }
+      if (k.startsWith(KEY_PREFIX)) localStorage.removeItem(k);
     });
     starCount = 0;
     updateStarDisp();
@@ -1035,6 +1281,8 @@ if (debugFullResetBtn) {
     currentPet = 'Bunny';
     savePetLove(currentPet, 0);
     renderPetUI();
+    // remove themes
+    document.body.className = ''; 
     showToast('All data cleared');
   });
 }
