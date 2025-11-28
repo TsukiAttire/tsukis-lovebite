@@ -196,6 +196,20 @@
     </div>
   </div>
 
+  <div id="suggestModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-card">
+      <h3>Submit a suggestion</h3>
+      <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
+        <label>Your name <input type="text" name="name" required></label>
+        <label>Your suggestion <textarea name="message" rows="4" required></textarea></label>
+        <div class="modal-actions">
+          <button type="submit" class="submit-btn">Send</button>
+          <button type="button" id="modalCloseBtn" class="close-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="toast" class="toast" aria-hidden="true"></div>
   <script src="assets/js/script.js" defer></script>
 </body>
