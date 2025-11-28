@@ -1,11 +1,10 @@
-/* script.js — FIXED (Shop Buttons, Click Fixes, Clean Menu) */
+/* script.js — FIXED (Shop, Draggable Hats Restored, Feed/Bathe Restored) */
 (() => {
   'use strict';
 
   /* -------------------------
      Config & Resources
   ------------------------- */
-  const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
   const TYPE_SPEED_MS = 24;
   const TALK_INTERVAL_MS = 140;
   const SPRITE_TRANSITION_CLASS = 'sprite-transition';
@@ -78,8 +77,6 @@
   
   function updateStarDisp() { 
     if (starCountDisp) starCountDisp.innerText = starCount; 
-    const shopCosts = document.querySelectorAll('.shop-btn .cost');
-    // Optional: dim items you can't afford (advanced polish)
   }
   
   function spendStars(amount) {
@@ -226,7 +223,7 @@
   }
 
   /* -------------------------
-     SCENES (Standard)
+     SCENES
   ------------------------- */
   async function scene_start() {
     openVN();
@@ -244,26 +241,17 @@
     showOptions([
       { label: "I've got some tea for a video...", onClick: scene_tea },
       { label: "Who are you…What are you?", onClick: scene_identity },
-      // Gifts & Fortune removed from here (moved to Shop)
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
 
-  /* -------------------------
-     SCENES (Shop Items)
-  ------------------------- */
   // 1. FORTUNE
   async function scene_fortuneTeller() {
     if (!spendStars(10)) return;
     openVN();
     optionsBox.innerHTML = '';
-    
-    const fortunes = [
-      "The stars say... girl, no.", "My dad Cupid says YES! Go for it!", "It's giving... chaotic energy.",
-      "Outlook is sparkly! ✨", "Don't bet your soulmate on it.", "The spirits are ghosting me rn...", "Absolutely! Manifest it! ♡"
-    ];
+    const fortunes = ["The stars say... girl, no.", "My dad Cupid says YES! Go for it!", "It's giving... chaotic energy.", "Outlook is sparkly! ✨", "Don't bet your soulmate on it.", "The spirits are ghosting me rn...", "Absolutely! Manifest it! ♡"];
     const result = fortunes[Math.floor(Math.random() * fortunes.length)];
-
     startTalking(sprites.rose);
     await typeText("Tsuki: *Close eyes* Hmmm... tapping into the vibes...");
     await new Promise(r => setTimeout(r, 1000));
@@ -285,13 +273,10 @@
     stopTalking(sprites.giftedRose[0]);
     showOptions([{ label: "You're welcome!", onClick: closeVN }]);
   }
-
   async function scene_giftTeddy() {
     startTalking(sprites.flirty);
     await typeText("Tsuki: Awwww! Thank you! Hmm..I don’t know what to name it…Got any ideas?");
     stopTalking(sprites.flirty[0]);
-
-    // Name input
     const container = document.createElement('div');
     container.style.marginTop = '14px';
     const input = document.createElement('input');
@@ -299,10 +284,8 @@
     input.style.width = '100%'; input.style.padding = '10px'; input.style.marginBottom='8px';
     const subBtn = document.createElement('button');
     subBtn.textContent = 'Name it!'; subBtn.className = 'optionButton';
-
     container.appendChild(input); container.appendChild(subBtn);
     optionsBox.appendChild(container);
-
     subBtn.onclick = async () => {
       const bearName = input.value.trim() || 'Mr. Cuddles';
       optionsBox.innerHTML = '';
@@ -312,21 +295,18 @@
       setTimeout(() => showOptions([{ label: "<3", onClick: closeVN }]), 1000);
     };
   }
-
   async function scene_giftPurse() {
     startTalking(sprites.flirty);
     await typeText("Tsuki: Ooohh~ I always need a new purse! Thank you so much, bestie! We should get matching ones~");
     stopTalking(sprites.flirty[0]);
     showOptions([{ label: "Yess matching!", onClick: closeVN }]);
   }
-
   async function scene_giftChoco() {
     startTalking(sprites.happy);
     await typeText("Tsuki: Oh my goth! I haven’t had chocolate in..fang-ever! Thank you so much, bestie <3");
     stopTalking(sprites.happy[0]);
     showOptions([{ label: "Enjoy!", onClick: closeVN }]);
   }
-
   async function scene_giftBoba() {
     startTalking(sprites.happy);
     await typeText("Tsuki: Oooooh~ I love bubble tea! It sucks when the boba’s get stuck on my fangs though..");
@@ -334,9 +314,6 @@
     showOptions([{ label: "Haha same", onClick: closeVN }]);
   }
 
-  /* -------------------------
-     UI Wiring (Shop Buttons)
-  ------------------------- */
   if(btnGiftRose) btnGiftRose.onclick = () => triggerGift(20, scene_giftRose);
   if(btnGiftTeddy) btnGiftTeddy.onclick = () => triggerGift(40, scene_giftTeddy);
   if(btnGiftPurse) btnGiftPurse.onclick = () => triggerGift(50, scene_giftPurse);
@@ -344,22 +321,11 @@
   if(btnGiftBoba) btnGiftBoba.onclick = () => triggerGift(15, scene_giftBoba);
   if(btnFortune) btnFortune.onclick = scene_fortuneTeller;
 
-  // General UI
-  if (phoneBtn) {
-    startRing();
-    phoneBtn.addEventListener('click', () => {
-      if (audioCtx?.state === 'suspended') audioCtx.resume();
-      scene_start();
-    });
-  }
-  if (openVNbtn) openVNbtn.addEventListener('click', () => { 
-    if (audioCtx?.state === 'suspended') audioCtx.resume(); 
-    scene_start(); 
-  });
-  if (vnClose) vnClose.addEventListener('click', closeVN);
+  if (phoneBtn) { startRing(); phoneBtn.onclick = () => { if (audioCtx?.state === 'suspended') audioCtx.resume(); scene_start(); }; }
+  if (openVNbtn) openVNbtn.onclick = () => { if (audioCtx?.state === 'suspended') audioCtx.resume(); scene_start(); };
+  if (vnClose) vnClose.onclick = closeVN;
   if (toggleSfx) toggleSfx.addEventListener('change', () => toggleSfx.checked ? startRing() : stopRing());
 
-  // Tab Logic
   const navTabs = document.querySelectorAll('.nav-tab');
   const pagePanels = document.querySelectorAll('.page-panel');
   navTabs.forEach(tab => {
@@ -373,74 +339,24 @@
     });
   });
 
-  /* -------------------------
-     Standard Scenes (Lore)
-  ------------------------- */
-  async function scene_identity() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.neutral);
-    await typeText("Tsuki: Girl..Did you hit your head? It's me! Your Bestie?");
-    stopTalking(sprites.neutral[0]);
-    showOptions([
-      { label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore },
-      { label: "What's the vampire side like?", onClick: scene_vampireLore },
-      { label: "Favorite Monster High character?", onClick: scene_monsterHigh },
-      { label: "Back", onClick: scene_whatsUp },
-      { label: "Hang up", onClick: scene_userHangup }
-    ]);
-  }
-  async function scene_cupidLore() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.rose);
-    await typeText("Tsuki: Dad? Dads fun! Way out of his league with technology though.");
-    stopTalking(sprites.rose[0]);
-    showOptions([{ label: "Back", onClick: scene_identity }]);
-  }
-  async function scene_vampireLore() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.wineScoff);
-    await typeText("Tsuki: I wasn’t born a vampire, I was turned on my sweet 1600.. destiny stuff.");
-    stopTalking(sprites.wineScoff[0]);
-    showOptions([{ label: "Do you drink blood?", onClick: scene_bloodQuestion }, { label: "Back", onClick: scene_identity }]);
-  }
-  async function scene_bloodQuestion() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.frown);
-    await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?");
-    await new Promise(r => setTimeout(r, 900));
-    startTalking(sprites.wineSmile);
-    await typeText("Tsuki: Kidding! We don’t need to drink blood anymore.");
-    stopTalking(sprites.wineSmile[0]);
-    showOptions([{ label: "Back", onClick: scene_identity }]);
-  }
-  async function scene_monsterHigh() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.happy);
-    await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura is my spirit ghoul!");
-    stopTalking(sprites.happy[0]);
-    showOptions([{ label: "Back", onClick: scene_identity }]);
-  }
-  async function scene_tea() {
-    optionsBox.innerHTML = '';
-    startTalking(sprites.wineSmile);
-    await typeText("Tsuki: Oooh…Spill it!");
-    stopTalking(sprites.wineSmile[0]);
-    showOptions([{ label: "Hang up", onClick: scene_userHangup }]);
-  }
-  async function scene_userHangup() {
-    optionsBox.innerHTML = '';
-    safeSetSprite(sprites.hangup[1] || sprites.hangup[0]);
-    await typeText("—call ended—");
-    setTimeout(closeVN, 600);
-  }
+  async function scene_identity() { optionsBox.innerHTML = ''; startTalking(sprites.neutral); await typeText("Tsuki: Girl..Did you hit your head? It's me! Your Bestie?"); stopTalking(sprites.neutral[0]); showOptions([{ label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore }, { label: "What's the vampire side like?", onClick: scene_vampireLore }, { label: "Favorite Monster High character?", onClick: scene_monsterHigh }, { label: "Back", onClick: scene_whatsUp }, { label: "Hang up", onClick: scene_userHangup }]); }
+  async function scene_cupidLore() { optionsBox.innerHTML = ''; startTalking(sprites.rose); await typeText("Tsuki: Dad? Dads fun! Way out of his league with technology though."); stopTalking(sprites.rose[0]); showOptions([{ label: "Back", onClick: scene_identity }]); }
+  async function scene_vampireLore() { optionsBox.innerHTML = ''; startTalking(sprites.wineScoff); await typeText("Tsuki: I wasn’t born a vampire, I was turned on my sweet 1600.. destiny stuff."); stopTalking(sprites.wineScoff[0]); showOptions([{ label: "Do you drink blood?", onClick: scene_bloodQuestion }, { label: "Back", onClick: scene_identity }]); }
+  async function scene_bloodQuestion() { optionsBox.innerHTML = ''; startTalking(sprites.frown); await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?"); await new Promise(r => setTimeout(r, 900)); startTalking(sprites.wineSmile); await typeText("Tsuki: Kidding! We don’t need to drink blood anymore."); stopTalking(sprites.wineSmile[0]); showOptions([{ label: "Back", onClick: scene_identity }]); }
+  async function scene_monsterHigh() { optionsBox.innerHTML = ''; startTalking(sprites.happy); await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura is my spirit ghoul!"); stopTalking(sprites.happy[0]); showOptions([{ label: "Back", onClick: scene_identity }]); }
+  async function scene_tea() { optionsBox.innerHTML = ''; startTalking(sprites.wineSmile); await typeText("Tsuki: Oooh…Spill it!"); stopTalking(sprites.wineSmile[0]); showOptions([{ label: "Hang up", onClick: scene_userHangup }]); }
+  async function scene_userHangup() { optionsBox.innerHTML = ''; safeSetSprite(sprites.hangup[1] || sprites.hangup[0]); await typeText("—call ended—"); setTimeout(closeVN, 600); }
 
   /* -------------------------
-     PET SYSTEM (Fixed)
+     PET SYSTEM (Restored & Fixed)
   ------------------------- */
   const PET_ASSETS = {
     'Bunny': 'Bunnie.png', 'Bear Cub': 'Cubbie.png', 'Dog': 'Doggie.png',
     'Frog': 'Froggie.png', 'Pony': 'Horsie.png', 'Cat': 'Kittie.png'
   };
+  const FOOD_EMOJI = [
+    { id: 'apple', emoji: '🍎' }, { id: 'carrot', emoji: '🥕' }, { id: 'fish', emoji: '🐟' }, { id: 'steak', emoji: '🥩' }, { id: 'fly', emoji: '🪰' }
+  ];
   const FOOD_PREF = {
     'Bunny':    { apple: 1, carrot: 3, fish: -1, steak: -1, fly:-2 },
     'Bear Cub': { apple: 3, carrot: 1, fish: -1, steak: 2, fly:-2 },
@@ -451,12 +367,14 @@
   };
   
   let currentPet = localStorage.getItem(`${KEY_PREFIX}petChosen`) || 'Bunny';
+  let toolMode = 'idle';
+  let toolContainer = null;
+
   function loadPetLove(name) { return Number(localStorage.getItem(getLoveKey(name)) || 0); }
   function savePetLove(name, val) { localStorage.setItem(getLoveKey(name), Math.max(0, Math.min(100, Math.round(val)))); }
   function loadHat(petName) { try { const s = localStorage.getItem(getHatKey(petName)); return s ? JSON.parse(s) : null; } catch(e){return null;} }
   function saveHat(petName, hatObj) { if(!hatObj) localStorage.removeItem(getHatKey(petName)); else localStorage.setItem(getHatKey(petName), JSON.stringify(hatObj)); }
 
-  // Initial Preload
   (function preload() {
     Object.values(sprites).flat().forEach(u => { const i = new Image(); i.src = u; });
     Object.values(PET_ASSETS).forEach(fn => { const i = new Image(); i.src = `assets/pets/${fn}`; });
@@ -476,6 +394,7 @@
     renderHatForCurrentPet();
   }
 
+  /* --- RESTORED: DRAGGABLE HATS --- */
   function renderHatForCurrentPet() {
     if (!petVisualWrap) return;
     let existing = petVisualWrap.querySelector('.pet-hat-emoji');
@@ -490,9 +409,173 @@
     el.style.top = (hat.yPct || 12) + '%';
     el.style.transform = `translate(-50%,-50%) scale(${hat.scale || 1.2})`;
     el.style.fontSize = '34px';
+    el.style.cursor = 'grab';
     el.style.zIndex = 40;
     petVisualWrap.appendChild(el);
+    makeHatDraggable(el);
   }
+
+  function makeHatDraggable(hatEl) {
+    if (!petVisualWrap) return;
+    let active = false;
+    function onDown(e) {
+      e.preventDefault(); active = true;
+      hatEl.style.cursor = 'grabbing';
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+    }
+    function onMove(e) {
+      if (!active) return;
+      const p = getPointerPos(e);
+      const wrap = petVisualWrap.getBoundingClientRect();
+      const xPct = ((p.x - wrap.left) / wrap.width) * 100;
+      const yPct = ((p.y - wrap.top) / wrap.height) * 100;
+      hatEl.style.left = Math.max(2, Math.min(98, xPct)) + '%';
+      hatEl.style.top = Math.max(2, Math.min(98, yPct)) + '%';
+    }
+    function onUp(e) {
+      if (!active) return;
+      active = false; hatEl.style.cursor = 'grab';
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      const wrap = petVisualWrap.getBoundingClientRect();
+      const rect = hatEl.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const xPct = ((cx - wrap.left) / wrap.width) * 100;
+      const yPct = ((cy - wrap.top) / wrap.height) * 100;
+      const hat = loadHat(currentPet) || { emoji: hatEl.innerText, scale: 1.2 };
+      hat.xPct = Math.max(1, Math.min(99, xPct));
+      hat.yPct = Math.max(1, Math.min(99, yPct));
+      saveHat(currentPet, hat);
+    }
+    hatEl.addEventListener('pointerdown', onDown, { passive: false });
+  }
+
+  /* --- RESTORED: FEED & BATHE TOOLS --- */
+  function ensureToolContainer() {
+    if (toolContainer) return toolContainer;
+    const rightBox = petPopup?.querySelector('.vn-right .vn-box');
+    const cont = document.createElement('div');
+    cont.id = 'petToolContainer';
+    cont.style.display = 'none'; cont.style.marginTop = '12px';
+    cont.style.flexWrap = 'wrap'; cont.style.justifyContent = 'center'; cont.style.gap = '8px';
+    if (rightBox) rightBox.appendChild(cont);
+    toolContainer = cont;
+    return cont;
+  }
+  function showToolsForMode(mode) {
+    const cont = ensureToolContainer();
+    cont.innerHTML = ''; cont.style.display = 'flex';
+    cont.dataset.mode = mode; toolMode = mode;
+    if (mode === 'feed') {
+      FOOD_EMOJI.forEach(f => {
+        const b = document.createElement('button');
+        b.className = 'pet-tool tool-food'; b.dataset.tool = 'food'; b.dataset.foodId = f.id; b.innerText = f.emoji;
+        cont.appendChild(b);
+      });
+    } else if (mode === 'bathe') {
+      const soap = document.createElement('button'); soap.className='pet-tool'; soap.dataset.tool='soap'; soap.innerText='🧼';
+      const shower = document.createElement('button'); shower.className='pet-tool'; shower.dataset.tool='shower'; shower.innerText='🚿';
+      const towel = document.createElement('button'); towel.className='pet-tool'; towel.dataset.tool='towel'; towel.innerText='🧻';
+      cont.appendChild(soap); cont.appendChild(shower); cont.appendChild(towel);
+    }
+    attachToolDragHandlers();
+  }
+  function hideTools() {
+    if (!toolContainer) return;
+    toolContainer.style.display = 'none'; toolMode = 'idle';
+    if (batheBtn) batheBtn.innerText = 'Bathe';
+  }
+  function toggleToolMode(mode) {
+    if (toolMode === mode) { hideTools(); return; }
+    showToolsForMode(mode);
+    if (mode === 'bathe') batheBtn && (batheBtn.innerText = 'Exit Bath');
+    if (mode !== 'bathe') cleanupBubbles();
+  }
+  if (feedBtn) feedBtn.onclick = () => toggleToolMode('feed');
+  if (batheBtn) batheBtn.onclick = () => toggleToolMode('bathe');
+
+  /* --- RESTORED: DRAGGABLE TOOLS LOGIC --- */
+  function getPointerPos(e) {
+    if (!e) return { x: 0, y: 0 };
+    return { x: (e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX)),
+             y: (e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] && e.touches[0].clientY)) };
+  }
+  function makeDraggableTool(el) {
+    let avatar = null; let active = false;
+    function createAvatar(x, y) {
+      avatar = document.createElement('div');
+      avatar.className = 'tool-avatar';
+      avatar.style.position = 'fixed'; avatar.style.left = (x-18)+'px'; avatar.style.top = (y-18)+'px';
+      avatar.style.zIndex = 20000; avatar.style.pointerEvents = 'none'; avatar.innerText = el.innerText;
+      document.body.appendChild(avatar);
+    }
+    function onDown(e) {
+      e.preventDefault(); active = true;
+      const p = getPointerPos(e); createAvatar(p.x, p.y);
+      document.addEventListener('pointermove', onMove); document.addEventListener('pointerup', onUp);
+    }
+    function onMove(e) {
+      if (!active || !avatar) return;
+      const p = getPointerPos(e);
+      avatar.style.left = (p.x-18)+'px'; avatar.style.top = (p.y-18)+'px';
+    }
+    function onUp(e) {
+      if (!active) return;
+      const p = getPointerPos(e);
+      const wrap = petVisualWrap && petVisualWrap.getBoundingClientRect();
+      const toolType = el.dataset.tool;
+      if (wrap && p.x >= wrap.left && p.x <= wrap.right && p.y >= wrap.top && p.y <= wrap.bottom) {
+        const xPct = ((p.x-wrap.left)/wrap.width)*100;
+        const yPct = ((p.y-wrap.top)/wrap.height)*100;
+        if (toolType === 'food') handleFoodDrop(el.dataset.foodId);
+        else if (toolType === 'soap') handleSoapAt(xPct, yPct);
+        else if (toolType === 'shower') handleShowerAt();
+        else if (toolType === 'towel') handleTowelAt();
+      }
+      if (avatar) avatar.remove(); avatar = null; active = false;
+      document.removeEventListener('pointermove', onMove); document.removeEventListener('pointerup', onUp);
+    }
+    el.addEventListener('pointerdown', onDown, { passive: false });
+  }
+  function attachToolDragHandlers() {
+    if (!toolContainer) return;
+    toolContainer.querySelectorAll('.pet-tool').forEach(tool => {
+      const newTool = tool.cloneNode(true);
+      tool.replaceWith(newTool);
+      makeDraggableTool(newTool);
+    });
+  }
+
+  /* --- PET ACTIONS (Feeding, Bathing) --- */
+  function createBubblesAt(xPct, yPct) {
+    if (!petVisualWrap) return;
+    const wrapRect = petVisualWrap.getBoundingClientRect();
+    const b = document.createElement('div'); b.className = 'pet-bubble';
+    const size = 10 + Math.random() * 20;
+    b.style.width=size+'px'; b.style.height=size+'px';
+    b.style.left = ((xPct/100)*wrapRect.width)+'px'; b.style.top = ((yPct/100)*wrapRect.height)+'px';
+    petVisualWrap.appendChild(b);
+    setTimeout(()=>b.style.transform='translateY(-20px)', 100);
+  }
+  function cleanupBubbles() { petVisualWrap?.querySelectorAll('.pet-bubble').forEach(n => n.remove()); }
+  function spawnReaction(emoji) {
+    if (!petVisualWrap) return;
+    const r = document.createElement('div'); r.className='reaction-bubble'; r.innerText=emoji;
+    r.style.left='50%'; r.style.top='10%';
+    petVisualWrap.appendChild(r);
+    setTimeout(()=>r.remove(), 1000);
+  }
+  function handleFoodDrop(foodId) {
+    const pref = (FOOD_PREF[currentPet] && FOOD_PREF[currentPet][foodId]) || 0;
+    savePetLove(currentPet, loadPetLove(currentPet) + (pref >= 0 ? 5 : -2));
+    spawnReaction(pref >= 2 ? '😍' : (pref < 0 ? '😖' : '😋'));
+    renderPetUI();
+  }
+  function handleSoapAt(x, y) { createBubblesAt(x, y); }
+  function handleShowerAt() { cleanupBubbles(); spawnReaction('✨'); savePetLove(currentPet, loadPetLove(currentPet)+5); renderPetUI(); }
+  function handleTowelAt() { spawnReaction('🥰'); savePetLove(currentPet, loadPetLove(currentPet)+5); renderPetUI(); }
 
   function openPetPopup() {
     if (!petPopup) return;
@@ -500,23 +583,19 @@
     petPopup.setAttribute('aria-hidden', 'false');
     renderPetUI();
   }
-
   function closePetPopup() {
     if (!petPopup) return;
     petPopup.classList.add('hidden');
     petPopup.setAttribute('aria-hidden', 'true');
+    hideTools();
   }
 
-  // Pet Event Listeners (FIXED)
-  if (petClose) {
-    petClose.onclick = closePetPopup; // Force overwrite
-  }
+  if (petClose) petClose.onclick = closePetPopup;
   if (petUnlockBtn) petUnlockBtn.addEventListener('click', openPetPopup);
   if (petVariantSel) {
     petVariantSel.addEventListener('change', () => {
       currentPet = petVariantSel.value;
       localStorage.setItem(`${KEY_PREFIX}petChosen`, currentPet);
-      if (!localStorage.getItem(getLoveKey(currentPet))) savePetLove(currentPet, 0);
       renderPetUI();
     });
   }
@@ -538,7 +617,6 @@
       div.style.cursor = 'pointer';
       div.innerHTML = `<div style="font-size:28px">${h.emoji}</div><div style="font-size:12px">${h.label}</div>`;
       div.onclick = () => {
-        // Simple click-to-equip for better UX than drag
         saveHat(currentPet, { emoji: h.emoji, xPct: 50, yPct: 15, scale: h.scale });
         renderPetUI();
         showToast(`Equipped ${h.label}`);
