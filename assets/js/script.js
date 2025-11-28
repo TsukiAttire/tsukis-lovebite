@@ -1,10 +1,11 @@
-/* script.js — FIXED (Shop, Draggable Hats Restored, Feed/Bathe Restored) */
+/* script.js — FIXED (VN Lore Restored, Stars Buffed, Form Fixed) */
 (() => {
   'use strict';
 
   /* -------------------------
      Config & Resources
   ------------------------- */
+  const FORM_ENDPOINT = 'https://formspree.io/f/mjkdzyqk';
   const TYPE_SPEED_MS = 24;
   const TALK_INTERVAL_MS = 140;
   const SPRITE_TRANSITION_CLASS = 'sprite-transition';
@@ -36,6 +37,10 @@
   const tsukiSprite = document.getElementById('tsukiSprite');
   const textBox = document.getElementById('textBox');
   const optionsBox = document.getElementById('optionsBox');
+
+  const suggestModal = document.getElementById('suggestModal');
+  const suggestForm = document.getElementById('suggestForm');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
 
   const toast = document.getElementById('toast');
   const toggleSfx = document.getElementById('toggle-sfx');
@@ -223,7 +228,49 @@
   }
 
   /* -------------------------
-     SCENES
+     MODAL & FORM LOGIC (RESTORED)
+  ------------------------- */
+  function openSuggestModal(kind = '') {
+    if (!suggestForm) return;
+    if (!suggestForm.querySelector('input[name="type"]')) {
+      const hidden = document.createElement('input');
+      hidden.type = 'hidden'; hidden.name = 'type'; hidden.value = kind;
+      suggestForm.appendChild(hidden);
+    } else {
+      const tf = suggestForm.querySelector('input[name="type"]');
+      if (tf) tf.value = kind;
+    }
+    suggestModal.classList.remove('hidden');
+    suggestModal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeSuggestModal() {
+    suggestModal.classList.add('hidden');
+    suggestModal.setAttribute('aria-hidden', 'true');
+  }
+
+  if (suggestForm) {
+    suggestForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const fd = new FormData(suggestForm);
+      try {
+        const res = await fetch(FORM_ENDPOINT, { method: 'POST', body: fd, headers: { Accept: 'application/json' }});
+        if (res.ok) {
+          showToast('Submitted — thanks babe ♡');
+          closeSuggestModal();
+          textBox.innerText = "Tsuki: Mmm thanks! I'll check it out.";
+          optionsBox.innerHTML = '';
+          setTimeout(closeVN, 900);
+        } else showToast('Submission failed — try again');
+      } catch (err) {
+        showToast('Submission failed — check network');
+      }
+    });
+  }
+  if (modalCloseBtn) modalCloseBtn.onclick = closeSuggestModal;
+
+  /* -------------------------
+     SCENES (Standard)
   ------------------------- */
   async function scene_start() {
     openVN();
@@ -239,12 +286,99 @@
     await typeText("Tsuki: What's up, girl?");
     stopTalking(sprites.happy[0]);
     showOptions([
-      { label: "I've got some tea for a video...", onClick: scene_tea },
+      { label: "I've got an idea for a video!", onClick: scene_tea },
       { label: "Who are you…What are you?", onClick: scene_identity },
       { label: "Hang up", onClick: scene_userHangup }
     ]);
   }
 
+  // LORE RESTORED
+  async function scene_identity() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.neutral);
+    await typeText("Tsuki: Girl..Did you hit your head? It's me! Your Bestie?");
+    stopTalking(sprites.neutral[0]);
+    showOptions([
+      { label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore },
+      { label: "What's the vampire side like?", onClick: scene_vampireLore },
+      { label: "Favorite Monster High character?", onClick: scene_monsterHigh },
+      { label: "Back", onClick: scene_whatsUp },
+      { label: "Hang up", onClick: scene_userHangup }
+    ]);
+  }
+
+  async function scene_cupidLore() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.rose);
+    await typeText("Tsuki: Dad? Dads fun! Way out of his league with technology though. It’s harder to do the arrows thing when everyone is online.");
+    stopTalking(sprites.rose[0]);
+    showOptions([
+       { label: "More about your job?", onClick: scene_jobLore },
+       { label: "Back", onClick: scene_identity }
+    ]);
+  }
+
+  async function scene_vampireLore() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.wineScoff);
+    await typeText("Tsuki: I wasn’t born a vampire, I was turned on my sweet 1600.. destiny stuff.");
+    stopTalking(sprites.wineScoff[0]);
+    showOptions([
+      { label: "Do you drink blood?", onClick: scene_bloodQuestion }, 
+      { label: "Back", onClick: scene_identity }
+    ]);
+  }
+
+  async function scene_bloodQuestion() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.frown);
+    await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?");
+    await new Promise(r => setTimeout(r, 900));
+    startTalking(sprites.wineSmile);
+    await typeText("Tsuki: Kidding! We don’t need to drink blood anymore.");
+    stopTalking(sprites.wineSmile[0]);
+    showOptions([{ label: "Back", onClick: scene_identity }]);
+  }
+
+  async function scene_monsterHigh() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.happy);
+    await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura is my spirit ghoul!");
+    stopTalking(sprites.happy[0]);
+    showOptions([{ label: "Back", onClick: scene_identity }]);
+  }
+
+  async function scene_jobLore() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.neutral);
+    await typeText("Tsuki: You’re seeing it, babe! I spill tea with you and then tell everyone else about it!");
+    stopTalking(sprites.neutral[0]);
+    showOptions([{ label: "Back", onClick: scene_identity }]);
+  }
+
+  // RESTORED: Form/Tea Logic
+  async function scene_tea() {
+    optionsBox.innerHTML = '';
+    startTalking(sprites.wineSmile);
+    await typeText("Tsuki: Oooh…Spill it!");
+    stopTalking(sprites.wineSmile[0]);
+    showOptions([
+      { label: "Suggest Rant (Form)", onClick: () => openSuggestModal('Rant') },
+      { label: "Suggest Game (Form)", onClick: () => openSuggestModal('Game') },
+      { label: "Hang up", onClick: scene_userHangup }
+    ]);
+  }
+
+  async function scene_userHangup() {
+    optionsBox.innerHTML = '';
+    safeSetSprite(sprites.hangup[1] || sprites.hangup[0]);
+    await typeText("—call ended—");
+    setTimeout(closeVN, 600);
+  }
+
+  /* -------------------------
+     SCENES (Shop Items)
+  ------------------------- */
   // 1. FORTUNE
   async function scene_fortuneTeller() {
     if (!spendStars(10)) return;
@@ -339,14 +473,6 @@
     });
   });
 
-  async function scene_identity() { optionsBox.innerHTML = ''; startTalking(sprites.neutral); await typeText("Tsuki: Girl..Did you hit your head? It's me! Your Bestie?"); stopTalking(sprites.neutral[0]); showOptions([{ label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore }, { label: "What's the vampire side like?", onClick: scene_vampireLore }, { label: "Favorite Monster High character?", onClick: scene_monsterHigh }, { label: "Back", onClick: scene_whatsUp }, { label: "Hang up", onClick: scene_userHangup }]); }
-  async function scene_cupidLore() { optionsBox.innerHTML = ''; startTalking(sprites.rose); await typeText("Tsuki: Dad? Dads fun! Way out of his league with technology though."); stopTalking(sprites.rose[0]); showOptions([{ label: "Back", onClick: scene_identity }]); }
-  async function scene_vampireLore() { optionsBox.innerHTML = ''; startTalking(sprites.wineScoff); await typeText("Tsuki: I wasn’t born a vampire, I was turned on my sweet 1600.. destiny stuff."); stopTalking(sprites.wineScoff[0]); showOptions([{ label: "Do you drink blood?", onClick: scene_bloodQuestion }, { label: "Back", onClick: scene_identity }]); }
-  async function scene_bloodQuestion() { optionsBox.innerHTML = ''; startTalking(sprites.frown); await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?"); await new Promise(r => setTimeout(r, 900)); startTalking(sprites.wineSmile); await typeText("Tsuki: Kidding! We don’t need to drink blood anymore."); stopTalking(sprites.wineSmile[0]); showOptions([{ label: "Back", onClick: scene_identity }]); }
-  async function scene_monsterHigh() { optionsBox.innerHTML = ''; startTalking(sprites.happy); await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura is my spirit ghoul!"); stopTalking(sprites.happy[0]); showOptions([{ label: "Back", onClick: scene_identity }]); }
-  async function scene_tea() { optionsBox.innerHTML = ''; startTalking(sprites.wineSmile); await typeText("Tsuki: Oooh…Spill it!"); stopTalking(sprites.wineSmile[0]); showOptions([{ label: "Hang up", onClick: scene_userHangup }]); }
-  async function scene_userHangup() { optionsBox.innerHTML = ''; safeSetSprite(sprites.hangup[1] || sprites.hangup[0]); await typeText("—call ended—"); setTimeout(closeVN, 600); }
-
   /* -------------------------
      PET SYSTEM (Restored & Fixed)
   ------------------------- */
@@ -394,7 +520,6 @@
     renderHatForCurrentPet();
   }
 
-  /* --- RESTORED: DRAGGABLE HATS --- */
   function renderHatForCurrentPet() {
     if (!petVisualWrap) return;
     let existing = petVisualWrap.querySelector('.pet-hat-emoji');
@@ -452,7 +577,6 @@
     hatEl.addEventListener('pointerdown', onDown, { passive: false });
   }
 
-  /* --- RESTORED: FEED & BATHE TOOLS --- */
   function ensureToolContainer() {
     if (toolContainer) return toolContainer;
     const rightBox = petPopup?.querySelector('.vn-right .vn-box');
@@ -496,7 +620,6 @@
   if (feedBtn) feedBtn.onclick = () => toggleToolMode('feed');
   if (batheBtn) batheBtn.onclick = () => toggleToolMode('bathe');
 
-  /* --- RESTORED: DRAGGABLE TOOLS LOGIC --- */
   function getPointerPos(e) {
     if (!e) return { x: 0, y: 0 };
     return { x: (e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] && e.touches[0].clientX)),
@@ -548,7 +671,6 @@
     });
   }
 
-  /* --- PET ACTIONS (Feeding, Bathing) --- */
   function createBubblesAt(xPct, yPct) {
     if (!petVisualWrap) return;
     const wrapRect = petVisualWrap.getBoundingClientRect();
@@ -634,11 +756,16 @@
   const debugFullResetBtn = document.getElementById('debug-full-reset');
 
   if(debugAddStarsBtn) debugAddStarsBtn.onclick = () => { starCount += 50; updateStarDisp(); showToast('+50 stars'); };
+  
   if(debugUnlockPetsBtn) debugUnlockPetsBtn.onclick = () => { 
     localStorage.setItem(`${KEY_PREFIX}petUnlocked`, 'true'); 
-    if(firstPetUnlockBox) firstPetUnlockBox.style.display = 'block';
-    showToast('Pet unlocked'); 
+    if(firstPetUnlockBox) {
+        firstPetUnlockBox.style.display = 'block';
+        if(petUnlockBtn) petUnlockBtn.innerText = "🐾 Open Pet";
+    }
+    showToast('Pet unlocked! Check Home.'); 
   };
+  
   if(debugResetBtn) debugResetBtn.onclick = () => { savePetLove(currentPet, 0); renderPetUI(); showToast('Pet Reset'); };
   if(debugFullResetBtn) debugFullResetBtn.onclick = () => { localStorage.clear(); location.reload(); };
 
@@ -667,9 +794,15 @@
     star.style.fontSize = '22px'; star.style.color = '#ffb3c6';
     star.textContent = '★';
     document.body.appendChild(star);
-    const duration = 3500 + Math.random() * 2000;
+    const duration = 2000 + Math.random() * 2000;
     star.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(110vh)' }], { duration, easing: 'linear' });
-    star.onclick = () => { star.remove(); starCount++; localStorage.setItem(`${KEY_PREFIX}stars`, starCount); updateStarDisp(); showToast('+1 star!'); };
+    star.onclick = () => { 
+      star.remove(); 
+      starCount += 10; // Worth more
+      localStorage.setItem(`${KEY_PREFIX}stars`, starCount); 
+      updateStarDisp(); 
+      showToast('+10 stars!'); 
+    };
     setTimeout(() => star.remove(), duration+50);
   }
   function populateBackgroundStars() {
@@ -677,7 +810,7 @@
     for (let i=0; i<MAX; i++) createBackgroundStar(Math.random()*window.innerWidth, Math.random()*window.innerHeight);
   }
   populateBackgroundStars();
-  setInterval(spawnFallingStar, 3500);
+  setInterval(spawnFallingStar, 1200); // More stars
 
   // First Star Logic
   if (localStorage.getItem(`${KEY_PREFIX}petUnlocked`) === 'true' && firstPetUnlockBox) {
