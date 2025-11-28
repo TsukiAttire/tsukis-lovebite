@@ -242,4 +242,63 @@ a{color:var(--accent-strong);text-decoration:none}
 .pet-hat-emoji { pointer-events: auto; user-select: none; }
 .pet-bounce { display: inline-block; transform-origin: center; }
 
+/* --- NEW ADDITIONS FOR UPDATE --- */
+
+/* 1. THEME: Vampire Mode (Dark Red/Gothic) */
+body.theme-vampire {
+  --bg: #1a0505;
+  --accent-dark: #2d0a0a;
+  --accent-strong: #ff0033;
+  --hot-pink: #8a0000;
+  --card: #2b1111;
+  --subtle: #3d1f1f;
+  --gloss: #5c0000;
+  --text: #ffcccc;
+}
+body.theme-vampire .hero .title-chrome {
+  background: linear-gradient(90deg, #ff0000, #800000);
+  -webkit-background-clip: text;
+  text-shadow: 0 0 10px rgba(255,0,0,0.4);
+}
+body.theme-vampire .bg-star { box-shadow: 0 0 8px rgba(255,0,0,0.8); background:red; }
+
+/* 2. THEME: Midnight Mode (Blue/Purple/Cyber) */
+body.theme-midnight {
+  --bg: #05051a;
+  --accent-dark: #0a0a2d;
+  --accent-strong: #00ffff;
+  --hot-pink: #aa00ff;
+  --card: #11112b;
+  --subtle: #1f1f3d;
+  --gloss: #005c5c;
+  --text: #ccccff;
+}
+body.theme-midnight .hero .title-chrome {
+  background: linear-gradient(90deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  text-shadow: 0 0 10px rgba(0,255,255,0.4);
+}
+
+/* 3. SETTINGS: Theme Buttons */
+.theme-btn {
+  display:block; width:100%; padding:10px; margin-bottom:8px;
+  border:2px solid var(--accent-dark); border-radius:8px;
+  background: var(--card); color: var(--accent-strong);
+  font-family: 'VT323', monospace; font-size:18px; cursor:pointer;
+  text-align:left;
+}
+.theme-btn:hover { filter:brightness(1.1); }
+.theme-btn.active-theme { border-color:var(--accent-strong); background:var(--bg); }
+
+/* 4. VN: Gift Buttons */
+.gift-btn {
+  display:flex; justify-content:space-between;
+  width:100%; padding:10px; margin-bottom:6px;
+  background: linear-gradient(90deg, #fff0f5, #fff);
+  border: 2px solid var(--accent-dark); border-radius:8px;
+  font-family: 'VT323', monospace; font-size:18px; cursor:pointer;
+  color: #3b2a2a;
+}
+.gift-btn:hover { transform: translateX(4px); }
+.gift-cost { font-weight:bold; color:#cc4455; }
 }
