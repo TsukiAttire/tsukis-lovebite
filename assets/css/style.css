@@ -302,3 +302,44 @@ body.theme-midnight .hero .title-chrome {
 .gift-btn:hover { transform: translateX(4px); }
 .gift-cost { font-weight:bold; color:#cc4455; }
 }
+/* --- FIX: Force buttons to be clickable --- */
+button, select, input {
+  position: relative;
+  z-index: 50; /* Ensures they sit above decorative layers */
+  cursor: pointer;
+}
+
+/* --- SHOP STYLES --- */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.shop-btn {
+  background: #fff;
+  border: 2px solid var(--accent-dark);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: transform 0.1s;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+}
+
+.shop-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+}
+
+.shop-btn .emoji { font-size: 28px; }
+.shop-btn .label { font-size: 14px; font-weight: bold; color: var(--accent-dark); }
+.shop-btn .cost { 
+  background: var(--accent-strong); 
+  color: var(--card); 
+  padding: 2px 6px; 
+  border-radius: 4px; 
+  font-size: 12px; 
+}
