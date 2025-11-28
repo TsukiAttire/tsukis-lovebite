@@ -4,14 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tsuki's Lovebite.exe</title>
-
-  <!-- Pixel font -->
   <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-  <!-- TOP NAV (hyper-Y2K glossy) -->
   <header class="topbar">
     <div class="brand">
       <div class="brand-icon">♡</div>
@@ -20,7 +17,8 @@
 
     <nav class="nav">
       <button class="nav-tab active" data-tab="home">Home</button>
-      <button class="nav-tab" data-tab="shop">Shop</button> <button class="nav-tab" data-tab="socials">Socials</button>
+      <button class="nav-tab" data-tab="shop">Shop</button>
+      <button class="nav-tab" data-tab="socials">Socials</button>
       <button class="nav-tab" data-tab="settings">Settings</button>
       <button class="nav-tab" data-tab="about">About</button>
     </nav>
@@ -128,82 +126,8 @@
     </section>
   </main>
 
-  <main class="main">
-    <!-- Home -->
-    <section id="home" class="page-panel active">
-      <div class="hero">
-        <h1 class="title-chrome">Tsuki's Lovebite.exe</h1>
-        <p class="tagline">soft chaos • pink tea • pixel love</p>
-
-        <div class="hero-actions">
-          <button class="cta" id="openVNbtn">Chat with Tsuki ♡</button>
-          <a class="kofi-btn" href="#" target="_blank">Support (Ko-Fi)</a>
-        </div>
-
-        <!-- ⭐ FIRST PET UNLOCK BUTTON (hidden until first star) -->
-        <div id="firstPetUnlock" style="display:none; margin-top:14px; text-align:center;">
-          <button id="petUnlockBtn" class="cta" style="background:linear-gradient(180deg,#ffe6f0,#ffb3c6); color:#3b2a1a;">
-            🐾 Your Pet Awaits…
-          </button>
-        </div>
-        <!-- ⭐ END FIRST PET UNLOCK BUTTON -->
-
-      </div>
-    </section>
-
-    <!-- Socials -->
-    <section id="socials" class="page-panel">
-      <div class="card">
-        <h2>Stay up to date</h2>
-        <div class="links">
-          <a href="#" target="_blank">YouTube</a>
-          <a href="#" target="_blank">TikTok #1</a>
-          <a href="#" target="_blank">TikTok #2</a>
-          <a href="#" target="_blank">TikTok #3</a>
-          <a href="#" target="_blank">Roblox</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- Support -->
-    <section id="support" class="page-panel">
-      <div class="card">
-        <h2>Support Me</h2>
-        <p>Ko-Fi link coming soon — placeholder for future support link.</p>
-        <a class="kofi-btn big" href="#" target="_blank">Ko-Fi (coming soon)</a>
-      </div>
-    </section>
-
-    <!-- Settings -->
-    <section id="settings" class="page-panel">
-      <div class="card">
-        <h2>Settings</h2>
-        <label><input type="checkbox" id="toggle-sfx" checked> Enable sounds (ring & typing)</label>
-
-        <div class="settings-section" style="margin-top:12px">
-          <h3>Debug / Cheats</h3>
-          <button class="debug-btn" id="debug-reset">Reset Pet System</button>
-          <button class="debug-btn" id="debug-add-stars">+5 Stars</button>
-          <button class="debug-btn" id="debug-unlock-pets">Unlock Pet System</button>
-          <button class="debug-btn" id="debug-full-reset">Clear ALL Data</button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- About -->
-    <section id="about" class="page-panel">
-      <div class="card">
-        <h2>About</h2>
-        <p>Tsuki's Lovebite.exe — a soft, glittery Y2K corner for pixel tea, ranters, and cozy chaos.</p>
-      </div>
-    </section>
-  </main>
-
-  <!-- RINGING PHONE (fixed) -->
   <img id="phoneButton" src="assets/images/Phone.png" alt="phone" class="phone-icon" />
 
-  <!-- VISUAL NOVEL WINDOW (Tsuki) -->
   <div id="vnContainer" class="vn hidden" aria-hidden="true">
     <div class="vn-card">
       <div class="vn-left">
@@ -219,16 +143,12 @@
     </div>
   </div>
 
-  <!-- PET POPUP (VN-style) -->
   <div id="petPopup" class="vn hidden" aria-hidden="true" data-type="pet">
     <div class="vn-card">
       <div class="vn-left" style="flex:0 0 220px">
-        <!-- container is relative so bubble elements can be placed over the pet -->
         <div id="petVisualWrap" style="width:180px; margin:0 auto; position:relative;">
           <img id="petSprite" src="" alt="pet" style="width:100%; image-rendering:pixelated; border-radius:10px; border:3px solid var(--accent-dark)">
-          <img id="petHat" src="" alt="hat" style="position:absolute; left:50%; transform:translateX(-50%); top:6px; width:84px; display:none; pointer-events:none; image-rendering:pixelated"/>
-          <!-- bubble layer will be appended here -->
-        </div>
+          </div>
         <div style="text-align:center;margin-top:8px;color:var(--accent-dark)">
           <div id="petNameTitle">Your Pet</div>
           <div style="margin-top:6px">Stars: <strong id="starCountDisp">0</strong></div>
@@ -267,39 +187,16 @@
           </div>
 
           <hr style="margin:12px 0; border-color: #ffd6df">
-
-          <div style="color:var(--accent-dark);margin-bottom:8px">Hat Shop</div>
-          <div id="shopScroll" class="pet-shop-window">
-            <!-- shop items populated by JS -->
-          </div>
+          <div style="color:var(--accent-dark);margin-bottom:8px">Hat Inventory (Click to Equip)</div>
+          <div id="shopScroll" class="pet-shop-window"></div>
 
         </div>
       </div>
-
       <button id="petClose" class="vn-close" aria-label="close pet">✕</button>
     </div>
   </div>
 
-  <!-- MODAL: suggestion (Formspree) -->
-  <div id="suggestModal" class="modal hidden" aria-hidden="true">
-    <div class="modal-card">
-      <h3>Submit a suggestion</h3>
-      <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
-        <label>Your name <input type="text" name="name" required></label>
-        <label>Your suggestion <textarea name="message" rows="4" required></textarea></label>
-        <div class="modal-actions">
-          <button type="submit" class="submit-btn">Send</button>
-          <button type="button" id="modalCloseBtn" class="close-btn">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- STAR LAYER (appended by JS if needed) -->
-
-  <!-- toast -->
   <div id="toast" class="toast" aria-hidden="true"></div>
-
   <script src="assets/js/script.js" defer></script>
 </body>
 </html>
