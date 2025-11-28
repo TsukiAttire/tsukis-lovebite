@@ -20,12 +20,113 @@
 
     <nav class="nav">
       <button class="nav-tab active" data-tab="home">Home</button>
-      <button class="nav-tab" data-tab="socials">Socials</button>
-      <button class="nav-tab" data-tab="support">Support Me</button>
+      <button class="nav-tab" data-tab="shop">Shop</button> <button class="nav-tab" data-tab="socials">Socials</button>
       <button class="nav-tab" data-tab="settings">Settings</button>
       <button class="nav-tab" data-tab="about">About</button>
     </nav>
   </header>
+
+  <main class="main">
+    <section id="home" class="page-panel active">
+      <div class="hero">
+        <h1 class="title-chrome">Tsuki's Lovebite.exe</h1>
+        <p class="tagline">soft chaos • pink tea • pixel love</p>
+
+        <div class="hero-actions">
+          <button class="cta" id="openVNbtn">Chat with Tsuki ♡</button>
+          <a class="kofi-btn" href="#" target="_blank">Support (Ko-Fi)</a>
+        </div>
+
+        <div id="firstPetUnlock" style="display:none; margin-top:14px; text-align:center;">
+          <button id="petUnlockBtn" class="cta" style="background:linear-gradient(180deg,#ffe6f0,#ffb3c6); color:#3b2a1a;">
+            🐾 Your Pet Awaits…
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="shop" class="page-panel">
+      <div class="card">
+        <h2>✨ Tsuki's Gift Shop</h2>
+        <p style="margin-bottom:12px; opacity:0.8">Buy a gift to see Tsuki's reaction!</p>
+        
+        <div class="shop-grid">
+          <button class="shop-btn" id="btn-gift-rose">
+            <span class="emoji">🌹</span>
+            <span class="label">Red Rose</span>
+            <span class="cost">20★</span>
+          </button>
+
+          <button class="shop-btn" id="btn-gift-teddy">
+            <span class="emoji">🧸</span>
+            <span class="label">Teddy Bear</span>
+            <span class="cost">40★</span>
+          </button>
+
+          <button class="shop-btn" id="btn-gift-purse">
+            <span class="emoji">👜</span>
+            <span class="label">Purse</span>
+            <span class="cost">50★</span>
+          </button>
+
+          <button class="shop-btn" id="btn-gift-choco">
+            <span class="emoji">🍫</span>
+            <span class="label">Chocolate</span>
+            <span class="cost">15★</span>
+          </button>
+
+          <button class="shop-btn" id="btn-gift-boba">
+            <span class="emoji">🧋</span>
+            <span class="label">Boba Tea</span>
+            <span class="cost">15★</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px; background:linear-gradient(180deg,#f3e6ff,#efe6ff);">
+        <h2>🔮 Mystic Corner</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <p>Consult the spirits for a vibe check.</p>
+          <button class="cta" id="btn-fortune" style="font-size:16px;">Ask Fortune (10★)</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="socials" class="page-panel">
+      <div class="card">
+        <h2>Stay up to date</h2>
+        <div class="links">
+          <a href="#" target="_blank">YouTube</a>
+          <a href="#" target="_blank">TikTok</a>
+          <a href="#" target="_blank">Roblox</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="settings" class="page-panel">
+      <div class="card">
+        <h2>Settings</h2>
+        <label><input type="checkbox" id="toggle-sfx" checked> Enable sounds</label>
+
+        <div class="settings-section" style="margin-top:12px">
+          <h3>Debug / Cheats</h3>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            <button class="debug-btn" id="debug-add-stars">+50 Stars</button>
+            <button class="debug-btn" id="debug-unlock-pets">Unlock Pet</button>
+            <button class="debug-btn" id="debug-reset">Reset Pet</button>
+            <button class="debug-btn" id="debug-full-reset">Wipe Save</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="page-panel">
+      <div class="card">
+        <h2>About</h2>
+        <p>Tsuki's Lovebite.exe — a soft, glittery Y2K corner for pixel tea and cozy chaos.</p>
+      </div>
+    </section>
+  </main>
 
   <main class="main">
     <!-- Home -->
