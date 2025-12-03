@@ -17,17 +17,30 @@
     <img src="assets/images/Bat Wing Right.png" alt="" class="wing-deco right-wing">
 
     <header class="header-section">
-      <div class="logo-text">
-          <h1>Tsuki's Lovebite</h1>
-          <span class="heart-decoration">♥ .exe ♥</span>
+      <div class="header-inner">
+          <div class="logo-text">
+              <h1>Tsuki's Lovebite</h1>
+              <span class="heart-decoration">♥ .exe ♥</span>
+          </div>
       </div>
     </header>
 
     <nav class="nav-bar">
-      <button class="nav-tab active" data-tab="home">Home</button>
-      <button class="nav-tab" data-tab="shop">Shop</button>
-      <button class="nav-tab" data-tab="socials">Links</button>
-      <button class="nav-tab" data-tab="settings">Config</button>
+      <button class="nav-tab active" data-tab="home">
+        <span class="icon">🏠</span> Home
+      </button>
+      <button class="nav-tab" data-tab="pet">
+        <span class="icon">🐾</span> Pet
+      </button>
+      <button class="nav-tab" data-tab="shop">
+        <span class="icon">🛍️</span> Shop
+      </button>
+      <button class="nav-tab" data-tab="socials">
+        <span class="icon">☁️</span> Links
+      </button>
+      <button class="nav-tab" data-tab="settings">
+        <span class="icon">⚙️</span> Config
+      </button>
     </nav>
 
     <main class="content-grid">
@@ -37,7 +50,7 @@
           <img id="staticAvatar" src="assets/sprites/Thanks.png" alt="Tsuki Avatar">
         </div>
         
-        <div class="status-box">
+        <div class="status-sticker">
           <h3>♥ Status ♥</h3>
           <p class="blink">● Online</p>
         </div>
@@ -47,35 +60,75 @@
             <button id="dailyRewardBtn" class="daily-btn">Claim Daily!</button>
             <div id="dailyTimer" class="daily-timer">00:00:00</div>
         </div>
-
-        <div class="deco-stickers">
-           <span>🍓</span><span>🍫</span><span>💉</span>
-        </div>
       </aside>
 
       <section class="col-main">
         
         <div id="home" class="page-panel active">
-            <div class="content-box">
-                <h2 class="section-title">✨ Welcome ✨</h2>
+            <div class="content-box pattern-dot">
+                <h2 class="section-title"><span>✨ Welcome ✨</span></h2>
                 <div class="scroll-text">
                     <p>Welcome to my digital crypt! <br>Grab some blood-orange tea and stay a while.</p>
-                    <p style="color:var(--accent-red)">"Soft chaos & pixel love..."</p>
+                    <p style="color:var(--accent-red); font-style:italic;">"Soft chaos & pixel love..."</p>
                 </div>
                 
                 <div class="action-area">
-                    <button class="cta-btn" id="openVNbtn">Chat with Tsuki (+Pts)</button>
-                    <div id="firstPetUnlock" style="display:none; margin-top:10px;">
-                        <button id="petUnlockBtn" class="cta-btn secondary">🐾 Pet Found!</button>
-                    </div>
+                    <button class="cta-btn stitch-btn" id="openVNbtn">Start Chat ♡ (+Pts)</button>
                 </div>
             </div>
         </div>
 
+        <div id="pet" class="page-panel">
+            <div class="content-box pattern-grid">
+                <h2 class="section-title"><span>Your Familiar</span></h2>
+                
+                <div class="pet-layout">
+                    <div class="pet-stage-container">
+                        <div id="petVisualWrap" class="pet-stage">
+                            <img id="petSprite" src="" alt="pet">
+                        </div>
+                    </div>
+
+                    <div class="pet-dashboard">
+                         <div class="pet-info-row">
+                             <h3 id="petNameTitle">Bunny</h3>
+                             <div class="love-meter-wrap">
+                                 <div id="loveFill" class="love-fill"></div>
+                             </div>
+                         </div>
+
+                         <div class="pet-actions">
+                             <button id="feedBtn" class="action-pill">🍖 Feed</button>
+                             <button id="batheBtn" class="action-pill">🧼 Bathe</button>
+                         </div>
+                         
+                         <div id="petToolContainer" class="tool-rack"></div>
+
+                         <div class="pet-selector">
+                             <label>Swap Pet:</label>
+                             <select id="petVariant" class="cute-select">
+                                <option value="Bunny">Bunny</option>
+                                <option value="Bear Cub">Bear Cub</option>
+                                <option value="Dog">Dog</option>
+                                <option value="Frog">Frog</option>
+                                <option value="Pony">Pony</option>
+                                <option value="Cat">Cat</option>
+                             </select>
+                         </div>
+                    </div>
+                </div>
+                
+                <div class="hat-closet">
+                    <h4>🎀 Accessories</h4>
+                    <div class="shop-mini-scroll" id="shopScroll"></div>
+                </div>
+
+            </div>
+        </div>
+
         <div id="shop" class="page-panel">
-            <div class="content-box">
-                <h2 class="section-title">🥀 Point Shop</h2>
-                <p style="text-align:center; font-size:14px; color:var(--text-light)">Spend points to spoil Tsuki!</p>
+            <div class="content-box pattern-dot">
+                <h2 class="section-title"><span>🥀 Point Shop</span></h2>
                 <div class="shop-grid">
                     <button class="shop-item" id="btn-gift-rose">🌹<br><span>Rose</span><br><small>20p</small></button>
                     <button class="shop-item" id="btn-gift-teddy">🧸<br><span>Bear</span><br><small>40p</small></button>
@@ -90,8 +143,8 @@
         </div>
 
         <div id="settings" class="page-panel">
-            <div class="content-box">
-                <h2 class="section-title">⚙️ Config</h2>
+            <div class="content-box pattern-dot">
+                <h2 class="section-title"><span>⚙️ Config</span></h2>
                 <div class="settings-list">
                     <label class="toggle-row">
                         <span>Enable SFX</span>
@@ -107,19 +160,29 @@
         </div>
         
         <div id="socials" class="page-panel">
-            <div class="content-box">
-                <h2 class="section-title">☁️ Socials</h2>
-                <p>Follow the chaos elsewhere:</p>
+            <div class="content-box pattern-dot">
+                <h2 class="section-title"><span>☁️ Socials</span></h2>
+                <div class="links-list">
+                    <a href="#" target="_blank" class="link-pill">📺 YouTube</a>
+                    <a href="#" target="_blank" class="link-pill">🎵 TikTok</a>
+                    <a href="#" target="_blank" class="link-pill">🎮 Roblox</a>
+                    <a href="#" target="_blank" class="link-pill">☕ Ko-Fi</a>
                 </div>
+            </div>
         </div>
 
       </section>
 
       <aside class="col-links">
-        <a href="#" target="_blank" class="link-pill">📺 YouTube</a>
-        <a href="#" target="_blank" class="link-pill">🎵 TikTok</a>
-        <a href="#" target="_blank" class="link-pill">🎮 Roblox</a>
-        <a href="#" target="_blank" class="link-pill">☕ Ko-Fi</a>
+        <div class="deco-box">
+             <p>✨ Links ✨</p>
+             <a href="#" target="_blank" class="mini-link">YT</a>
+             <a href="#" target="_blank" class="mini-link">TT</a>
+             <a href="#" target="_blank" class="mini-link">RBX</a>
+        </div>
+        <div class="deco-stickers">
+           <span>🍓</span><span>🍫</span><span>💉</span>
+        </div>
       </aside>
 
     </main>
@@ -142,41 +205,6 @@
         <div id="optionsBox" class="vn-choices"></div>
       </div>
       <button id="vnClose" class="close-badge">✕</button>
-    </div>
-  </div>
-
-  <div id="petPopup" class="overlay hidden" aria-hidden="true">
-    <div class="pet-window">
-      <div class="pet-header">
-        <span id="petNameTitle">My Pet</span>
-        <button id="petClose" class="close-badge-small">✕</button>
-      </div>
-      
-      <div class="pet-display">
-         <div id="petVisualWrap" class="pet-stage">
-            <img id="petSprite" src="" alt="pet">
-         </div>
-         <div class="love-meter">
-            <div id="loveFill" class="love-fill"></div>
-         </div>
-         <div class="star-wallet">Points: <span id="starCountDispInPet">0</span></div>
-      </div>
-
-      <div class="pet-controls">
-        <div class="control-row">
-            <button id="feedBtn" class="action-pill">🍖 Feed</button>
-            <button id="batheBtn" class="action-pill">🧼 Bathe</button>
-        </div>
-        <select id="petVariant" class="pet-select">
-            <option value="Bunny">Bunny</option>
-            <option value="Bear Cub">Bear Cub</option>
-            <option value="Dog">Dog</option>
-            <option value="Frog">Frog</option>
-            <option value="Pony">Pony</option>
-            <option value="Cat">Cat</option>
-        </select>
-        <div class="shop-mini-scroll" id="shopScroll"></div>
-      </div>
     </div>
   </div>
 
