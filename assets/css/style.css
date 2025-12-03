@@ -1,301 +1,310 @@
-/* THEME: Neapolitan Vampire (Dark Chocolate & Strawberry)
-   Aesthetic: Stitched, Polka Dots, Cute & Bubbly
-*/
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600&family=VT323&display=swap');
+/* =========================================
+   CSS Variables - Neapolitan x Vampire Palette
+   ========================================= */
+   :root {
+    /* Backgrounds */
+    --bg-dark: #121212;        /* Deep charcoal background */
+    --grid-line: #2a1f1f;      /* Subtle reddish-brown grid line */
+    --card-bg: #1e1616;        /* Very dark brownish-grey card body */
 
-:root {
-  /* Colors */
-  --bg-dark: #3e2723;   /* Dark Chocolate */
-  --bg-check: #5d4037;  /* Milk Chocolate */
-  
-  --container-bg: #fff0f5; /* Strawberry Milk */
-  --card-white: #ffffff;
-  
-  --accent-red: #880e4f;    /* Deep Vampire Red */
-  --accent-pink: #f48fb1;   /* Bubblegum */
-  --accent-cream: #fff9c4;  /* Custard/Pudding */
-  
-  --text-main: #4e342e;
-  --text-light: #8d6e63;
+    /* Text Colors */
+    --text-cream: #f3e5d8;     /* Vanilla cream for main text */
+    --text-muted: #cbb6b6;     /* Dusty pinkish-grey for subheaders */
+    
+    /* Accents (The Neapolitan x Vampire mix) */
+    --accent-burgundy: #722f37; /* Deep vampire red */
+    --accent-strawberry: #a85e6a; /* Muted neapolitan pink */
+    --accent-chocolate: #4e3629;  /* Rich chocolate brown */
+    --accent-vanilla: #e6d2b5;    /* Darker vanilla accent */
 
-  --border-dashed: 2px dashed var(--accent-red);
-  --border-solid: 3px solid var(--accent-red);
-  --radius-lg: 30px;
-  --radius-sm: 15px;
+    /* Borders and Shadows */
+    --border-color: #3d2a2a;
 }
 
-* { box-sizing: border-box; }
+/* =========================================
+   Global Resets and Typography
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 body {
-  margin: 0; padding: 60px 20px;
-  font-family: 'Fredoka', sans-serif;
-  color: var(--text-main);
-  background-color: var(--bg-dark);
-  
-  /* Plaid Pattern */
-  background-image:
-    linear-gradient(45deg, var(--bg-check) 25%, transparent 25%, transparent 75%, var(--bg-check) 75%, var(--bg-check)),
-    linear-gradient(45deg, var(--bg-check) 25%, transparent 25%, transparent 75%, var(--bg-check) 75%, var(--bg-check));
-  background-position: 0 0, 20px 20px;
-  background-size: 40px 40px;
-  
-  display: flex; justify-content: center; align-items: flex-start;
-  min-height: 100vh;
+    font-family: 'Quicksand', sans-serif; /* Rounded, clean font */
+    background-color: var(--bg-dark);
+    color: var(--text-cream);
+    /* Creating the grid background pattern using CSS gradients */
+    background-image: 
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 30px 30px; /* Size of grid squares */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-/* === MAIN CONTAINER === */
-.main-container {
-  width: 100%; max-width: 850px;
-  background: var(--container-bg);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  /* Double Border Effect (Carrd style) */
-  border: 4px solid white;
-  outline: 4px solid var(--accent-red);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-  display: flex; flex-direction: column; gap: 15px;
-  position: relative; 
-  z-index: 10;
-  margin-top: 40px;
+/* =========================================
+   Top Banner Area
+   ========================================= */
+.site-title-banner {
+    width: 100%;
+    max-width: 900px;
+    text-align: right;
+    margin-bottom: 10px;
 }
 
-/* === BAT WINGS (Fixed & Enlarged) === */
-.wing-deco {
-  position: absolute;
-  width: 280px; /* BIGGER */
-  height: auto;
-  z-index: -1;
-  top: -120px; /* MOVED UP */
-  animation: flap 3s infinite ease-in-out;
-}
-.left-wing {
-  left: -120px; 
-  transform-origin: right bottom;
-}
-.right-wing {
-  right: -120px; 
-  transform-origin: left bottom;
-  animation-name: flap-right;
+.site-title-banner h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--accent-vanilla);
+    text-shadow: 2px 2px var(--accent-burgundy);
+    text-transform: uppercase;
 }
 
-@keyframes flap { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-8deg); } }
-@keyframes flap-right { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
-
-/* === HEADER === */
-.header-section {
-  background: white;
-  border-radius: 40px;
-  padding: 10px;
-  border: var(--border-dashed);
-}
-.header-inner {
-  background: var(--container-bg);
-  border-radius: 30px;
-  padding: 15px;
-  text-align: center;
-  border: 2px dotted var(--accent-pink);
-}
-.logo-text h1 {
-  margin: 0; font-size: 42px; color: var(--accent-red); font-weight: 600;
-  text-shadow: 3px 3px 0px #f8bbd0; letter-spacing: 2px;
-}
-.heart-decoration {
-  font-family: 'VT323', monospace; color: var(--text-light);
-  font-size: 22px; background: #fff; padding: 4px 12px; border-radius: 15px;
-  border: 1px dashed var(--accent-red);
+/* =========================================
+   Main Card Container Structure
+   ========================================= */
+.main-card {
+    background-color: var(--card-bg);
+    width: 100%;
+    max-width: 900px;
+    border-radius: 30px;
+    padding: 25px;
+    border: 3px solid var(--border-color);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    
+    /* Using CSS Grid to split left and right columns */
+    display: grid;
+    grid-template-columns: 3fr 4fr; /* Left column slightly smaller than right */
+    gap: 25px;
 }
 
-/* === NAVIGATION (Cute Buttons) === */
-.nav-bar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top:5px; }
-.nav-tab {
-  background: #fff;
-  border: 2px dashed var(--accent-red);
-  color: var(--accent-red);
-  padding: 10px 18px; border-radius: 25px;
-  font-family: 'Fredoka', sans-serif; font-weight: 600; font-size: 16px;
-  cursor: pointer; position: relative;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 4px 0 rgba(136, 14, 79, 0.15);
-}
-.nav-tab .icon { margin-right: 5px; }
-.nav-tab:hover {
-  background: var(--accent-cream);
-  transform: translateY(-3px);
-  border-style: solid;
-}
-.nav-tab.active {
-  background: var(--accent-red); color: white; border-style: solid;
-  transform: translateY(2px); box-shadow: none;
+/* =========================================
+   Left Column Styling
+   ========================================= */
+.left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-/* === CONTENT LAYOUT === */
-.content-grid {
-  display: grid; grid-template-columns: 200px 1fr 140px; gap: 15px;
+.card-header h1 {
+    font-size: 2.5rem;
+    color: var(--accent-vanilla);
+    font-weight: 700;
+    line-height: 1.1;
 }
 
-/* Profile Column */
-.col-profile {
-  background: white; border-radius: var(--radius-lg); padding: 15px;
-  border: var(--border-dashed); text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-}
-.profile-frame {
-  width: 120px; height: 120px; background: var(--container-bg); border-radius: 50%;
-  border: 4px solid var(--accent-red); overflow: hidden;
-  display: flex; justify-content: center; align-items: flex-end;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-.profile-frame img { width: 90%; }
-.status-sticker {
-  background: #fff9c4; width: 100%; padding: 5px; border-radius: 10px;
-  border: 1px dotted var(--text-light); transform: rotate(-2deg);
-}
-.blink { animation: blinker 2s linear infinite; font-size: 14px; font-family: 'VT323'; color: #2e7d32;}
-@keyframes blinker { 50% { opacity: 0; } }
-
-/* Daily Reward */
-.daily-box {
-  width: 100%; background: var(--accent-pink); color: white;
-  padding: 10px; border-radius: 15px; border: 2px solid white;
-  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-}
-.points-display { font-family: 'VT323'; font-size: 24px; margin-bottom: 5px; text-shadow: 1px 1px 0 rgba(0,0,0,0.2); }
-.daily-btn {
-  background: #fff; color: var(--accent-red); border: 2px dashed var(--accent-red);
-  padding: 6px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;
-  font-family: 'Fredoka'; font-size: 14px;
-}
-.daily-btn:hover { background: var(--accent-cream); }
-.daily-timer { font-size: 12px; margin-top: 4px; font-family: monospace; }
-
-/* === MAIN PANELS & PATTERNS === */
-.page-panel { display: none; animation: fadeIn 0.4s ease; }
-.page-panel.active { display: block; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-.content-box {
-  background: white; border-radius: var(--radius-lg); border: var(--border-solid);
-  padding: 20px; min-height: 300px; position: relative; overflow: hidden;
+.card-header h2 {
+    font-size: 1.5rem;
+    color: var(--accent-strawberry);
+    font-weight: 400;
+    text-align: center;
+    margin-top: 5px;
 }
 
-/* Cute Patterns */
-.pattern-dot {
-  background-image: radial-gradient(var(--accent-pink) 20%, transparent 20%), radial-gradient(var(--accent-pink) 20%, transparent 20%);
-  background-color: #ffffff;
-  background-position: 0 0, 10px 10px;
-  background-size: 20px 20px;
-  background-blend-mode: soft-light;
-}
-.pattern-grid {
-  background-size: 20px 20px;
-  background-image:
-    linear-gradient(to right, rgba(136, 14, 79, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(136, 14, 79, 0.05) 1px, transparent 1px);
-}
-
-.section-title {
-  margin-top: 0; text-align: center; color: var(--accent-red);
-  margin-bottom: 15px;
-}
-.section-title span {
-  background: white; padding: 5px 15px; border-radius: 20px;
-  border: 2px dashed var(--accent-red); box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+/* The top rounded button */
+.pill-btn {
+    background-color: var(--accent-burgundy);
+    color: var(--text-cream);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    border: 2px solid var(--accent-chocolate);
 }
 
-/* Stitched Button Style */
-.cta-btn {
-  background: var(--accent-red); color: white; border: 2px dashed white; 
-  padding: 12px 20px; border-radius: 20px; font-family: 'Fredoka', sans-serif; 
-  font-weight: bold; font-size: 18px; cursor: pointer; width: 100%; 
-  margin-top: 15px; box-shadow: 0 0 0 3px var(--accent-red), 0 6px 0 rgba(0,0,0,0.2);
-  transition: transform 0.1s;
-}
-.cta-btn:hover { transform: translateY(-2px); }
-.cta-btn:active { transform: translateY(4px); box-shadow: 0 0 0 3px var(--accent-red); }
-
-/* === PET SECTION (Resized & Clean) === */
-.pet-layout { display: flex; gap: 15px; align-items: flex-start; }
-.pet-stage-container { 
-    flex: 0 0 140px; 
-    background: #fff; border: 2px solid var(--accent-pink); 
-    border-radius: 20px; padding: 10px;
-}
-.pet-stage { width: 100%; position: relative; min-height: 140px; display:flex; justify-content:center; align-items:flex-end; }
-/* Force sprite to be small */
-.pet-stage img { max-width: 100%; max-height: 120px; image-rendering: pixelated; }
-
-.pet-dashboard { flex: 1; display:flex; flex-direction:column; gap:8px; }
-.pet-info-row h3 { margin: 0; color: var(--text-main); font-size: 20px; }
-.love-meter-wrap { height: 12px; background: #ffebee; border-radius: 6px; border: 1px solid var(--accent-pink); overflow: hidden; margin-top: 4px; }
-.love-fill { height: 100%; width: 0%; background: var(--accent-red); }
-
-.pet-actions { display: flex; gap: 5px; }
-.action-pill { 
-    flex: 1; background: white; border: 1px solid var(--text-light); 
-    color: var(--text-main); padding: 5px; border-radius: 8px; cursor: pointer; 
-    font-size: 14px; transition:0.2s; 
-}
-.action-pill:hover { background: var(--accent-cream); }
-
-.cute-select { width: 100%; padding: 5px; border-radius: 8px; border: 1px solid var(--accent-pink); font-family: 'Fredoka'; }
-.tool-rack { display: flex; gap: 5px; min-height: 40px; align-items: center; justify-content: center; background: rgba(255,255,255,0.5); border-radius: 10px; margin: 5px 0; }
-.pet-tool { font-size: 24px; cursor: grab; transition: transform 0.2s; }
-.pet-tool:hover { transform: scale(1.2); }
-
-.hat-closet { margin-top: 15px; border-top: 2px dashed var(--accent-pink); padding-top: 10px; }
-.hat-closet h4 { margin: 0 0 5px 0; font-size: 14px; color: var(--text-light); }
-.shop-mini-scroll { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; }
-
-/* === LINKS & EXTRAS === */
-.link-pill {
-  display: block; background: white; padding: 10px; margin-bottom: 8px;
-  text-align: center; border-radius: 15px; border: 2px solid var(--accent-pink);
-  color: var(--accent-red); text-decoration: none; font-weight: 600;
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.05); transition: 0.2s;
-}
-.link-pill:hover { background: var(--accent-pink); color: white; border-color: var(--accent-pink); }
-
-.col-links { display: flex; flex-direction: column; gap: 10px; }
-.deco-box {
-    background: white; border: 2px dashed var(--accent-red); border-radius: 20px;
-    padding: 10px; text-align: center;
-}
-.mini-link { 
-    display: inline-block; padding: 4px 8px; background: var(--accent-cream); 
-    border-radius: 8px; margin: 2px; text-decoration: none; color: var(--text-main); font-size: 12px;
+/* The main text box (box within a box) */
+.text-box-outer {
+    background-color: var(--accent-strawberry); /* The outer rim color */
+    padding: 12px;
+    border-radius: 20px;
+    border: 2px solid var(--accent-burgundy);
 }
 
-/* Shop Grid */
-.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; margin-top: 15px; }
-.shop-item {
-  background: white; border: 1px solid var(--accent-pink); border-radius: 10px;
-  padding: 8px; cursor: pointer; font-family: 'VT323'; color: var(--accent-red);
-  box-shadow: 2px 2px 0 rgba(0,0,0,0.05);
+.text-box-inner {
+    background-color: var(--card-bg); /* Inner box color */
+    padding: 15px;
+    border-radius: 12px;
+    border: 2px solid var(--accent-chocolate);
 }
 
-/* PHONE FLOATER (Bubbly) */
-.phone-floater {
-  position: fixed; bottom: 20px; right: 20px; width: 85px; cursor: pointer;
-  filter: drop-shadow(0 0 0 4px white) drop-shadow(0 5px 10px rgba(0,0,0,0.3));
-  transition: transform 0.2s; z-index: 500;
+.text-box-inner p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: var(--text-muted);
 }
-.phone-floater:hover { transform: translateY(-5px) rotate(10deg); }
 
-/* RESPONSIVE */
+/* Social Links Section */
+.links-section h3 {
+    color: var(--accent-vanilla);
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.social-icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icon-box {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    font-size: 1.5rem;
+    transition: transform 0.2s ease;
+}
+
+.icon-box:hover {
+    transform: translateY(-3px);
+}
+
+/* Coloring specific icons based on palette */
+.icon-box.instagram { background-color: var(--accent-burgundy); color: var(--text-cream); }
+.icon-box.tiktok { background-color: var(--accent-chocolate); color: var(--text-cream); }
+.icon-box.twitter { background-color: var(--accent-strawberry); color: var(--bg-dark); }
+.icon-box.other { background-color: var(--accent-vanilla); color: var(--accent-burgundy); }
+
+
+/* Status Bar */
+.status-bar {
+    display: flex;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: auto; /* Pushes it to the bottom of the container if space allows */
+    border: 2px solid var(--accent-burgundy);
+}
+
+.status-label {
+    background-color: var(--accent-burgundy);
+    color: var(--text-cream);
+    padding: 8px 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.status-value {
+    background-color: var(--card-bg);
+    color: var(--text-cream);
+    padding: 8px 15px;
+    flex-grow: 1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   Right Column (Image Placeholder) Styling
+   ========================================= */
+.right-col {
+    position: relative;
+    height: 100%;
+    min-height: 400px; /* Ensure it has height even without an image */
+}
+
+/* The temporary sprite placeholder */
+.image-placeholder-sprite {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, var(--accent-chocolate), var(--accent-burgundy));
+    border-radius: 20px;
+    border: 3px solid var(--accent-vanilla);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-cream);
+    font-weight: 700;
+    opacity: 0.8;
+}
+
+/* Use this class when you add your real image tag */
+.right-col img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image fills the space without stretching */
+    border-radius: 20px;
+    border: 3px solid var(--accent-vanilla);
+}
+
+
+/* =========================================
+   Bottom Navigation Bar
+   ========================================= */
+.bottom-nav {
+    width: 100%;
+    max-width: 900px;
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.nav-pill {
+    flex: 1; /* Distribute space evenly */
+    text-align: center;
+    padding: 12px 5px;
+    border-radius: 50px;
+    text-decoration: none;
+    color: var(--text-cream);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid rgba(255,255,255,0.1);
+    transition: filter 0.2s;
+}
+
+.nav-pill:hover {
+    filter: brightness(1.2);
+}
+
+/* Alternating palette colors for nav buttons */
+.nav-pill.home { background-color: var(--accent-burgundy); }
+.nav-pill.prices { background-color: var(--accent-chocolate); }
+.nav-pill.terms { background-color: var(--accent-strawberry); color: var(--bg-dark);}
+.nav-pill.gallery { background-color: var(--accent-vanilla); color: var(--accent-burgundy); }
+
+/* =========================================
+   Footer Styling
+   ========================================= */
+footer {
+    width: 100%;
+    max-width: 900px;
+    text-align: right;
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* =========================================
+   Media Query for Mobile Devices
+   ========================================= */
 @media (max-width: 768px) {
-  .content-grid { grid-template-columns: 1fr; }
-  .col-profile { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-  .wing-deco { width: 160px; top: -70px; } /* Smaller wings on mobile */
-  .left-wing { left: -30px; } .right-wing { right: -30px; }
-  .pet-layout { flex-direction: column; align-items: center; }
-  .col-links { display: none; } /* Hide right column on mobile */
-}
+    .main-card {
+        grid-template-columns: 1fr; /* Stack columns vertically on small screens */
+        gap: 30px;
+    }
 
-/* Overlays */
-.overlay { position: fixed; inset: 0; background: rgba(62, 39, 35, 0.8); backdrop-filter: blur(2px); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-.hidden { display: none !important; }
-.vn-window { background: white; border: 4px solid var(--accent-red); border-radius: 20px; width: 90%; max-width: 500px; overflow: hidden; position: relative; }
-.vn-character-area { height: 220px; background: var(--container-bg); display: flex; justify-content: center; align-items: flex-end; }
-.sprite-img { height: 95%; image-rendering: pixelated; }
-.vn-dialogue-box { background: var(--accent-red); color: white; padding: 15px; min-height: 130px; font-family: 'VT323', monospace; font-size: 20px; }
-.close-badge { position: absolute; top: 10px; right: 10px; background: white; color: var(--accent-red); border: 2px solid var(--accent-red); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold; }
+    .right-col {
+        min-height: 300px; /* Adjust image height for mobile */
+    }
+    
+    .bottom-nav {
+        flex-wrap: wrap; /* Allow buttons to wrap on very small screens */
+    }
+    .nav-pill {
+        min-width: 45%; /* Make buttons larger on mobile */
+    }
+}
