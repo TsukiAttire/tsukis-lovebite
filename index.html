@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Untitled Site</title>
+    <title>Tsuki's Lovebite.exe</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;800&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* =========================================
-           VAMPIRE x NEAPOLITAN PALETTE
+           THEME & VARIABLES
            ========================================= */
         :root {
             --bg-dark: #121212;
             --grid-line: #3d2a2a;
             --card-bg: #1e1616;
-            
-            /* The Neapolitan Textures */
             --cream: #f3e5d8;
             --strawberry: #a85e6a;
             --chocolate: #4e3629;
             --burgundy: #722f37;
             --vanilla-accent: #e6d2b5;
-            
-            /* Borders & Shadows */
             --border-thick: 4px solid var(--chocolate);
-            --shadow: 0 10px 0 rgba(0,0,0,0.3);
         }
 
         /* =========================================
-           GLOBAL RESET
+           GLOBAL RESET & LAYOUT
            ========================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -37,7 +32,6 @@
             font-family: 'Quicksand', sans-serif;
             background-color: var(--bg-dark);
             color: var(--cream);
-            /* Blue/Pink grid from reference, adapted to Vampire colors */
             background-image: 
                 linear-gradient(var(--grid-line) 2px, transparent 2px),
                 linear-gradient(90deg, var(--grid-line) 2px, transparent 2px);
@@ -51,58 +45,48 @@
         }
 
         /* =========================================
-           TOP BANNER
-           ========================================= */
-        .site-title-banner {
-            width: 100%; max-width: 900px; text-align: right; margin-bottom: 20px;
-            position: relative; z-index: 2;
-        }
-        
-        .site-title-banner h1 {
-            font-size: 3.5rem; font-weight: 800; text-transform: uppercase;
-            color: var(--vanilla-accent);
-            text-shadow: 4px 4px 0 var(--burgundy);
-            /* Optional: Add a subtle highlight background like reference */
-            display: inline-block;
-            background: rgba(114, 47, 55, 0.3); /* Burgundy low opacity */
-            padding: 0 15px;
-            transform: skew(-5deg);
-        }
-
-        /* =========================================
-           MAIN CARD CONTAINER
+           BAT WINGS (UPDATED SIZE & POSITION)
            ========================================= */
         .main-card-wrapper {
             position: relative;
             width: 100%; max-width: 900px;
             z-index: 10;
+            margin-top: 40px; /* Added spacing for wings */
         }
 
-        /* Bat Wings Decoration */
         .bat-wing {
-            position: absolute; top: -40px; width: 150px; z-index: -1;
-            opacity: 0.9; pointer-events: none;
+            position: absolute; 
+            /* MUCH BIGGER */
+            width: 320px; 
+            /* MOVED UP */
+            top: -120px; 
+            z-index: -1;
+            opacity: 1; 
+            pointer-events: none;
+            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
         }
-        .bat-wing.left { left: -80px; transform: rotate(-10deg); }
-        .bat-wing.right { right: -80px; transform: rotate(10deg); }
+        .bat-wing.left { left: -140px; transform: rotate(-15deg); }
+        .bat-wing.right { right: -140px; transform: rotate(15deg) scaleX(-1); }
 
+        /* =========================================
+           MAIN CARD
+           ========================================= */
         .main-card {
             background-color: var(--card-bg);
             border-radius: 40px;
-            border: 6px solid #b6d3ff; /* The Periwinkle border from reference */
-            border-color: var(--vanilla-accent); /* Swapped to Vanilla for theme */
+            border: 6px solid var(--vanilla-accent);
             box-shadow: 
-                0 0 0 10px #ffffff, /* Inner white outline simulation */
+                0 0 0 10px #ffffff, /* Inner white outline */
                 0 20px 40px rgba(0,0,0,0.5);
             padding: 30px;
             display: grid;
-            grid-template-columns: 3.5fr 4.5fr; /* Matches the ratio in image */
+            grid-template-columns: 3.5fr 4.5fr;
             gap: 30px;
             position: relative;
-            overflow: hidden; /* Keeps content inside rounded corners */
+            overflow: hidden;
         }
 
-        /* Decorative "Dotted" Header Background on Card (Like reference blue dots) */
+        /* Header decoration (dots) */
         .main-card::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 70px;
             background-image: radial-gradient(rgba(255,255,255,0.15) 20%, transparent 20%);
@@ -111,35 +95,43 @@
             border-bottom: 2px dashed rgba(255,255,255,0.1);
         }
 
+        /* Top Banner Text */
+        .site-title-banner {
+            width: 100%; max-width: 900px; text-align: right; margin-bottom: 20px;
+            position: relative; z-index: 2;
+        }
+        .site-title-banner h1 {
+            font-size: 3.5rem; font-weight: 800; text-transform: uppercase;
+            color: var(--vanilla-accent);
+            text-shadow: 4px 4px 0 var(--burgundy);
+            display: inline-block;
+            background: rgba(114, 47, 55, 0.3);
+            padding: 0 15px; transform: skew(-5deg);
+        }
+
         /* =========================================
            LEFT COLUMN
            ========================================= */
         .left-col { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 18px; }
 
-        /* Typography */
         .card-header h1 {
             font-size: 3rem; font-weight: 800; line-height: 0.9;
-            color: #6a8eff; /* Reference Blue */
-            color: var(--vanilla-accent); /* Theme override */
+            color: var(--vanilla-accent);
             text-shadow: 2px 2px 0 var(--burgundy);
             letter-spacing: -1px;
         }
         .card-header h2 {
             font-size: 2rem; font-weight: 400;
-            color: #ff99aa; /* Reference Pink */
-            color: var(--strawberry); /* Theme override */
+            color: var(--strawberry);
             font-family: 'Quicksand', sans-serif;
             text-align: center; margin-top: 5px;
         }
 
         /* Top Pill Button */
         .pill-btn-top {
-            background-color: #6a8eff; /* Reference Blue */
-            background-color: var(--burgundy); /* Theme override */
-            color: white; border: 2px solid white;
+            background-color: var(--burgundy); color: white; border: 2px solid white;
             padding: 10px; border-radius: 50px;
-            font-size: 0.9rem; font-style: italic; font-weight: 600;
-            text-align: center; width: 100%;
+            font-size: 0.9rem; font-weight: 600; text-align: center; width: 100%;
             box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
             cursor: pointer; transition: transform 0.2s;
         }
@@ -147,7 +139,6 @@
 
         /* Striped Text Box */
         .text-box-outer {
-            /* Candy stripe pattern */
             background: repeating-linear-gradient(
                 -45deg,
                 var(--strawberry),
@@ -167,42 +158,35 @@
 
         /* Links */
         .links-section h3 {
-            color: #b6d3ff; /* Ref Blue */
-            color: var(--vanilla-accent); /* Theme override */
-            font-size: 1.5rem; font-weight: 800;
+            color: var(--vanilla-accent); font-size: 1.5rem; font-weight: 800;
             letter-spacing: 1px; margin-bottom: 5px;
         }
         .social-icons { display: flex; gap: 10px; }
         .icon-box {
             width: 50px; height: 50px; border-radius: 15px;
             display: flex; justify-content: center; align-items: center;
-            font-size: 1.6rem; text-decoration: none;
-            color: white; transition: transform 0.2s;
+            font-size: 1.6rem; text-decoration: none; color: white;
+            transition: transform 0.2s;
         }
         .icon-box:hover { transform: translateY(-3px); }
-        /* Exact colors from reference mapped to theme */
-        .ib-1 { background-color: var(--burgundy); }   /* Instagram */
-        .ib-2 { background-color: #6a8eff; background-color: var(--chocolate); } /* Tiktok */
-        .ib-3 { background-color: var(--strawberry); } /* X */
-        .ib-4 { background-color: #ffde59; background-color: var(--vanilla-accent); color: var(--burgundy); } /* Heart */
+        .ib-1 { background-color: var(--burgundy); }
+        .ib-2 { background-color: var(--chocolate); }
+        .ib-3 { background-color: var(--strawberry); }
+        .ib-4 { background-color: var(--vanilla-accent); color: var(--burgundy); }
 
         /* Status Bar */
         .status-bar {
-            display: flex; margin-top: auto;
-            border-radius: 8px; overflow: hidden;
+            display: flex; margin-top: auto; border-radius: 8px; overflow: hidden;
             font-weight: 700; text-transform: uppercase;
         }
-        .status-label {
-            background-color: var(--strawberry); color: white;
-            padding: 8px 12px; font-size: 0.9rem;
-        }
+        .status-label { background-color: var(--strawberry); color: white; padding: 8px 12px; font-size: 0.9rem; }
         .status-value {
             background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
             color: white; padding: 8px 12px; flex-grow: 1; font-size: 0.9rem;
         }
 
         /* =========================================
-           RIGHT COLUMN (IMAGE)
+           RIGHT COLUMN (IMAGE PLACEHOLDER)
            ========================================= */
         .right-col {
             position: relative; height: 100%; min-height: 450px;
@@ -214,11 +198,8 @@
             background: linear-gradient(to bottom right, var(--chocolate), var(--burgundy));
             display: flex; justify-content: center; align-items: center;
             color: rgba(255,255,255,0.3); font-weight: 800; font-size: 2rem;
-            text-align: center;
         }
-        .image-placeholder img {
-            width: 100%; height: 100%; object-fit: cover;
-        }
+        .image-placeholder img { width: 100%; height: 100%; object-fit: cover; }
 
         /* =========================================
            BOTTOM NAVIGATION
@@ -227,31 +208,28 @@
             width: 100%; max-width: 900px; margin-top: 30px;
             display: flex; justify-content: space-between; gap: 15px;
         }
-        
         .nav-btn {
             flex: 1; text-align: center; text-decoration: none;
             padding: 15px 5px; border-radius: 50px;
             font-weight: 800; font-size: 1.5rem; text-transform: uppercase;
-            color: white;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.3); /* The chunky button look */
+            color: white; box-shadow: 0 5px 0 rgba(0,0,0,0.3);
             transition: transform 0.1s, filter 0.2s;
             border: 2px solid rgba(255,255,255,0.2);
         }
         .nav-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
         .nav-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
 
-        /* Palette rotation */
-        .btn-home { background-color: #8c52ff; background-color: var(--burgundy); }
-        .btn-prices { background-color: #6a8eff; background-color: var(--chocolate); }
-        .btn-terms { background-color: #ff99aa; background-color: var(--strawberry); }
-        .btn-gallery { background-color: #ffde59; background-color: var(--vanilla-accent); color: var(--burgundy); }
+        .btn-home { background-color: var(--burgundy); }
+        .btn-prices { background-color: var(--chocolate); }
+        .btn-terms { background-color: var(--strawberry); }
+        .btn-gallery { background-color: var(--vanilla-accent); color: var(--burgundy); }
 
         /* =========================================
-           PHONE & VN OVERLAY CSS
+           PHONE & VN CSS (Restored Animation)
            ========================================= */
         .phone-icon {
             position: fixed; right: 20px; bottom: 20px; width: 100px;
-            cursor: pointer; z-index: 100; transition: transform 0.3s;
+            cursor: pointer; z-index: 100;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
         }
         .phone-ringing { animation: ring 1.2s infinite; }
@@ -285,26 +263,32 @@
             background: linear-gradient(180deg, var(--vanilla-accent), #fff);
             overflow: hidden;
         }
-        .vn-sprite-container img { width: 100%; height: auto; image-rendering: pixelated; }
+        .tsuki-sprite {
+            width: 100%; height: auto; image-rendering: pixelated;
+        }
+        
+        /* Sprite Transition Animation */
+        .sprite-transition { animation: fadeBounce 0.36s ease-out; }
+        @keyframes fadeBounce {
+            0% { opacity:0; transform:scale(0.96); }
+            60% { opacity:1; transform:scale(1.04); }
+            100% { opacity:1; transform:scale(1); }
+        }
 
         .vn-content { flex-grow: 1; display: flex; flex-direction: column; }
-        
         .vn-text-area {
             background: var(--chocolate); color: var(--cream);
             font-family: 'VT323', monospace; font-size: 1.6rem;
             padding: 15px; border-radius: 10px; border: 2px solid var(--burgundy);
             flex-grow: 1; min-height: 100px;
         }
-
-        .vn-options {
-            display: flex; flex-direction: column; gap: 10px; margin-top: 15px;
-        }
-        .vn-opt-btn {
+        .vn-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .optionButton {
             background: var(--strawberry); color: white; border: none;
             font-family: 'VT323', monospace; font-size: 1.4rem;
             padding: 8px 15px; text-align: left; cursor: pointer; border-radius: 5px;
         }
-        .vn-opt-btn:hover { background: var(--burgundy); }
+        .optionButton:hover { background: var(--burgundy); }
 
         .vn-close {
             position: absolute; top: -15px; right: -15px;
@@ -314,15 +298,15 @@
             font-weight: bold; cursor: pointer;
         }
 
-        /* Mobile Response */
+        /* Mobile adjustments */
         @media (max-width: 768px) {
             .main-card { grid-template-columns: 1fr; }
             .right-col { height: 300px; min-height: 0; order: -1; }
             .bottom-nav { flex-wrap: wrap; }
             .nav-btn { min-width: 45%; }
-            .bat-wing { display: none; } /* Hide wings on mobile */
             .vn-box { flex-direction: column; }
             .vn-sprite-container { width: 120px; height: 120px; margin: 0 auto; }
+            .bat-wing { display: none; } /* Hide wings on mobile */
         }
     </style>
 </head>
@@ -343,7 +327,7 @@
                     <h2>subheader</h2>
                 </header>
 
-                <a href="https://google.com" target="_blank" style="text-decoration:none;">
+                <a href="#" style="text-decoration:none;">
                     <button class="pill-btn-top">Donec tincidunt aliquam neque.</button>
                 </a>
 
@@ -384,140 +368,256 @@
         <a href="#gallery" class="nav-btn btn-gallery">GALLERY</a>
     </nav>
 
-    <img id="phoneBtn" src="assets/images/Phone.png" alt="Phone" class="phone-icon phone-ringing">
+    <img id="phoneButton" src="assets/images/Phone.png" alt="Phone" class="phone-icon phone-ringing">
 
-    <div id="vnOverlay" class="vn-overlay">
+    <div id="vnContainer" class="vn-overlay">
         <div class="vn-box">
             <button id="vnClose" class="vn-close">X</button>
             <div class="vn-sprite-container">
-                <img id="vnSprite" src="" alt="Sprite">
+                <img id="tsukiSprite" class="tsuki-sprite" src="" alt="Tsuki">
             </div>
             <div class="vn-content">
-                <div id="vnText" class="vn-text-area"></div>
-                <div id="vnOptions" class="vn-options"></div>
+                <div id="textBox" class="vn-text-area"></div>
+                <div id="optionsBox" class="vn-options"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Exact filenames as provided
-        const sprites = {
-            happy: 'assets/sprites/Thanks.png',
-            happy2: 'assets/sprites/Thanks 2.png',
-            sad: 'assets/sprites/Sad Talking.png',
-            wine: 'assets/sprites/Holding Wine Smile.png',
-            rose: 'assets/sprites/Holding Rose Talk 1.png',
-            hangup: 'assets/sprites/Hanging Up the phone.png'
-        };
+        (() => {
+            'use strict';
 
-        const phoneBtn = document.getElementById('phoneBtn');
-        const overlay = document.getElementById('vnOverlay');
-        const closeBtn = document.getElementById('vnClose');
-        const vnSprite = document.getElementById('vnSprite');
-        const vnText = document.getElementById('vnText');
-        const vnOptions = document.getElementById('vnOptions');
+            const TYPE_SPEED_MS = 24;
+            const TALK_INTERVAL_MS = 140;
+            const SPRITE_TRANSITION_CLASS = 'sprite-transition';
 
-        let typeInterval;
-
-        function openVN() {
-            phoneBtn.classList.remove('phone-ringing');
-            overlay.classList.add('active');
-            startDialogue();
-        }
-
-        function closeVN() {
-            overlay.classList.remove('active');
-            // Restart ring after 5 seconds
-            setTimeout(() => phoneBtn.classList.add('phone-ringing'), 5000);
-        }
-
-        function typeWriter(text) {
-            vnText.innerHTML = "";
-            let i = 0;
-            clearInterval(typeInterval);
-            return new Promise(resolve => {
-                typeInterval = setInterval(() => {
-                    if(i < text.length) {
-                        vnText.innerHTML += text.charAt(i);
-                        i++;
-                    } else {
-                        clearInterval(typeInterval);
-                        resolve();
-                    }
-                }, 30);
+            /* --- RESOURCE MAPPING --- */
+            // Using exact filenames provided in your list
+            const spriteFiles = {
+                happy: ['Thanks.png', 'Thanks 2.png'],
+                neutral: ['Sad Talking.png', 'Sad Talking 2.png'],
+                frown: ['Sad Talking.png'], // Fallback as only one Frown wasn't specified in list, using sad
+                wineSmile: ['Holding Wine Smile.png', 'Holding Wine Smile 2.png'],
+                wineScoff: ['Holding Wine Scoff 2.png'], 
+                rose: ['Holding Rose Talk 1.png', 'Holding Rose Talk 2.png'],
+                hangup: ['Hanging Up the phone.png']
+            };
+            
+            const sprites = {};
+            Object.keys(spriteFiles).forEach(k => {
+                sprites[k] = spriteFiles[k].map(fn => `assets/sprites/${fn}`);
             });
-        }
 
-        function setSprite(src) {
-            vnSprite.src = src;
-        }
+            /* --- DOM --- */
+            const phoneBtn = document.getElementById('phoneButton');
+            const vnContainer = document.getElementById('vnContainer');
+            const vnClose = document.getElementById('vnClose');
+            const tsukiSprite = document.getElementById('tsukiSprite');
+            const textBox = document.getElementById('textBox');
+            const optionsBox = document.getElementById('optionsBox');
 
-        function clearOptions() {
-            vnOptions.innerHTML = "";
-        }
+            /* --- AUDIO --- */
+            // Simple ringer simulation
+            let ringInterval;
+            function stopRing() {
+                phoneBtn.classList.remove('phone-ringing');
+            }
+            function startRing() {
+                phoneBtn.classList.add('phone-ringing');
+            }
 
-        function addOption(label, callback) {
-            const btn = document.createElement('button');
-            btn.className = 'vn-opt-btn';
-            btn.innerText = "> " + label;
-            btn.onclick = callback;
-            vnOptions.appendChild(btn);
-        }
+            /* --- ANIMATION LOGIC --- */
+            function safeSetSprite(path, el = tsukiSprite) {
+                if (!el) return;
+                el.classList.remove(SPRITE_TRANSITION_CLASS);
+                void el.offsetWidth; // trigger reflow
+                el.classList.add(SPRITE_TRANSITION_CLASS);
+                el.src = path;
+            }
 
-        // --- DIALOGUE SCRIPT ---
+            function typeText(text = '', speed = TYPE_SPEED_MS) {
+                return new Promise(resolve => {
+                    if (!textBox) return resolve();
+                    textBox.innerHTML = '';
+                    let i = 0;
+                    function step() {
+                        if (i < text.length) {
+                            textBox.innerHTML += text.charAt(i);
+                            i++;
+                            setTimeout(step, speed);
+                        } else resolve();
+                    }
+                    step();
+                });
+            }
 
-        async function startDialogue() {
-            clearOptions();
-            setSprite(sprites.happy);
-            await typeWriter("Tsuki: Hello? Is someone there? Oh! You picked up!");
-            
-            addOption("Who is this?", scene_who);
-            addOption("I love your outfit.", scene_compliment);
-            addOption("Hang up.", scene_hangup);
-        }
+            let talkInterval = null;
+            function startTalking(frames = [], intervalMs = TALK_INTERVAL_MS) {
+                stopTalking();
+                if (!frames || frames.length === 0) return;
+                let idx = 0;
+                // Set initial frame immediately
+                tsukiSprite.src = frames[0];
+                
+                if (frames.length > 1) {
+                    talkInterval = setInterval(() => {
+                        idx++;
+                        tsukiSprite.src = frames[idx % frames.length];
+                    }, intervalMs);
+                }
+            }
 
-        async function scene_who() {
-            clearOptions();
-            setSprite(sprites.wine);
-            await typeWriter("Tsuki: It's me, Tsuki! The vampire princess? Did you forget me already? Rude.");
-            
-            addOption("Sorry! I remember now.", scene_remember);
-            addOption("Do you have a rose?", scene_rose);
-        }
+            function stopTalking(finalPath) {
+                if (talkInterval) clearInterval(talkInterval);
+                talkInterval = null;
+                if (finalPath) safeSetSprite(finalPath);
+            }
 
-        async function scene_compliment() {
-            clearOptions();
-            setSprite(sprites.happy2);
-            await typeWriter("Tsuki: Aww, thank you! It's custom made. It costs more than your house! Just kidding... sort of.");
-            addOption("Back to main menu.", startDialogue);
-        }
+            function showOptions(list = []) {
+                if (!optionsBox) return;
+                optionsBox.innerHTML = '';
+                list.forEach(item => {
+                    const b = document.createElement('button');
+                    b.className = 'optionButton';
+                    b.textContent = item.label;
+                    b.addEventListener('click', item.onClick);
+                    optionsBox.appendChild(b);
+                });
+            }
 
-        async function scene_remember() {
-            clearOptions();
-            setSprite(sprites.happy);
-            await typeWriter("Tsuki: Good! I was about to bite you. Just kidding! Maybe.");
-            setTimeout(closeVN, 3000);
-        }
+            function openVN() {
+                vnContainer.classList.add('active');
+                stopRing();
+            }
+            function closeVN() {
+                vnContainer.classList.remove('active');
+                optionsBox.innerHTML = '';
+                textBox.innerHTML = '';
+                stopTalking();
+                setTimeout(startRing, 5000); // Ring again later
+            }
 
-        async function scene_rose() {
-            clearOptions();
-            setSprite(sprites.rose);
-            await typeWriter("Tsuki: A rose? For me? Or from me? Here, take this one. It's almost as pretty as I am.");
-            addOption("Thanks!", closeVN);
-        }
+            /* --- SCENES (Restored from your Script) --- */
+            async function scene_start() {
+                openVN();
+                optionsBox.innerHTML = '';
+                startTalking(sprites.happy);
+                await typeText("Tsuki: Hey Boo! ♡ You finally picked up..");
+                stopTalking(sprites.happy[0]);
+                setTimeout(scene_whatsUp, 300);
+            }
 
-        async function scene_hangup() {
-            clearOptions();
-            setSprite(sprites.hangup);
-            await typeWriter("Tsuki: Hey! Don't you da— *Click*");
-            setTimeout(closeVN, 2000);
-        }
+            async function scene_whatsUp() {
+                startTalking(sprites.happy);
+                await typeText("Tsuki: What's up, girl?");
+                stopTalking(sprites.happy[0]);
+                showOptions([
+                    { label: "Who are you…What are you?", onClick: scene_identity },
+                    { label: "Hang up", onClick: scene_userHangup }
+                ]);
+            }
 
-        // Listeners
-        phoneBtn.onclick = openVN;
-        closeBtn.onclick = closeVN;
-        overlay.onclick = (e) => { if(e.target === overlay) closeVN(); };
+            async function scene_identity() {
+                optionsBox.innerHTML = '';
+                startTalking(sprites.neutral);
+                await typeText("Tsuki: Girl..Did you hit your head? Its me! Your Bestie? Maybe you just need a refresher..what do ya wanna know?");
+                stopTalking(sprites.neutral[0]);
+                showOptions([
+                    { label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore },
+                    { label: "What's the vampire side like?", onClick: scene_vampireLore },
+                    { label: "Favorite Monster High character?", onClick: scene_monsterHigh },
+                    { label: "Hang up", onClick: scene_userHangup }
+                ]);
+            }
 
+            async function scene_cupidLore() {
+                optionsBox.innerHTML = '';
+                startTalking(sprites.rose);
+                await typeText("Tsuki: Dad? Dads fun! Way out of his league now with technology though. It’s hard to do the arrows thing when everyone is online now, y’know?");
+                stopTalking(sprites.rose[0]);
+                showOptions([
+                   { label: "More about your job?", onClick: scene_jobLore },
+                   { label: "Back", onClick: scene_identity }
+                ]);
+            }
+
+            async function scene_vampireLore() {
+                optionsBox.innerHTML = '';
+                startTalking(sprites.wineScoff);
+                await typeText("Tsuki: Believe it or not I wasn’t born a vampire. I was turned on my sweet 1600..something about destiny..I dont wanna talk about it..");
+                stopTalking(sprites.wineScoff[0]);
+                showOptions([
+                  { label: "Do you drink blood?", onClick: scene_bloodQuestion }, 
+                  { label: "Back", onClick: scene_identity }
+                ]);
+            }
+
+            async function scene_monsterHigh() {
+                optionsBox.innerHTML = '';
+                startTalking(sprites.happy);
+                await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura and Abby are my spirit ghouls! Who's your fave?");
+                stopTalking(sprites.happy[0]);
+
+                const container = document.createElement('div');
+                container.style.marginTop = '14px';
+                
+                const input = document.createElement('input');
+                input.type = 'text'; input.placeholder = 'Type your fave ghoul…';
+                input.style.width = '100%'; input.style.padding = '10px';
+                input.style.fontFamily = 'VT323'; input.style.fontSize='1.2rem';
+
+                const submitBtn = document.createElement('button');
+                submitBtn.textContent = 'Tell Tsuki!';
+                submitBtn.className = 'optionButton';
+                submitBtn.style.marginTop = '6px';
+
+                container.appendChild(input); container.appendChild(submitBtn);
+                optionsBox.appendChild(container);
+
+                submitBtn.onclick = async () => {
+                    const fave = input.value.trim() || 'them';
+                    optionsBox.innerHTML = '';
+                    startTalking(sprites.happy);
+                    await typeText(`Tsuki: Girrrrl! I love ${fave} too! We should watch it together some time~`);
+                    stopTalking(sprites.happy[0]);
+                    setTimeout(() => showOptions([
+                        { label: "Back to questions", onClick: scene_identity },
+                        { label: "Hang up", onClick: scene_userHangup }
+                    ]), 1500);
+                };
+            }
+
+            async function scene_jobLore() {
+                optionsBox.innerHTML = '';
+                startTalking(sprites.neutral);
+                await typeText("Tsuki: You’re seeing it, babe! I do this..I spill tea with you and then tell everyone else about it!");
+                stopTalking(sprites.neutral[0]);
+                showOptions([{ label: "Back", onClick: scene_identity }]);
+            }
+
+            async function scene_bloodQuestion() {
+                optionsBox.innerHTML = '';
+                startTalking(sprites.neutral); // Using neutral/frown equivalent
+                await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?");
+                await new Promise(r => setTimeout(r, 1500)); 
+                startTalking(sprites.wineSmile);
+                await typeText("Tsuki: Im kidding! We don’t need to drink blood anymore, my father would kill me if i did..");
+                stopTalking(sprites.wineSmile[0]);
+                showOptions([{ label: "Back", onClick: scene_identity }]);
+            }
+
+            async function scene_userHangup() {
+                optionsBox.innerHTML = '';
+                safeSetSprite(sprites.hangup[0]);
+                await typeText("—call ended—");
+                setTimeout(closeVN, 1000);
+            }
+
+            /* --- LISTENERS --- */
+            if (phoneBtn) phoneBtn.onclick = scene_start;
+            if (vnClose) vnClose.onclick = closeVN;
+
+        })();
     </script>
 </body>
 </html>
