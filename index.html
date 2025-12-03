@@ -9,232 +9,244 @@
     
     <style>
         /* =========================================
-           VAMPIRE COQUETTE PALETTE
+           COQUETTE CHOCOLATE PALETTE & PATTERNS
            ========================================= */
         :root {
-            --bg-dark: #121212;
-            --card-bg: #1e1616;      /* Dark chocolate base */
-            --content-bg: #2a1f1f;   /* Slightly lighter for inner boxes */
-            --cream: #f3e5d8;
-            --strawberry: #a85e6a;
-            --chocolate: #4e3629;
-            --burgundy: #722f37;
-            --vanilla-accent: #e6d2b5;
+            --bg-chocolate: #3d2a2a;
+            --bg-chocolate-dark: #2a1f1f;
+            --card-base: #fff0f5; /* Light pink base */
+            --text-brown: #4e3629;
+            --text-pink: #a85e6a;
+            --accent-pink: #ffb3c6;
+            --accent-brown: #722f37;
             
-            --border-style: 2px dashed var(--vanilla-accent);
+            /* Patterns */
+            --plaid-pattern: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(114, 47, 55, 0.05) 20px, rgba(114, 47, 55, 0.05) 22px),
+                             repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(114, 47, 55, 0.05) 20px, rgba(114, 47, 55, 0.05) 22px);
+            
+            --lace-trim: radial-gradient(circle at 10px 0, transparent 6px, var(--card-base) 7px, var(--card-base) 10px, transparent 11px) repeat-x bottom;
         }
 
-        /* Reset */
+        /* Reset & Body */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--cream);
-            /* Plaid Pattern Background */
-            background-image:
-                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(114, 47, 55, 0.1) 40px, rgba(114, 47, 55, 0.1) 42px),
-                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(114, 47, 55, 0.1) 40px, rgba(114, 47, 55, 0.1) 42px);
-            background-size: 100% 100%;
+            background-color: var(--bg-chocolate);
+            color: var(--text-brown);
+            /* Chocolate Bar Background Pattern */
+            background-image: linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; padding: 20px;
         }
 
-        /* --- OUTER FRAME (The "Card") --- */
-        .main-frame {
-            position: relative;
-            width: 100%; max-width: 850px;
-            background-color: var(--chocolate); /* Dark border look */
-            border-radius: 20px;
-            padding: 15px;
-            border: 4px solid var(--burgundy);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            margin-top: 50px;
-            z-index: 10;
+        /* --- MAIN FRAME --- */
+        .main-frame-wrapper {
+            position: relative; width: 100%; max-width: 850px; margin-top: 30px; z-index: 10;
         }
-
-        /* Bat Wings Positioned behind frame */
         .bat-wing {
-            position: absolute; width: 300px; top: -80px; z-index: -1;
+            position: absolute; width: 250px; top: -60px; z-index: -1;
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); pointer-events: none;
         }
-        .bat-wing.left { left: -120px; transform: rotate(-15deg); }
-        .bat-wing.right { right: -120px; transform: rotate(15deg); }
+        .bat-wing.left { left: -100px; transform: rotate(-15deg); }
+        .bat-wing.right { right: -100px; transform: rotate(15deg); }
 
-        /* --- HEADER SECTION --- */
-        .header-section {
-            display: flex; gap: 15px;
-            background-color: var(--card-bg);
-            border-radius: 15px 15px 0 0;
+        .main-frame {
+            background-color: var(--accent-brown); /* Outer brown border */
+            border-radius: 25px;
+            padding: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        
+        .inner-frame {
+            background-color: var(--card-base);
+            background-image: var(--plaid-pattern); /* Inner plaid glow */
+            border-radius: 18px;
+            border: 3px solid var(--text-brown);
             padding: 15px;
-            border: var(--border-style);
-            margin-bottom: 10px;
-            align-items: center;
+            overflow: hidden;
         }
 
-        .avatar-box {
-            width: 100px; height: 100px;
+        /* --- TOP HEADER SECTION --- */
+        .coquette-header {
+            display: flex; gap: 15px;
+            background: #fff;
+            border: 3px solid var(--text-brown);
             border-radius: 15px;
-            border: 3px solid var(--strawberry);
-            overflow: hidden; flex-shrink: 0;
-            background: var(--burgundy);
+            padding: 12px;
+            position: relative;
+            margin-bottom: 15px;
         }
-        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        /* Lace Trim at bottom of header */
+        .coquette-header::after {
+            content: ''; position: absolute; bottom: -12px; left: 5px; right: 5px; height: 12px;
+            background: var(--lace-trim); background-size: 20px 12px;
+        }
 
-        .header-info { flex-grow: 1; }
+        .header-img-box {
+            width: 110px; height: 110px; flex-shrink: 0;
+            border: 3px solid var(--text-brown); border-radius: 12px;
+            background: var(--accent-pink); overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .header-img-box img { height: 100%; width: auto; }
+
+        .header-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
         .header-title {
-            font-size: 2.8rem; color: var(--vanilla-accent);
-            text-shadow: 2px 2px 0 var(--burgundy); font-weight: 800; line-height: 1;
+            font-size: 2.5rem; font-weight: 800; color: var(--accent-brown);
+            text-shadow: 2px 2px 0 #fff, 3px 3px 0 var(--text-brown);
+            margin-bottom: 5px;
         }
         .header-sub {
-            color: var(--strawberry); font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;
+            font-size: 1.1rem; color: var(--text-brown); margin-bottom: 10px;
+            font-weight: 600;
         }
         .header-pills { display: flex; gap: 10px; }
-        .status-pill {
-            background: var(--cream); color: var(--chocolate);
-            padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;
-            border: 1px dashed var(--chocolate);
+        .header-pill {
+            background: #fff; border: 2px dashed var(--text-brown);
+            padding: 4px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 700;
         }
 
-        /* --- NAVIGATION TABS (Middle) --- */
-        .nav-tabs {
-            display: flex; gap: 8px; margin-bottom: -2px; padding: 0 10px;
+        /* --- NAVIGATION TABS --- */
+        .tab-nav {
+            display: flex; gap: 8px; margin-bottom: 15px; padding: 0 10px;
+            position: relative; z-index: 2;
         }
-        .nav-btn {
-            flex: 1;
-            background: var(--card-bg);
-            border: var(--border-style);
+        .tab-btn {
+            flex: 1; border: none;
+            background: var(--card-base);
+            background-image: var(--plaid-pattern); /* Plaid tabs */
+            border: 3px solid var(--text-brown);
             border-bottom: none;
             border-radius: 15px 15px 0 0;
-            padding: 10px;
-            text-align: center;
-            color: var(--cream);
-            font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 1.1rem;
-            cursor: pointer; transition: all 0.2s;
-            opacity: 0.7;
+            padding: 10px 5px;
+            font-family: inherit; font-size: 1.2rem; font-weight: 700; color: var(--text-brown);
+            cursor: pointer; transition: transform 0.1s;
+            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1);
         }
-        .nav-btn:hover { opacity: 1; background: var(--burgundy); }
-        .nav-btn.active-btn {
-            opacity: 1; background: var(--content-bg);
-            padding-bottom: 15px; /* Visual "connected" effect */
-            color: var(--vanilla-accent);
+        .tab-btn:hover { transform: translateY(-2px); }
+        .tab-btn.active {
+            background: #fff;
+            padding-bottom: 12px; margin-bottom: -2px;
+            box-shadow: none;
         }
 
-        /* --- MAIN CONTENT AREA --- */
-        .content-box {
-            background-color: var(--content-bg);
-            border-radius: 15px;
-            border: var(--border-style);
+        /* --- CONTENT AREA --- */
+        .content-container {
+            background: #fff;
+            border: 3px solid var(--text-brown);
+            border-radius: 0 0 15px 15px;
             padding: 20px;
             min-height: 400px;
-            position: relative;
         }
-
-        /* Scalloped Edge Decoration (Top of content) */
-        .content-box::before {
-            content: ""; position: absolute; top: 5px; left: 5px; right: 5px; height: 10px;
-            background-image: radial-gradient(circle, var(--strawberry) 2px, transparent 2.5px);
-            background-size: 15px 15px; opacity: 0.5;
-        }
-
-        /* Inner Page Banner */
+        
+        /* Page Banner */
         .page-banner {
-            background: var(--cream); color: var(--chocolate);
-            text-align: center; padding: 8px; border-radius: 50px;
-            border: 2px dashed var(--burgundy);
-            font-weight: 800; font-size: 1.4rem; margin-bottom: 20px;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            background: var(--card-base);
+            background-image: var(--plaid-pattern);
+            border: 2px dashed var(--text-brown);
+            border-radius: 30px;
+            text-align: center; padding: 8px;
+            font-size: 1.5rem; font-weight: 800; color: var(--text-brown);
+            margin-bottom: 20px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
         }
 
-        /* Tab Visibility */
+        /* Tab Content Visibility */
         .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
-        /* --- HOME LAYOUT (Split) --- */
-        .home-grid {
-            display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;
+        /* HOME TAB LAYOUT */
+        .home-layout {
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px;
         }
         
-        .home-text-col {
-            background: rgba(0,0,0,0.2);
-            padding: 15px; border-radius: 10px;
-            border: 1px dashed var(--strawberry);
+        /* Left Column styles */
+        .home-left { display: flex; flex-direction: column; gap: 15px; position: relative; padding-bottom: 20px; }
+        .home-subtitle {
+            font-size: 1.8rem; color: var(--text-brown); text-align: center;
         }
-        .home-text-col p { font-size: 0.95rem; line-height: 1.5; margin-bottom: 10px; }
-        .home-text-col i { color: var(--strawberry); margin-right: 5px; }
+        .plaid-box {
+            background: var(--card-base);
+            background-image: var(--plaid-pattern); /* Plaid text boxes */
+            border: 2px dashed var(--text-brown);
+            border-radius: 12px; padding: 12px;
+        }
+        .plaid-box p { font-size: 0.95rem; line-height: 1.5; }
+        /* Bottom Lace Trim for Left Column */
+        .home-left::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 12px;
+            background: var(--lace-trim); background-size: 20px 12px;
+        }
 
-        .home-links-col {
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        
-        /* New Link Buttons (Right Side) */
+        /* Right Column (Links) styles */
+        .home-right { display: flex; flex-direction: column; gap: 12px; }
         .link-pill {
             display: flex; align-items: center;
-            background: var(--cream); color: var(--chocolate);
-            text-decoration: none; padding: 8px 5px;
-            border-radius: 30px; border: 2px solid var(--vanilla-accent);
-            transition: transform 0.2s;
-            font-weight: 700; font-size: 0.9rem;
+            background: var(--card-base);
+            border: 3px solid var(--text-brown);
+            border-radius: 30px; padding: 6px;
+            text-decoration: none; color: var(--text-brown); font-weight: 700;
+            transition: transform 0.1s;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
         }
-        .link-pill:hover { transform: translateX(-5px); }
-        
-        .lp-icon-box {
-            background: var(--burgundy); color: var(--cream);
-            width: 32px; height: 32px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            margin-right: 10px; margin-left: 5px;
+        .link-pill:hover { transform: translateX(-3px); }
+        .link-icon {
+            width: 40px; height: 40px; background: var(--text-brown); color: var(--card-base);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem; margin-right: 10px;
         }
-        
-        /* --- OTHER PAGES --- */
-        .inner-content {
-            background: rgba(0,0,0,0.2); padding: 20px; border-radius: 10px;
-            border: 1px dashed var(--strawberry); height: 100%;
+
+        /* OTHER TABS */
+        .generic-content-box {
+            background: var(--card-base); background-image: var(--plaid-pattern);
+            border: 2px dashed var(--text-brown); border-radius: 15px; padding: 20px;
         }
         .gallery-grid {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;
         }
         .gallery-item {
-            background: var(--chocolate); height: 120px; border-radius: 8px; border: 2px solid var(--vanilla-accent);
+            background: var(--text-brown); height: 120px; border-radius: 8px; border: 2px solid var(--accent-pink);
         }
 
-        /* --- FOOTER DECORATION --- */
-        .footer-deco {
-            text-align: center; margin-top: 10px;
-            font-size: 0.8rem; color: var(--strawberry); opacity: 0.7;
+        /* FOOTER */
+        .site-footer {
+            margin-top: 15px; text-align: center; color: var(--text-pink); font-size: 0.9rem; font-weight: 600;
         }
 
-        /* --- PHONE & VN (Untouched logic) --- */
+        /* --- PHONE & VN LOGIC (Unchanged) --- */
         .phone-icon { position: fixed; right: 20px; bottom: 20px; width: 100px; cursor: pointer; z-index: 100; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .phone-ringing { animation: ring 1.2s infinite; }
         @keyframes ring { 0%, 100% { transform: rotate(0); } 10%, 30%, 50% { transform: rotate(8deg) scale(1.05); } 20%, 40%, 60% { transform: rotate(-8deg) scale(1.05); } }
-
         .vn-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200;
             display: flex; justify-content: center; align-items: flex-end; padding-bottom: 50px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
         .vn-overlay.active { opacity: 1; pointer-events: auto; }
         .vn-box {
-            width: 90%; max-width: 800px; background: var(--card-bg); border: 4px solid var(--vanilla-accent);
+            width: 90%; max-width: 800px; background: var(--card-base); border: 4px solid var(--text-brown);
             border-radius: 20px; padding: 20px; display: flex; gap: 20px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.9);
         }
         .vn-sprite-container {
             width: 200px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center;
-            border: 3px solid var(--chocolate); border-radius: 15px; background: linear-gradient(180deg, var(--vanilla-accent), #fff); overflow: hidden;
+            border: 3px solid var(--text-brown); border-radius: 15px; background: linear-gradient(180deg, var(--accent-pink), #fff); overflow: hidden;
         }
         .tsuki-sprite { width: 100%; height: auto; image-rendering: pixelated; }
         .sprite-transition { animation: fadeBounce 0.36s ease-out; }
         @keyframes fadeBounce { 0% { opacity:0; transform:scale(0.96); } 60% { opacity:1; transform:scale(1.04); } 100% { opacity:1; transform:scale(1); } }
         .vn-content { flex-grow: 1; display: flex; flex-direction: column; }
-        .vn-text-area { background: var(--chocolate); color: var(--cream); font-family: 'VT323', monospace; font-size: 1.6rem; padding: 15px; border-radius: 10px; border: 2px solid var(--burgundy); flex-grow: 1; min-height: 100px; }
+        .vn-text-area { background: var(--text-brown); color: var(--cream); font-family: 'VT323', monospace; font-size: 1.6rem; padding: 15px; border-radius: 10px; border: 2px solid var(--accent-brown); flex-grow: 1; min-height: 100px; }
         .vn-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .optionButton { background: var(--strawberry); color: white; border: none; font-family: 'VT323', monospace; font-size: 1.4rem; padding: 8px 15px; text-align: left; cursor: pointer; border-radius: 5px; }
-        .optionButton:hover { background: var(--burgundy); }
-        .vn-close { position: absolute; top: -15px; right: -15px; background: var(--burgundy); color: white; width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--vanilla-accent); font-weight: bold; cursor: pointer; }
+        .optionButton:hover { background: var(--accent-brown); }
+        .vn-close { position: absolute; top: -15px; right: -15px; background: var(--accent-brown); color: white; width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--text-brown); font-weight: bold; cursor: pointer; }
 
         @media (max-width: 768px) {
-            .home-grid { grid-template-columns: 1fr; }
-            .header-section { flex-direction: column; text-align: center; }
+            .home-layout { grid-template-columns: 1fr; }
+            .coquette-header { flex-direction: column; text-align: center; }
+            .header-img-box { margin: 0 auto; }
             .header-pills { justify-content: center; }
             .bat-wing { display: none; }
             .vn-box { flex-direction: column; }
@@ -244,99 +256,99 @@
 </head>
 <body>
 
-    <div style="text-align: center; margin-bottom: -40px; position: relative; z-index: 5;">
-        <h1 style="background: rgba(0,0,0,0.5); display: inline-block; padding: 5px 15px; border-radius: 10px; font-family: 'VT323'; color: var(--strawberry); font-size: 2rem; transform: rotate(-2deg);">
-            Tsuki Attire Presents...
-        </h1>
-    </div>
-
-    <div class="main-frame">
+    <div class="main-frame-wrapper">
         <img src="assets/images/Bat Wing Left.png" alt="" class="bat-wing left">
         <img src="assets/images/Bat Wing Right.png" alt="" class="bat-wing right">
 
-        <header class="header-section">
-            <div class="avatar-box">
-                <img src="assets/sprites/Thanks.png" alt="Avatar">
-            </div>
-            <div class="header-info">
-                <div class="header-title">Tsuki's Lovebite</div>
-                <div class="header-sub">Hey Diva 😚 / Version 1.0</div>
-                <div class="header-pills">
-                    <div class="status-pill">STATUS: OPEN</div>
-                    <div class="status-pill">Comms: Yes</div>
-                </div>
-            </div>
-        </header>
-
-        <nav class="nav-tabs">
-            <button class="nav-btn active-btn" data-target="home-tab">home</button>
-            <button class="nav-btn" data-target="prices-tab">prices</button>
-            <button class="nav-btn" data-target="terms-tab">terms</button>
-            <button class="nav-btn" data-target="gallery-tab">gallery</button>
-        </nav>
-
-        <main class="content-box">
-            
-            <div id="home-tab" class="tab-content active">
-                <div class="page-banner">❖ My Home Page ❖</div>
+        <div class="main-frame">
+            <div class="inner-frame">
                 
-                <div class="home-grid">
-                    <div class="home-text-col">
-                        <h3 style="color:var(--vanilla-accent); margin-bottom:10px; text-align:center;">Welcome Boo! <i class="fa-solid fa-heart"></i></h3>
-                        <p><i class="fa-solid fa-star"></i> Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page.</p>
-                        <p><i class="fa-solid fa-star"></i> Pricing for Commissions is up! If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO</p>
+                <header class="coquette-header">
+                    <div class="header-img-box">
+                        <img src="assets/sprites/Thanks.png" alt="Profile">
+                    </div>
+                    <div class="header-content">
+                        <h1 class="header-title">Tsuki's Lovebite</h1>
+                        <div class="header-sub">Hey Diva 😚  |  Version 1.0</div>
+                        <div class="header-pills">
+                            <div class="header-pill">STATUS: OPEN</div>
+                            <div class="header-pill">Comms: Yes!</div>
+                        </div>
+                    </div>
+                </header>
+
+                <nav class="tab-nav">
+                    <button class="tab-btn active" data-target="home-tab">home</button>
+                    <button class="tab-btn" data-target="prices-tab">prices</button>
+                    <button class="tab-btn" data-target="terms-tab">terms</button>
+                    <button class="tab-btn" data-target="gallery-tab">gallery</button>
+                </nav>
+
+                <main class="content-container">
+                    
+                    <div id="home-tab" class="tab-content active">
+                        <div class="page-banner">❖ My Home Page ❖</div>
+                        
+                        <div class="home-layout">
+                            <div class="home-left">
+                                <h2 class="home-subtitle">Welcome Boo! ♡</h2>
+                                <div class="plaid-box">
+                                    <p>Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page.</p>
+                                </div>
+                                <div class="plaid-box">
+                                    <p>Pricing for Commissions is up! If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO</p>
+                                </div>
+                            </div>
+
+                            <div class="home-right">
+                                <a href="#" class="link-pill">
+                                    <div class="link-icon"><i class="fab fa-instagram"></i></div> Instagram
+                                </a>
+                                <a href="#" class="link-pill">
+                                    <div class="link-icon"><i class="fab fa-tiktok"></i></div> TikTok
+                                </a>
+                                <a href="#" class="link-pill">
+                                    <div class="link-icon"><i class="fa-solid fa-x"></i></div> Twitter / X
+                                </a>
+                                <a href="#" class="link-pill">
+                                    <div class="link-icon"><i class="fa-solid fa-heart"></i></div> Ko-Fi
+                                </a>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="home-links-col">
-                        <a href="#" class="link-pill">
-                            <div class="lp-icon-box"><i class="fab fa-instagram"></i></div> Instagram
-                        </a>
-                        <a href="#" class="link-pill">
-                            <div class="lp-icon-box"><i class="fab fa-tiktok"></i></div> TikTok
-                        </a>
-                        <a href="#" class="link-pill">
-                            <div class="lp-icon-box"><i class="fa-solid fa-x"></i></div> Twitter / X
-                        </a>
-                        <a href="#" class="link-pill">
-                            <div class="lp-icon-box"><i class="fa-solid fa-heart"></i></div> Ko-Fi
-                        </a>
+                    <div id="prices-tab" class="tab-content">
+                        <div class="page-banner">❖ Prices ❖</div>
+                        <div class="generic-content-box" style="text-align:center;">
+                            <p>Price sheet coming soon...</p>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <div id="prices-tab" class="tab-content">
-                <div class="page-banner">❖ Prices ❖</div>
-                <div class="inner-content" style="text-align:center;">
-                    <p>Price sheet coming soon...</p>
-                </div>
-            </div>
-
-            <div id="terms-tab" class="tab-content">
-                <div class="page-banner">❖ Terms ❖</div>
-                <div class="inner-content">
-                    <ul style="list-style:none; padding-left:10px;">
-                        <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--strawberry);"></i> Payment required upfront via Paypal.</li>
-                        <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--strawberry);"></i> No refunds after the sketching phase.</li>
-                        <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--strawberry);"></i> Personal use only.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div id="gallery-tab" class="tab-content">
-                <div class="page-banner">❖ Gallery ❖</div>
-                <div class="inner-content">
-                    <div class="gallery-grid">
-                        <div class="gallery-item"></div>
-                        <div class="gallery-item"></div>
-                        <div class="gallery-item"></div>
-                        <div class="gallery-item"></div>
+                    <div id="terms-tab" class="tab-content">
+                        <div class="page-banner">❖ Terms ❖</div>
+                        <div class="generic-content-box">
+                            <ul style="list-style:none; padding-left:10px;">
+                                <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--accent-brown);"></i> Payment required upfront via Paypal.</li>
+                                <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--accent-brown);"></i> No refunds after the sketching phase.</li>
+                                <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--accent-brown);"></i> Personal use only.</li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-        </main>
-        
-        <div class="footer-deco">- by Tsuki -</div>
+                    <div id="gallery-tab" class="tab-content">
+                        <div class="page-banner">❖ Gallery ❖</div>
+                        <div class="generic-content-box">
+                            <div class="gallery-grid">
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                                <div class="gallery-item"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </main>
+            </div> </div> <div class="site-footer">( Made with love by Tsuki )</div>
     </div>
 
     <img id="phoneButton" src="assets/images/Phone.png" alt="Phone" class="phone-icon phone-ringing">
@@ -356,13 +368,13 @@
             'use strict';
 
             /* --- TAB SYSTEM LOGIC --- */
-            const navButtons = document.querySelectorAll('.nav-btn');
+            const navButtons = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
 
             navButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    navButtons.forEach(b => b.classList.remove('active-btn'));
-                    btn.classList.add('active-btn');
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
                     
                     tabContents.forEach(tab => tab.classList.remove('active'));
                     const targetId = btn.getAttribute('data-target');
