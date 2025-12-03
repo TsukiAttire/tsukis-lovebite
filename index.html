@@ -13,16 +13,13 @@
   
   <div class="main-container">
     
+    <img src="assets/images/Bat Wing Left.png" alt="" class="wing-deco left-wing">
+    <img src="assets/images/Bat Wing Right.png" alt="" class="wing-deco right-wing">
+
     <header class="header-section">
-      <div class="header-cloud">
-        <img src="assets/images/Bat Wing Left.png" alt="Left Bat Wing" class="bat-wing-left">
-        
-        <div class="logo-text">
-            <h1>Tsuki's Lovebite</h1>
-            <span class="heart-decoration">♥ .exe ♥</span>
-        </div>
-        
-        <img src="assets/images/Bat Wing Right.png" alt="Right Bat Wing" class="bat-wing-right">
+      <div class="logo-text">
+          <h1>Tsuki's Lovebite</h1>
+          <span class="heart-decoration">♥ .exe ♥</span>
       </div>
     </header>
 
@@ -39,12 +36,20 @@
         <div class="profile-frame">
           <img id="staticAvatar" src="assets/sprites/Thanks.png" alt="Tsuki Avatar">
         </div>
+        
         <div class="status-box">
           <h3>♥ Status ♥</h3>
           <p class="blink">● Online</p>
         </div>
+
+        <div class="daily-box">
+            <div class="points-display">✨ <span id="pointCountDisp">0</span> pts</div>
+            <button id="dailyRewardBtn" class="daily-btn">Claim Daily!</button>
+            <div id="dailyTimer" class="daily-timer">00:00:00</div>
+        </div>
+
         <div class="deco-stickers">
-           <span>🍓</span><span>💉</span><span>🍰</span>
+           <span>🍓</span><span>🍫</span><span>💉</span>
         </div>
       </aside>
 
@@ -54,12 +59,12 @@
             <div class="content-box">
                 <h2 class="section-title">✨ Welcome ✨</h2>
                 <div class="scroll-text">
-                    <p>Welcome to my digital crypt! <br>Grab some tea and stay a while.</p>
+                    <p>Welcome to my digital crypt! <br>Grab some blood-orange tea and stay a while.</p>
                     <p style="color:var(--accent-red)">"Soft chaos & pixel love..."</p>
                 </div>
                 
                 <div class="action-area">
-                    <button class="cta-btn" id="openVNbtn">Start Chat ♡</button>
+                    <button class="cta-btn" id="openVNbtn">Chat with Tsuki (+Pts)</button>
                     <div id="firstPetUnlock" style="display:none; margin-top:10px;">
                         <button id="petUnlockBtn" class="cta-btn secondary">🐾 Pet Found!</button>
                     </div>
@@ -69,16 +74,17 @@
 
         <div id="shop" class="page-panel">
             <div class="content-box">
-                <h2 class="section-title">🥀 Gift Shop</h2>
+                <h2 class="section-title">🥀 Point Shop</h2>
+                <p style="text-align:center; font-size:14px; color:var(--text-light)">Spend points to spoil Tsuki!</p>
                 <div class="shop-grid">
-                    <button class="shop-item" id="btn-gift-rose">🌹<br><span>Rose</span><br><small>20★</small></button>
-                    <button class="shop-item" id="btn-gift-teddy">🧸<br><span>Bear</span><br><small>40★</small></button>
-                    <button class="shop-item" id="btn-gift-purse">👜<br><span>Purse</span><br><small>50★</small></button>
-                    <button class="shop-item" id="btn-gift-choco">🍫<br><span>Choco</span><br><small>15★</small></button>
-                    <button class="shop-item" id="btn-gift-boba">🧋<br><span>Tea</span><br><small>15★</small></button>
+                    <button class="shop-item" id="btn-gift-rose">🌹<br><span>Rose</span><br><small>20p</small></button>
+                    <button class="shop-item" id="btn-gift-teddy">🧸<br><span>Bear</span><br><small>40p</small></button>
+                    <button class="shop-item" id="btn-gift-purse">👜<br><span>Purse</span><br><small>50p</small></button>
+                    <button class="shop-item" id="btn-gift-choco">🍫<br><span>Choco</span><br><small>15p</small></button>
+                    <button class="shop-item" id="btn-gift-boba">🧋<br><span>Tea</span><br><small>15p</small></button>
                 </div>
                 <div style="margin-top:15px; border-top: 2px dashed var(--accent-light);">
-                    <button class="cta-btn secondary" id="btn-fortune" style="width:100%; margin-top:10px;">🔮 Fortune (10★)</button>
+                    <button class="cta-btn secondary" id="btn-fortune" style="width:100%; margin-top:10px;">🔮 Fortune (10p)</button>
                 </div>
             </div>
         </div>
@@ -93,7 +99,7 @@
                     </label>
                     <hr class="dashed-line">
                     <div class="debug-zone">
-                        <button class="debug-btn" id="debug-add-stars">+50 Stars</button>
+                        <button class="debug-btn" id="debug-add-stars">+50 Pts (Test)</button>
                         <button class="debug-btn" id="debug-reset">Reset Pet</button>
                     </div>
                 </div>
@@ -153,7 +159,7 @@
          <div class="love-meter">
             <div id="loveFill" class="love-fill"></div>
          </div>
-         <div class="star-wallet">🌟 <span id="starCountDisp">0</span></div>
+         <div class="star-wallet">Points: <span id="starCountDispInPet">0</span></div>
       </div>
 
       <div class="pet-controls">
