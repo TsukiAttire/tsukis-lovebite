@@ -4,285 +4,325 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Untitled Site</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;800&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         /* =========================================
-           CSS STYLING STARTS HERE
+           VAMPIRE x NEAPOLITAN PALETTE
            ========================================= */
-        
         :root {
-            /* VAMPIRE x NEAPOLITAN PALETTE */
-            /* Backgrounds */
-            --bg-dark: #121212;        /* Deep charcoal background */
-            --grid-line: #2a1f1f;      /* Subtle reddish-brown grid line */
-            --card-bg: #1e1616;        /* Very dark brownish-grey card body */
-
-            /* Text Colors */
-            --text-cream: #f3e5d8;     /* Vanilla cream for main text */
-            --text-muted: #cbb6b6;     /* Dusty pinkish-grey for subheaders */
+            --bg-dark: #121212;
+            --grid-line: #3d2a2a;
+            --card-bg: #1e1616;
             
-            /* Accents */
-            --accent-burgundy: #722f37; /* Deep vampire red */
-            --accent-strawberry: #a85e6a; /* Muted neapolitan pink */
-            --accent-chocolate: #4e3629;  /* Rich chocolate brown */
-            --accent-vanilla: #e6d2b5;    /* Darker vanilla accent */
-
-            /* Borders */
-            --border-color: #3d2a2a;
+            /* The Neapolitan Textures */
+            --cream: #f3e5d8;
+            --strawberry: #a85e6a;
+            --chocolate: #4e3629;
+            --burgundy: #722f37;
+            --vanilla-accent: #e6d2b5;
+            
+            /* Borders & Shadows */
+            --border-thick: 4px solid var(--chocolate);
+            --shadow: 0 10px 0 rgba(0,0,0,0.3);
         }
 
-        /* Global Resets */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* =========================================
+           GLOBAL RESET
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Quicksand', sans-serif;
             background-color: var(--bg-dark);
-            color: var(--text-cream);
-            /* Grid Pattern Background */
+            color: var(--cream);
+            /* Blue/Pink grid from reference, adapted to Vampire colors */
             background-image: 
-                linear-gradient(var(--grid-line) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-            background-size: 30px 30px;
+                linear-gradient(var(--grid-line) 2px, transparent 2px),
+                linear-gradient(90deg, var(--grid-line) 2px, transparent 2px);
+            background-size: 50px 50px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
+            overflow-x: hidden;
         }
 
-        /* Top Banner Area */
+        /* =========================================
+           TOP BANNER
+           ========================================= */
         .site-title-banner {
-            width: 100%;
-            max-width: 900px;
-            text-align: right;
-            margin-bottom: 10px;
+            width: 100%; max-width: 900px; text-align: right; margin-bottom: 20px;
+            position: relative; z-index: 2;
         }
-
+        
         .site-title-banner h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--accent-vanilla);
-            text-shadow: 2px 2px var(--accent-burgundy);
-            text-transform: uppercase;
+            font-size: 3.5rem; font-weight: 800; text-transform: uppercase;
+            color: var(--vanilla-accent);
+            text-shadow: 4px 4px 0 var(--burgundy);
+            /* Optional: Add a subtle highlight background like reference */
+            display: inline-block;
+            background: rgba(114, 47, 55, 0.3); /* Burgundy low opacity */
+            padding: 0 15px;
+            transform: skew(-5deg);
         }
 
-        /* Main Card Container */
+        /* =========================================
+           MAIN CARD CONTAINER
+           ========================================= */
+        .main-card-wrapper {
+            position: relative;
+            width: 100%; max-width: 900px;
+            z-index: 10;
+        }
+
+        /* Bat Wings Decoration */
+        .bat-wing {
+            position: absolute; top: -40px; width: 150px; z-index: -1;
+            opacity: 0.9; pointer-events: none;
+        }
+        .bat-wing.left { left: -80px; transform: rotate(-10deg); }
+        .bat-wing.right { right: -80px; transform: rotate(10deg); }
+
         .main-card {
             background-color: var(--card-bg);
-            width: 100%;
-            max-width: 900px;
-            border-radius: 30px;
-            padding: 25px;
-            border: 3px solid var(--border-color);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            
-            /* Layout: Left Text, Right Image */
+            border-radius: 40px;
+            border: 6px solid #b6d3ff; /* The Periwinkle border from reference */
+            border-color: var(--vanilla-accent); /* Swapped to Vanilla for theme */
+            box-shadow: 
+                0 0 0 10px #ffffff, /* Inner white outline simulation */
+                0 20px 40px rgba(0,0,0,0.5);
+            padding: 30px;
             display: grid;
-            grid-template-columns: 3fr 4fr; 
-            gap: 25px;
+            grid-template-columns: 3.5fr 4.5fr; /* Matches the ratio in image */
+            gap: 30px;
+            position: relative;
+            overflow: hidden; /* Keeps content inside rounded corners */
         }
 
-        /* Left Column Styling */
-        .left-col {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        /* Decorative "Dotted" Header Background on Card (Like reference blue dots) */
+        .main-card::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 70px;
+            background-image: radial-gradient(rgba(255,255,255,0.15) 20%, transparent 20%);
+            background-size: 10px 10px;
+            z-index: 0; pointer-events: none;
+            border-bottom: 2px dashed rgba(255,255,255,0.1);
         }
 
+        /* =========================================
+           LEFT COLUMN
+           ========================================= */
+        .left-col { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 18px; }
+
+        /* Typography */
         .card-header h1 {
-            font-size: 2.5rem;
-            color: var(--accent-vanilla);
-            font-weight: 700;
-            line-height: 1.1;
+            font-size: 3rem; font-weight: 800; line-height: 0.9;
+            color: #6a8eff; /* Reference Blue */
+            color: var(--vanilla-accent); /* Theme override */
+            text-shadow: 2px 2px 0 var(--burgundy);
+            letter-spacing: -1px;
         }
-
         .card-header h2 {
-            font-size: 1.5rem;
-            color: var(--accent-strawberry);
-            font-weight: 400;
-            text-align: center;
-            margin-top: 5px;
+            font-size: 2rem; font-weight: 400;
+            color: #ff99aa; /* Reference Pink */
+            color: var(--strawberry); /* Theme override */
+            font-family: 'Quicksand', sans-serif;
+            text-align: center; margin-top: 5px;
         }
 
-        /* Pill Button */
-        .pill-btn {
-            background-color: var(--accent-burgundy);
-            color: var(--text-cream);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            width: 100%;
-            text-align: center;
-            border: 2px solid var(--accent-chocolate);
+        /* Top Pill Button */
+        .pill-btn-top {
+            background-color: #6a8eff; /* Reference Blue */
+            background-color: var(--burgundy); /* Theme override */
+            color: white; border: 2px solid white;
+            padding: 10px; border-radius: 50px;
+            font-size: 0.9rem; font-style: italic; font-weight: 600;
+            text-align: center; width: 100%;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            cursor: pointer; transition: transform 0.2s;
         }
+        .pill-btn-top:hover { transform: scale(1.02); }
 
-        /* Text Box (Box in a Box) */
+        /* Striped Text Box */
         .text-box-outer {
-            background-color: var(--accent-strawberry);
-            padding: 12px;
-            border-radius: 20px;
-            border: 2px solid var(--accent-burgundy);
+            /* Candy stripe pattern */
+            background: repeating-linear-gradient(
+                -45deg,
+                var(--strawberry),
+                var(--strawberry) 10px,
+                #c47c89 10px,
+                #c47c89 20px
+            );
+            padding: 12px; border-radius: 20px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
         }
-
         .text-box-inner {
             background-color: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid var(--accent-chocolate);
+            padding: 15px; border-radius: 12px;
+            color: var(--text-muted); font-size: 0.95rem; line-height: 1.4;
+            border: 2px solid rgba(255,255,255,0.1);
         }
 
-        .text-box-inner p {
-            font-size: 0.9rem;
-            line-height: 1.4;
-            color: var(--text-muted);
-        }
-
-        /* Links Section */
+        /* Links */
         .links-section h3 {
-            color: var(--accent-vanilla);
-            margin-bottom: 10px;
-            font-size: 1.2rem;
+            color: #b6d3ff; /* Ref Blue */
+            color: var(--vanilla-accent); /* Theme override */
+            font-size: 1.5rem; font-weight: 800;
+            letter-spacing: 1px; margin-bottom: 5px;
         }
-
-        .social-icons {
-            display: flex;
-            gap: 10px;
-        }
-
+        .social-icons { display: flex; gap: 10px; }
         .icon-box {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            font-size: 1.5rem;
-            transition: transform 0.2s ease;
+            width: 50px; height: 50px; border-radius: 15px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.6rem; text-decoration: none;
+            color: white; transition: transform 0.2s;
         }
-
-        .icon-box:hover {
-            transform: translateY(-3px);
-        }
-
-        .icon-box.instagram { background-color: var(--accent-burgundy); color: var(--text-cream); }
-        .icon-box.tiktok { background-color: var(--accent-chocolate); color: var(--text-cream); }
-        .icon-box.twitter { background-color: var(--accent-strawberry); color: var(--bg-dark); }
-        .icon-box.other { background-color: var(--accent-vanilla); color: var(--accent-burgundy); }
+        .icon-box:hover { transform: translateY(-3px); }
+        /* Exact colors from reference mapped to theme */
+        .ib-1 { background-color: var(--burgundy); }   /* Instagram */
+        .ib-2 { background-color: #6a8eff; background-color: var(--chocolate); } /* Tiktok */
+        .ib-3 { background-color: var(--strawberry); } /* X */
+        .ib-4 { background-color: #ffde59; background-color: var(--vanilla-accent); color: var(--burgundy); } /* Heart */
 
         /* Status Bar */
         .status-bar {
-            display: flex;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-top: auto; 
-            border: 2px solid var(--accent-burgundy);
+            display: flex; margin-top: auto;
+            border-radius: 8px; overflow: hidden;
+            font-weight: 700; text-transform: uppercase;
         }
-
         .status-label {
-            background-color: var(--accent-burgundy);
-            color: var(--text-cream);
-            padding: 8px 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.9rem;
+            background-color: var(--strawberry); color: white;
+            padding: 8px 12px; font-size: 0.9rem;
         }
-
         .status-value {
-            background-color: var(--card-bg);
-            color: var(--text-cream);
-            padding: 8px 15px;
-            flex-grow: 1;
-            font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+            color: white; padding: 8px 12px; flex-grow: 1; font-size: 0.9rem;
         }
 
-        /* Right Column (Image Placeholder) */
+        /* =========================================
+           RIGHT COLUMN (IMAGE)
+           ========================================= */
         .right-col {
-            position: relative;
-            height: 100%;
-            min-height: 400px;
+            position: relative; height: 100%; min-height: 450px;
+            border-radius: 20px; overflow: hidden;
+            border: 4px solid var(--vanilla-accent);
         }
-
-        .image-placeholder-sprite {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, var(--accent-chocolate), var(--accent-burgundy));
-            border-radius: 20px;
-            border: 3px solid var(--accent-vanilla);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-cream);
-            font-weight: 700;
-            opacity: 0.8;
-        }
-
-        /* Bottom Nav */
-        .bottom-nav {
-            width: 100%;
-            max-width: 900px;
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .nav-pill {
-            flex: 1;
+        .image-placeholder {
+            width: 100%; height: 100%;
+            background: linear-gradient(to bottom right, var(--chocolate), var(--burgundy));
+            display: flex; justify-content: center; align-items: center;
+            color: rgba(255,255,255,0.3); font-weight: 800; font-size: 2rem;
             text-align: center;
-            padding: 12px 5px;
-            border-radius: 50px;
-            text-decoration: none;
-            color: var(--text-cream);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 2px solid rgba(255,255,255,0.1);
-            transition: filter 0.2s;
+        }
+        .image-placeholder img {
+            width: 100%; height: 100%; object-fit: cover;
         }
 
-        .nav-pill:hover { filter: brightness(1.2); }
-        .nav-pill.home { background-color: var(--accent-burgundy); }
-        .nav-pill.prices { background-color: var(--accent-chocolate); }
-        .nav-pill.terms { background-color: var(--accent-strawberry); color: var(--bg-dark);}
-        .nav-pill.gallery { background-color: var(--accent-vanilla); color: var(--accent-burgundy); }
+        /* =========================================
+           BOTTOM NAVIGATION
+           ========================================= */
+        .bottom-nav {
+            width: 100%; max-width: 900px; margin-top: 30px;
+            display: flex; justify-content: space-between; gap: 15px;
+        }
+        
+        .nav-btn {
+            flex: 1; text-align: center; text-decoration: none;
+            padding: 15px 5px; border-radius: 50px;
+            font-weight: 800; font-size: 1.5rem; text-transform: uppercase;
+            color: white;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.3); /* The chunky button look */
+            transition: transform 0.1s, filter 0.2s;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .nav-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .nav-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
 
-        /* Footer */
-        footer {
-            width: 100%;
-            max-width: 900px;
-            text-align: right;
-            margin-top: 10px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
+        /* Palette rotation */
+        .btn-home { background-color: #8c52ff; background-color: var(--burgundy); }
+        .btn-prices { background-color: #6a8eff; background-color: var(--chocolate); }
+        .btn-terms { background-color: #ff99aa; background-color: var(--strawberry); }
+        .btn-gallery { background-color: #ffde59; background-color: var(--vanilla-accent); color: var(--burgundy); }
+
+        /* =========================================
+           PHONE & VN OVERLAY CSS
+           ========================================= */
+        .phone-icon {
+            position: fixed; right: 20px; bottom: 20px; width: 100px;
+            cursor: pointer; z-index: 100; transition: transform 0.3s;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+        }
+        .phone-ringing { animation: ring 1.2s infinite; }
+        @keyframes ring {
+            0%, 100% { transform: rotate(0); }
+            10%, 30%, 50% { transform: rotate(8deg) scale(1.05); }
+            20%, 40%, 60% { transform: rotate(-8deg) scale(1.05); }
         }
 
-        /* Mobile Adjustments */
+        .vn-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 200;
+            display: flex; justify-content: center; align-items: flex-end;
+            padding-bottom: 50px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .vn-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .vn-box {
+            width: 90%; max-width: 800px;
+            background: var(--card-bg);
+            border: 4px solid var(--vanilla-accent);
+            border-radius: 20px; padding: 20px;
+            display: flex; gap: 20px; position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9);
+        }
+
+        .vn-sprite-container {
+            width: 200px; flex-shrink: 0;
+            display: flex; align-items: flex-end; justify-content: center;
+            border: 3px solid var(--chocolate); border-radius: 15px;
+            background: linear-gradient(180deg, var(--vanilla-accent), #fff);
+            overflow: hidden;
+        }
+        .vn-sprite-container img { width: 100%; height: auto; image-rendering: pixelated; }
+
+        .vn-content { flex-grow: 1; display: flex; flex-direction: column; }
+        
+        .vn-text-area {
+            background: var(--chocolate); color: var(--cream);
+            font-family: 'VT323', monospace; font-size: 1.6rem;
+            padding: 15px; border-radius: 10px; border: 2px solid var(--burgundy);
+            flex-grow: 1; min-height: 100px;
+        }
+
+        .vn-options {
+            display: flex; flex-direction: column; gap: 10px; margin-top: 15px;
+        }
+        .vn-opt-btn {
+            background: var(--strawberry); color: white; border: none;
+            font-family: 'VT323', monospace; font-size: 1.4rem;
+            padding: 8px 15px; text-align: left; cursor: pointer; border-radius: 5px;
+        }
+        .vn-opt-btn:hover { background: var(--burgundy); }
+
+        .vn-close {
+            position: absolute; top: -15px; right: -15px;
+            background: var(--burgundy); color: white;
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 3px solid var(--vanilla-accent);
+            font-weight: bold; cursor: pointer;
+        }
+
+        /* Mobile Response */
         @media (max-width: 768px) {
-            .main-card {
-                grid-template-columns: 1fr;
-            }
-            .right-col {
-                min-height: 300px;
-            }
-            .bottom-nav {
-                flex-wrap: wrap;
-            }
-            .nav-pill {
-                min-width: 45%;
-            }
+            .main-card { grid-template-columns: 1fr; }
+            .right-col { height: 300px; min-height: 0; order: -1; }
+            .bottom-nav { flex-wrap: wrap; }
+            .nav-btn { min-width: 45%; }
+            .bat-wing { display: none; } /* Hide wings on mobile */
+            .vn-box { flex-direction: column; }
+            .vn-sprite-container { width: 120px; height: 120px; margin: 0 auto; }
         }
     </style>
 </head>
@@ -292,58 +332,192 @@
         <h1>YOUR TEXT HERE!</h1>
     </header>
 
-    <main class="main-card">
-        
-        <section class="left-col">
-            <header class="card-header">
-                <h1>My Untitled Site</h1>
-                <h2>subheader</h2>
-            </header>
+    <div class="main-card-wrapper">
+        <img src="assets/images/Bat Wing Left.png" alt="" class="bat-wing left">
+        <img src="assets/images/Bat Wing Right.png" alt="" class="bat-wing right">
 
-            <div class="action-button-container">
-                <button class="pill-btn">Donec tincidunt aliquam neque.</button>
-            </div>
+        <main class="main-card">
+            <section class="left-col">
+                <header class="card-header">
+                    <h1>My Untitled Site</h1>
+                    <h2>subheader</h2>
+                </header>
 
-            <article class="text-box-outer">
-                <div class="text-box-inner">
-                    <p>Mauris non purus ante. Vivamus a metus turpis. Proin vitae ultricies ipsum. Cras placerat nulla eget turpis pretium, et tempus nunc vestibulum. Aliquam erat volutpat.</p>
+                <a href="https://google.com" target="_blank" style="text-decoration:none;">
+                    <button class="pill-btn-top">Donec tincidunt aliquam neque.</button>
+                </a>
+
+                <article class="text-box-outer">
+                    <div class="text-box-inner">
+                        <p>Mauris non purus ante. Vivamus a metus turpis. Proin vitae ultricies ipsum. Cras placerat nulla eget turpis pretium, et tempus nunc vestibulum. Aliquam erat volutpat.</p>
+                    </div>
+                </article>
+
+                <div class="links-section">
+                    <h3>... links !</h3>
+                    <div class="social-icons">
+                        <a href="#" class="icon-box ib-1"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="icon-box ib-2"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="icon-box ib-3"><i class="fa-solid fa-x"></i></a>
+                        <a href="#" class="icon-box ib-4"><i class="fa-solid fa-heart"></i></a>
+                    </div>
                 </div>
-            </article>
 
-            <div class="links-section">
-                <h3>... links !</h3>
-                <div class="social-icons">
-                    <a href="#" class="icon-box instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="icon-box tiktok"><i class="fab fa-tiktok"></i></a>
-                    <a href="#" class="icon-box twitter"><i class="fa-solid fa-x"></i></a> 
-                    <a href="#" class="icon-box other"><i class="fa-solid fa-heart"></i></a>
+                <div class="status-bar">
+                    <div class="status-label">STATUS:</div>
+                    <div class="status-value">OPEN</div>
                 </div>
-            </div>
+            </section>
 
-            <div class="status-bar">
-                <span class="status-label">STATUS:</span>
-                <span class="status-value">OPEN</span>
-            </div>
-        </section>
-
-        <aside class="right-col">
-            <div class="image-placeholder-sprite">
-                <p>IMAGE PLACEHOLDER</p>
-            </div>
-        </aside>
-
-    </main>
+            <aside class="right-col">
+                <div class="image-placeholder">
+                    <p>IMAGE PLACEHOLDER</p>
+                </div>
+            </aside>
+        </main>
+    </div>
 
     <nav class="bottom-nav">
-        <a href="#" class="nav-pill home">HOME</a>
-        <a href="#" class="nav-pill prices">PRICES</a>
-        <a href="#" class="nav-pill terms">TERMS</a>
-        <a href="#" class="nav-pill gallery">GALLERY</a>
+        <a href="#home" class="nav-btn btn-home">HOME</a>
+        <a href="#prices" class="nav-btn btn-prices">PRICES</a>
+        <a href="#terms" class="nav-btn btn-terms">TERMS</a>
+        <a href="#gallery" class="nav-btn btn-gallery">GALLERY</a>
     </nav>
 
-    <footer>
-        <p>by xiu.carrd.co</p>
-    </footer>
+    <img id="phoneBtn" src="assets/images/Phone.png" alt="Phone" class="phone-icon phone-ringing">
 
+    <div id="vnOverlay" class="vn-overlay">
+        <div class="vn-box">
+            <button id="vnClose" class="vn-close">X</button>
+            <div class="vn-sprite-container">
+                <img id="vnSprite" src="" alt="Sprite">
+            </div>
+            <div class="vn-content">
+                <div id="vnText" class="vn-text-area"></div>
+                <div id="vnOptions" class="vn-options"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Exact filenames as provided
+        const sprites = {
+            happy: 'assets/sprites/Thanks.png',
+            happy2: 'assets/sprites/Thanks 2.png',
+            sad: 'assets/sprites/Sad Talking.png',
+            wine: 'assets/sprites/Holding Wine Smile.png',
+            rose: 'assets/sprites/Holding Rose Talk 1.png',
+            hangup: 'assets/sprites/Hanging Up the phone.png'
+        };
+
+        const phoneBtn = document.getElementById('phoneBtn');
+        const overlay = document.getElementById('vnOverlay');
+        const closeBtn = document.getElementById('vnClose');
+        const vnSprite = document.getElementById('vnSprite');
+        const vnText = document.getElementById('vnText');
+        const vnOptions = document.getElementById('vnOptions');
+
+        let typeInterval;
+
+        function openVN() {
+            phoneBtn.classList.remove('phone-ringing');
+            overlay.classList.add('active');
+            startDialogue();
+        }
+
+        function closeVN() {
+            overlay.classList.remove('active');
+            // Restart ring after 5 seconds
+            setTimeout(() => phoneBtn.classList.add('phone-ringing'), 5000);
+        }
+
+        function typeWriter(text) {
+            vnText.innerHTML = "";
+            let i = 0;
+            clearInterval(typeInterval);
+            return new Promise(resolve => {
+                typeInterval = setInterval(() => {
+                    if(i < text.length) {
+                        vnText.innerHTML += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(typeInterval);
+                        resolve();
+                    }
+                }, 30);
+            });
+        }
+
+        function setSprite(src) {
+            vnSprite.src = src;
+        }
+
+        function clearOptions() {
+            vnOptions.innerHTML = "";
+        }
+
+        function addOption(label, callback) {
+            const btn = document.createElement('button');
+            btn.className = 'vn-opt-btn';
+            btn.innerText = "> " + label;
+            btn.onclick = callback;
+            vnOptions.appendChild(btn);
+        }
+
+        // --- DIALOGUE SCRIPT ---
+
+        async function startDialogue() {
+            clearOptions();
+            setSprite(sprites.happy);
+            await typeWriter("Tsuki: Hello? Is someone there? Oh! You picked up!");
+            
+            addOption("Who is this?", scene_who);
+            addOption("I love your outfit.", scene_compliment);
+            addOption("Hang up.", scene_hangup);
+        }
+
+        async function scene_who() {
+            clearOptions();
+            setSprite(sprites.wine);
+            await typeWriter("Tsuki: It's me, Tsuki! The vampire princess? Did you forget me already? Rude.");
+            
+            addOption("Sorry! I remember now.", scene_remember);
+            addOption("Do you have a rose?", scene_rose);
+        }
+
+        async function scene_compliment() {
+            clearOptions();
+            setSprite(sprites.happy2);
+            await typeWriter("Tsuki: Aww, thank you! It's custom made. It costs more than your house! Just kidding... sort of.");
+            addOption("Back to main menu.", startDialogue);
+        }
+
+        async function scene_remember() {
+            clearOptions();
+            setSprite(sprites.happy);
+            await typeWriter("Tsuki: Good! I was about to bite you. Just kidding! Maybe.");
+            setTimeout(closeVN, 3000);
+        }
+
+        async function scene_rose() {
+            clearOptions();
+            setSprite(sprites.rose);
+            await typeWriter("Tsuki: A rose? For me? Or from me? Here, take this one. It's almost as pretty as I am.");
+            addOption("Thanks!", closeVN);
+        }
+
+        async function scene_hangup() {
+            clearOptions();
+            setSprite(sprites.hangup);
+            await typeWriter("Tsuki: Hey! Don't you da— *Click*");
+            setTimeout(closeVN, 2000);
+        }
+
+        // Listeners
+        phoneBtn.onclick = openVN;
+        closeBtn.onclick = closeVN;
+        overlay.onclick = (e) => { if(e.target === overlay) closeVN(); };
+
+    </script>
 </body>
 </html>
