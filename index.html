@@ -9,189 +9,202 @@
     
     <style>
         /* =========================================
-           CSS STYLING (MERGED)
+           VAMPIRE COQUETTE PALETTE
            ========================================= */
-
         :root {
             --bg-dark: #121212;
-            --grid-line: #3d2a2a;
-            --card-bg: #1e1616;
+            --card-bg: #1e1616;      /* Dark chocolate base */
+            --content-bg: #2a1f1f;   /* Slightly lighter for inner boxes */
             --cream: #f3e5d8;
             --strawberry: #a85e6a;
             --chocolate: #4e3629;
             --burgundy: #722f37;
             --vanilla-accent: #e6d2b5;
+            
+            --border-style: 2px dashed var(--vanilla-accent);
         }
 
-        /* Global Reset */
+        /* Reset */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Quicksand', sans-serif;
             background-color: var(--bg-dark);
             color: var(--cream);
-            /* Grid Background */
-            background-image: 
-                linear-gradient(var(--grid-line) 2px, transparent 2px),
-                linear-gradient(90deg, var(--grid-line) 2px, transparent 2px);
-            background-size: 50px 50px;
+            /* Plaid Pattern Background */
+            background-image:
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(114, 47, 55, 0.1) 40px, rgba(114, 47, 55, 0.1) 42px),
+                repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(114, 47, 55, 0.1) 40px, rgba(114, 47, 55, 0.1) 42px);
+            background-size: 100% 100%;
             display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; padding: 40px 20px; overflow-x: hidden;
+            min-height: 100vh; padding: 20px;
         }
 
-        /* --- LAYOUT WRAPPERS --- */
-        .main-card-wrapper {
-            position: relative; width: 100%; max-width: 900px; z-index: 10; margin-top: 40px;
+        /* --- OUTER FRAME (The "Card") --- */
+        .main-frame {
+            position: relative;
+            width: 100%; max-width: 850px;
+            background-color: var(--chocolate); /* Dark border look */
+            border-radius: 20px;
+            padding: 15px;
+            border: 4px solid var(--burgundy);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            margin-top: 50px;
+            z-index: 10;
         }
 
-        /* --- BAT WINGS FIX --- */
+        /* Bat Wings Positioned behind frame */
         .bat-wing {
-            position: absolute; width: 340px; top: -130px; z-index: -1;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5)); pointer-events: none;
+            position: absolute; width: 300px; top: -80px; z-index: -1;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); pointer-events: none;
         }
-        .bat-wing.left { 
-            left: -160px; transform: rotate(-15deg); 
-        }
-        .bat-wing.right { 
-            right: -160px; transform: rotate(15deg); /* Correct rotation, no flip */
-        }
+        .bat-wing.left { left: -120px; transform: rotate(-15deg); }
+        .bat-wing.right { right: -120px; transform: rotate(15deg); }
 
-        /* --- MAIN CARD --- */
-        .main-card {
+        /* --- HEADER SECTION --- */
+        .header-section {
+            display: flex; gap: 15px;
             background-color: var(--card-bg);
-            border-radius: 40px;
-            border: 6px solid var(--vanilla-accent);
-            box-shadow: 0 0 0 10px #ffffff, 0 20px 40px rgba(0,0,0,0.5);
-            padding: 30px;
-            position: relative; overflow: hidden;
-            min-height: 550px; /* Ensure consistent height across tabs */
+            border-radius: 15px 15px 0 0;
+            padding: 15px;
+            border: var(--border-style);
+            margin-bottom: 10px;
+            align-items: center;
         }
 
-        /* Decorative Dots Header */
-        .main-card::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 70px;
-            background-image: radial-gradient(rgba(255,255,255,0.15) 20%, transparent 20%);
-            background-size: 10px 10px; z-index: 0; pointer-events: none;
-            border-bottom: 2px dashed rgba(255,255,255,0.1);
+        .avatar-box {
+            width: 100px; height: 100px;
+            border-radius: 15px;
+            border: 3px solid var(--strawberry);
+            overflow: hidden; flex-shrink: 0;
+            background: var(--burgundy);
+        }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .header-info { flex-grow: 1; }
+        .header-title {
+            font-size: 2.8rem; color: var(--vanilla-accent);
+            text-shadow: 2px 2px 0 var(--burgundy); font-weight: 800; line-height: 1;
+        }
+        .header-sub {
+            color: var(--strawberry); font-size: 1.2rem; font-weight: 600; margin-bottom: 8px;
+        }
+        .header-pills { display: flex; gap: 10px; }
+        .status-pill {
+            background: var(--cream); color: var(--chocolate);
+            padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;
+            border: 1px dashed var(--chocolate);
         }
 
-        /* --- TAB SYSTEM (The Magic) --- */
-        /* By default, hide all tab contents */
-        .tab-content { display: none; height: 100%; }
-        /* Only show the one with the 'active' class */
+        /* --- NAVIGATION TABS (Middle) --- */
+        .nav-tabs {
+            display: flex; gap: 8px; margin-bottom: -2px; padding: 0 10px;
+        }
+        .nav-btn {
+            flex: 1;
+            background: var(--card-bg);
+            border: var(--border-style);
+            border-bottom: none;
+            border-radius: 15px 15px 0 0;
+            padding: 10px;
+            text-align: center;
+            color: var(--cream);
+            font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 1.1rem;
+            cursor: pointer; transition: all 0.2s;
+            opacity: 0.7;
+        }
+        .nav-btn:hover { opacity: 1; background: var(--burgundy); }
+        .nav-btn.active-btn {
+            opacity: 1; background: var(--content-bg);
+            padding-bottom: 15px; /* Visual "connected" effect */
+            color: var(--vanilla-accent);
+        }
+
+        /* --- MAIN CONTENT AREA --- */
+        .content-box {
+            background-color: var(--content-bg);
+            border-radius: 15px;
+            border: var(--border-style);
+            padding: 20px;
+            min-height: 400px;
+            position: relative;
+        }
+
+        /* Scalloped Edge Decoration (Top of content) */
+        .content-box::before {
+            content: ""; position: absolute; top: 5px; left: 5px; right: 5px; height: 10px;
+            background-image: radial-gradient(circle, var(--strawberry) 2px, transparent 2.5px);
+            background-size: 15px 15px; opacity: 0.5;
+        }
+
+        /* Inner Page Banner */
+        .page-banner {
+            background: var(--cream); color: var(--chocolate);
+            text-align: center; padding: 8px; border-radius: 50px;
+            border: 2px dashed var(--burgundy);
+            font-weight: 800; font-size: 1.4rem; margin-bottom: 20px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Tab Visibility */
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
 
-        /* Home Tab Layout (Grid) */
-        #home-tab.active {
-            display: grid; grid-template-columns: 3.5fr 4.5fr; gap: 30px;
+        /* --- HOME LAYOUT (Split) --- */
+        .home-grid {
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px;
         }
-        @media (max-width: 768px) {
-            #home-tab.active { grid-template-columns: 1fr; }
+        
+        .home-text-col {
+            background: rgba(0,0,0,0.2);
+            padding: 15px; border-radius: 10px;
+            border: 1px dashed var(--strawberry);
         }
+        .home-text-col p { font-size: 0.95rem; line-height: 1.5; margin-bottom: 10px; }
+        .home-text-col i { color: var(--strawberry); margin-right: 5px; }
 
-        /* Other Tabs Layout (Flex Column) */
-        .page-layout {
-            display: flex; flex-direction: column; gap: 20px; position: relative; z-index: 2; height: 100%;
+        .home-links-col {
+            display: flex; flex-direction: column; gap: 10px;
         }
-
-        /* --- TYPOGRAPHY & COMPONENTS --- */
-        .site-title-banner {
-            width: 100%; max-width: 900px; text-align: right; margin-bottom: 20px; position: relative; z-index: 2;
+        
+        /* New Link Buttons (Right Side) */
+        .link-pill {
+            display: flex; align-items: center;
+            background: var(--cream); color: var(--chocolate);
+            text-decoration: none; padding: 8px 5px;
+            border-radius: 30px; border: 2px solid var(--vanilla-accent);
+            transition: transform 0.2s;
+            font-weight: 700; font-size: 0.9rem;
         }
-        .site-title-banner h1 {
-            font-size: 3.5rem; font-weight: 800; text-transform: uppercase; color: var(--vanilla-accent);
-            text-shadow: 4px 4px 0 var(--burgundy); display: inline-block;
-            background: rgba(114, 47, 55, 0.3); padding: 0 15px; transform: skew(-5deg);
-        }
-
-        .left-col { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 18px; }
-
-        .card-header h1 {
-            font-size: 3rem; font-weight: 800; line-height: 0.9; color: var(--vanilla-accent);
-            text-shadow: 2px 2px 0 var(--burgundy); letter-spacing: -1px;
-        }
-        .card-header h2 {
-            font-size: 2rem; font-weight: 400; color: var(--strawberry);
-            font-family: 'Quicksand', sans-serif; text-align: center; margin-top: 5px;
-        }
-
-        .pill-btn-top {
-            background-color: var(--burgundy); color: white; border: 2px solid white;
-            padding: 10px; border-radius: 50px; font-size: 0.9rem; font-weight: 600;
-            text-align: center; width: 100%; box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
-            cursor: pointer; transition: transform 0.2s;
-        }
-        .pill-btn-top:hover { transform: scale(1.02); }
-
-        .text-box-outer {
-            background: repeating-linear-gradient(-45deg, var(--strawberry), var(--strawberry) 10px, #c47c89 10px, #c47c89 20px);
-            padding: 12px; border-radius: 20px; box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
-        }
-        .text-box-inner {
-            background-color: var(--card-bg); padding: 15px; border-radius: 12px;
-            color: var(--text-muted); font-size: 0.95rem; line-height: 1.4;
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-
-        .links-section h3 { color: var(--vanilla-accent); font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; margin-bottom: 5px; }
-        .social-icons { display: flex; gap: 10px; }
-        .icon-box {
-            width: 50px; height: 50px; border-radius: 15px; display: flex; justify-content: center; align-items: center;
-            font-size: 1.6rem; text-decoration: none; color: white; transition: transform 0.2s;
-        }
-        .icon-box:hover { transform: translateY(-3px); }
-        .ib-1 { background-color: var(--burgundy); }
-        .ib-2 { background-color: var(--chocolate); }
-        .ib-3 { background-color: var(--strawberry); }
-        .ib-4 { background-color: var(--vanilla-accent); color: var(--burgundy); }
-
-        .status-bar { display: flex; margin-top: auto; border-radius: 8px; overflow: hidden; font-weight: 700; text-transform: uppercase; }
-        .status-label { background-color: var(--strawberry); color: white; padding: 8px 12px; font-size: 0.9rem; }
-        .status-value { background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent); color: white; padding: 8px 12px; flex-grow: 1; font-size: 0.9rem; }
-
-        .right-col {
-            position: relative; height: 100%; min-height: 450px;
-            border-radius: 20px; overflow: hidden; border: 4px solid var(--vanilla-accent);
-        }
-        .image-placeholder {
-            width: 100%; height: 100%;
-            background: linear-gradient(to bottom right, var(--chocolate), var(--burgundy));
+        .link-pill:hover { transform: translateX(-5px); }
+        
+        .lp-icon-box {
+            background: var(--burgundy); color: var(--cream);
+            width: 32px; height: 32px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            color: rgba(255,255,255,0.3); font-weight: 800; font-size: 2rem;
+            margin-right: 10px; margin-left: 5px;
         }
-        .image-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* Content Page Styles */
-        .content-header h1 { font-size: 2.5rem; color: var(--vanilla-accent); text-align: center; text-shadow: 2px 2px 0 var(--burgundy); margin-top: 10px; }
-        .inner-container {
-            background: rgba(0,0,0,0.2); border: 2px solid var(--chocolate); border-radius: 15px; padding: 20px; flex-grow: 1;
+        
+        /* --- OTHER PAGES --- */
+        .inner-content {
+            background: rgba(0,0,0,0.2); padding: 20px; border-radius: 10px;
+            border: 1px dashed var(--strawberry); height: 100%;
         }
-
-        /* Gallery Grid */
         .gallery-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;
         }
         .gallery-item {
-            background: var(--chocolate); height: 150px; border-radius: 10px; border: 2px solid var(--vanilla-accent);
+            background: var(--chocolate); height: 120px; border-radius: 8px; border: 2px solid var(--vanilla-accent);
         }
 
-        /* --- BOTTOM NAV --- */
-        .bottom-nav { width: 100%; max-width: 900px; margin-top: 30px; display: flex; justify-content: space-between; gap: 15px; }
-        .nav-btn {
-            flex: 1; text-align: center; text-decoration: none; padding: 15px 5px; border-radius: 50px;
-            font-weight: 800; font-size: 1.5rem; text-transform: uppercase; color: white;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.3); transition: transform 0.1s, filter 0.2s;
-            border: 2px solid rgba(255,255,255,0.2); cursor: pointer;
+        /* --- FOOTER DECORATION --- */
+        .footer-deco {
+            text-align: center; margin-top: 10px;
+            font-size: 0.8rem; color: var(--strawberry); opacity: 0.7;
         }
-        .nav-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .nav-btn.active-btn { transform: translateY(4px); box-shadow: inset 0 5px 10px rgba(0,0,0,0.5); filter: brightness(0.8); }
 
-        .btn-home { background-color: var(--burgundy); }
-        .btn-prices { background-color: var(--chocolate); }
-        .btn-terms { background-color: var(--strawberry); }
-        .btn-gallery { background-color: var(--vanilla-accent); color: var(--burgundy); }
-
-        /* --- PHONE & VN --- */
+        /* --- PHONE & VN (Untouched logic) --- */
         .phone-icon { position: fixed; right: 20px; bottom: 20px; width: 100px; cursor: pointer; z-index: 100; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .phone-ringing { animation: ring 1.2s infinite; }
         @keyframes ring { 0%, 100% { transform: rotate(0); } 10%, 30%, 50% { transform: rotate(8deg) scale(1.05); } 20%, 40%, 60% { transform: rotate(-8deg) scale(1.05); } }
@@ -218,95 +231,101 @@
         .optionButton { background: var(--strawberry); color: white; border: none; font-family: 'VT323', monospace; font-size: 1.4rem; padding: 8px 15px; text-align: left; cursor: pointer; border-radius: 5px; }
         .optionButton:hover { background: var(--burgundy); }
         .vn-close { position: absolute; top: -15px; right: -15px; background: var(--burgundy); color: white; width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--vanilla-accent); font-weight: bold; cursor: pointer; }
-        
+
         @media (max-width: 768px) {
-            .main-card { grid-template-columns: 1fr; }
-            .right-col { height: 300px; order: -1; }
-            .bottom-nav { flex-wrap: wrap; }
-            .nav-btn { min-width: 45%; }
-            .vn-box { flex-direction: column; }
-            .vn-sprite-container { width: 120px; height: 120px; margin: 0 auto; }
+            .home-grid { grid-template-columns: 1fr; }
+            .header-section { flex-direction: column; text-align: center; }
+            .header-pills { justify-content: center; }
             .bat-wing { display: none; }
+            .vn-box { flex-direction: column; }
+            .vn-sprite-container { margin: 0 auto; width: 120px; height: 120px; }
         }
     </style>
 </head>
 <body>
 
-    <header class="site-title-banner">
-        <h1>Tsuki Attire Presents...</h1>
-    </header>
+    <div style="text-align: center; margin-bottom: -40px; position: relative; z-index: 5;">
+        <h1 style="background: rgba(0,0,0,0.5); display: inline-block; padding: 5px 15px; border-radius: 10px; font-family: 'VT323'; color: var(--strawberry); font-size: 2rem; transform: rotate(-2deg);">
+            Tsuki Attire Presents...
+        </h1>
+    </div>
 
-    <div class="main-card-wrapper">
+    <div class="main-frame">
         <img src="assets/images/Bat Wing Left.png" alt="" class="bat-wing left">
         <img src="assets/images/Bat Wing Right.png" alt="" class="bat-wing right">
 
-        <main class="main-card">
+        <header class="header-section">
+            <div class="avatar-box">
+                <img src="assets/sprites/Thanks.png" alt="Avatar">
+            </div>
+            <div class="header-info">
+                <div class="header-title">Tsuki's Lovebite</div>
+                <div class="header-sub">Hey Diva 😚 / Version 1.0</div>
+                <div class="header-pills">
+                    <div class="status-pill">STATUS: OPEN</div>
+                    <div class="status-pill">Comms: Yes</div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-btn active-btn" data-target="home-tab">home</button>
+            <button class="nav-btn" data-target="prices-tab">prices</button>
+            <button class="nav-btn" data-target="terms-tab">terms</button>
+            <button class="nav-btn" data-target="gallery-tab">gallery</button>
+        </nav>
+
+        <main class="content-box">
             
             <div id="home-tab" class="tab-content active">
-                <section class="left-col">
-                    <header class="card-header">
-                        <h1>Tsuki's Lovebite.exe</h1>
-                        <h2>Hey Diva 😚</h2>
-                    </header>
-                    <button class="pill-btn-top">Version 1.0</button>
-                    <article class="text-box-outer">
-                        <div class="text-box-inner">
-                            <p>Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page, as well as pricing for Commissions which is what I plan on doing now <3 If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO</p>
-                        </div>
-                    </article>
-                    <div class="links-section">
-                        <h3>... links !</h3>
-                        <div class="social-icons">
-                            <a href="#" class="icon-box ib-1"><i class="fab fa-instagram"></i></a>
-                            <a href="#" class="icon-box ib-2"><i class="fab fa-tiktok"></i></a>
-                            <a href="#" class="icon-box ib-3"><i class="fa-solid fa-x"></i></a>
-                            <a href="#" class="icon-box ib-4"><i class="fa-solid fa-heart"></i></a>
-                        </div>
+                <div class="page-banner">❖ My Home Page ❖</div>
+                
+                <div class="home-grid">
+                    <div class="home-text-col">
+                        <h3 style="color:var(--vanilla-accent); margin-bottom:10px; text-align:center;">Welcome Boo! <i class="fa-solid fa-heart"></i></h3>
+                        <p><i class="fa-solid fa-star"></i> Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page.</p>
+                        <p><i class="fa-solid fa-star"></i> Pricing for Commissions is up! If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO</p>
                     </div>
-                    <div class="status-bar">
-                        <div class="status-label">STATUS:</div>
-                        <div class="status-value">OPEN</div>
+
+                    <div class="home-links-col">
+                        <a href="#" class="link-pill">
+                            <div class="lp-icon-box"><i class="fab fa-instagram"></i></div> Instagram
+                        </a>
+                        <a href="#" class="link-pill">
+                            <div class="lp-icon-box"><i class="fab fa-tiktok"></i></div> TikTok
+                        </a>
+                        <a href="#" class="link-pill">
+                            <div class="lp-icon-box"><i class="fa-solid fa-x"></i></div> Twitter / X
+                        </a>
+                        <a href="#" class="link-pill">
+                            <div class="lp-icon-box"><i class="fa-solid fa-heart"></i></div> Ko-Fi
+                        </a>
                     </div>
-                </section>
-                <aside class="right-col">
-                    <div class="image-placeholder"><p>IMAGE PLACEHOLDER</p></div>
-                </aside>
+                </div>
             </div>
 
             <div id="prices-tab" class="tab-content">
-                <div class="page-layout">
-                    <header class="content-header">
-                        <h1>Commission Prices</h1>
-                    </header>
-                    <div class="inner-container">
-                        <p style="text-align:center; font-size:1.2rem;">Price sheet coming soon...</p>
-                    </div>
+                <div class="page-banner">❖ Prices ❖</div>
+                <div class="inner-content" style="text-align:center;">
+                    <p>Price sheet coming soon...</p>
                 </div>
             </div>
 
             <div id="terms-tab" class="tab-content">
-                <div class="page-layout">
-                    <header class="content-header">
-                        <h1>Terms of Service</h1>
-                    </header>
-                    <div class="inner-container">
-                        <ul style="list-style-type: square; margin-left: 20px; line-height: 1.6;">
-                            <li>Payment required upfront via Paypal.</li>
-                            <li>No refunds after the sketching phase begins.</li>
-                            <li>Personal use only unless discussed otherwise.</li>
-                        </ul>
-                    </div>
+                <div class="page-banner">❖ Terms ❖</div>
+                <div class="inner-content">
+                    <ul style="list-style:none; padding-left:10px;">
+                        <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--strawberry);"></i> Payment required upfront via Paypal.</li>
+                        <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--strawberry);"></i> No refunds after the sketching phase.</li>
+                        <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--strawberry);"></i> Personal use only.</li>
+                    </ul>
                 </div>
             </div>
 
             <div id="gallery-tab" class="tab-content">
-                <div class="page-layout">
-                    <header class="content-header">
-                        <h1>Portfolio</h1>
-                    </header>
-                    <div class="inner-container gallery-grid">
-                        <div class="gallery-item"></div>
-                        <div class="gallery-item"></div>
+                <div class="page-banner">❖ Gallery ❖</div>
+                <div class="inner-content">
+                    <div class="gallery-grid">
                         <div class="gallery-item"></div>
                         <div class="gallery-item"></div>
                         <div class="gallery-item"></div>
@@ -316,14 +335,9 @@
             </div>
 
         </main>
+        
+        <div class="footer-deco">- by Tsuki -</div>
     </div>
-
-    <nav class="bottom-nav">
-        <button class="nav-btn btn-home active-btn" data-target="home-tab">HOME</button>
-        <button class="nav-btn btn-prices" data-target="prices-tab">PRICES</button>
-        <button class="nav-btn btn-terms" data-target="terms-tab">TERMS</button>
-        <button class="nav-btn btn-gallery" data-target="gallery-tab">GALLERY</button>
-    </nav>
 
     <img id="phoneButton" src="assets/images/Phone.png" alt="Phone" class="phone-icon phone-ringing">
     <div id="vnContainer" class="vn-overlay">
