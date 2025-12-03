@@ -6,307 +6,7 @@
     <title>Tsuki's Lovebite.exe</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;800&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        /* =========================================
-           THEME & VARIABLES
-           ========================================= */
-        :root {
-            --bg-dark: #121212;
-            --grid-line: #3d2a2a;
-            --card-bg: #1e1616;
-            --cream: #f3e5d8;
-            --strawberry: #a85e6a;
-            --chocolate: #4e3629;
-            --burgundy: #722f37;
-            --vanilla-accent: #e6d2b5;
-            --border-thick: 4px solid var(--chocolate);
-        }
-
-        /* =========================================
-           GLOBAL RESET & LAYOUT
-           ========================================= */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--cream);
-            background-image: 
-                linear-gradient(var(--grid-line) 2px, transparent 2px),
-                linear-gradient(90deg, var(--grid-line) 2px, transparent 2px);
-            background-size: 50px 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 40px 20px;
-            overflow-x: hidden;
-        }
-
-        /* =========================================
-           BAT WINGS (UPDATED SIZE & POSITION)
-           ========================================= */
-        .main-card-wrapper {
-            position: relative;
-            width: 100%; max-width: 900px;
-            z-index: 10;
-            margin-top: 40px; /* Added spacing for wings */
-        }
-
-        .bat-wing {
-            position: absolute; 
-            width: 320px; 
-            top: -120px; 
-            z-index: -1;
-            opacity: 1; 
-            pointer-events: none;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
-        }
-        .bat-wing.left { left: -140px; transform: rotate(-15deg); }
-        .bat-wing.right { right: -140px; transform: rotate(15deg) scaleX(-1); }
-
-        /* =========================================
-           MAIN CARD
-           ========================================= */
-        .main-card {
-            background-color: var(--card-bg);
-            border-radius: 40px;
-            border: 6px solid var(--vanilla-accent);
-            box-shadow: 
-                0 0 0 10px #ffffff, /* Inner white outline */
-                0 20px 40px rgba(0,0,0,0.5);
-            padding: 30px;
-            display: grid;
-            grid-template-columns: 3.5fr 4.5fr;
-            gap: 30px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Header decoration (dots) */
-        .main-card::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 70px;
-            background-image: radial-gradient(rgba(255,255,255,0.15) 20%, transparent 20%);
-            background-size: 10px 10px;
-            z-index: 0; pointer-events: none;
-            border-bottom: 2px dashed rgba(255,255,255,0.1);
-        }
-
-        /* Top Banner Text */
-        .site-title-banner {
-            width: 100%; max-width: 900px; text-align: right; margin-bottom: 20px;
-            position: relative; z-index: 2;
-        }
-        .site-title-banner h1 {
-            font-size: 3.5rem; font-weight: 800; text-transform: uppercase;
-            color: var(--vanilla-accent);
-            text-shadow: 4px 4px 0 var(--burgundy);
-            display: inline-block;
-            background: rgba(114, 47, 55, 0.3);
-            padding: 0 15px; transform: skew(-5deg);
-        }
-
-        /* =========================================
-           LEFT COLUMN
-           ========================================= */
-        .left-col { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 18px; }
-
-        .card-header h1 {
-            font-size: 3rem; font-weight: 800; line-height: 0.9;
-            color: var(--vanilla-accent);
-            text-shadow: 2px 2px 0 var(--burgundy);
-            letter-spacing: -1px;
-        }
-        .card-header h2 {
-            font-size: 2rem; font-weight: 400;
-            color: var(--strawberry);
-            font-family: 'Quicksand', sans-serif;
-            text-align: center; margin-top: 5px;
-        }
-
-        /* Top Pill Button */
-        .pill-btn-top {
-            background-color: var(--burgundy); color: white; border: 2px solid white;
-            padding: 10px; border-radius: 50px;
-            font-size: 0.9rem; font-weight: 600; text-align: center; width: 100%;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
-            cursor: pointer; transition: transform 0.2s;
-        }
-        .pill-btn-top:hover { transform: scale(1.02); }
-
-        /* Striped Text Box */
-        .text-box-outer {
-            background: repeating-linear-gradient(
-                -45deg,
-                var(--strawberry),
-                var(--strawberry) 10px,
-                #c47c89 10px,
-                #c47c89 20px
-            );
-            padding: 12px; border-radius: 20px;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
-        }
-        .text-box-inner {
-            background-color: var(--card-bg);
-            padding: 15px; border-radius: 12px;
-            color: var(--text-muted); font-size: 0.95rem; line-height: 1.4;
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-
-        /* Links */
-        .links-section h3 {
-            color: var(--vanilla-accent); font-size: 1.5rem; font-weight: 800;
-            letter-spacing: 1px; margin-bottom: 5px;
-        }
-        .social-icons { display: flex; gap: 10px; }
-        .icon-box {
-            width: 50px; height: 50px; border-radius: 15px;
-            display: flex; justify-content: center; align-items: center;
-            font-size: 1.6rem; text-decoration: none; color: white;
-            transition: transform 0.2s;
-        }
-        .icon-box:hover { transform: translateY(-3px); }
-        .ib-1 { background-color: var(--burgundy); }
-        .ib-2 { background-color: var(--chocolate); }
-        .ib-3 { background-color: var(--strawberry); }
-        .ib-4 { background-color: var(--vanilla-accent); color: var(--burgundy); }
-
-        /* Status Bar */
-        .status-bar {
-            display: flex; margin-top: auto; border-radius: 8px; overflow: hidden;
-            font-weight: 700; text-transform: uppercase;
-        }
-        .status-label { background-color: var(--strawberry); color: white; padding: 8px 12px; font-size: 0.9rem; }
-        .status-value {
-            background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
-            color: white; padding: 8px 12px; flex-grow: 1; font-size: 0.9rem;
-        }
-
-        /* =========================================
-           RIGHT COLUMN (IMAGE PLACEHOLDER)
-           ========================================= */
-        .right-col {
-            position: relative; height: 100%; min-height: 450px;
-            border-radius: 20px; overflow: hidden;
-            border: 4px solid var(--vanilla-accent);
-        }
-        .image-placeholder {
-            width: 100%; height: 100%;
-            background: linear-gradient(to bottom right, var(--chocolate), var(--burgundy));
-            display: flex; justify-content: center; align-items: center;
-            color: rgba(255,255,255,0.3); font-weight: 800; font-size: 2rem;
-        }
-        .image-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* =========================================
-           BOTTOM NAVIGATION
-           ========================================= */
-        .bottom-nav {
-            width: 100%; max-width: 900px; margin-top: 30px;
-            display: flex; justify-content: space-between; gap: 15px;
-        }
-        .nav-btn {
-            flex: 1; text-align: center; text-decoration: none;
-            padding: 15px 5px; border-radius: 50px;
-            font-weight: 800; font-size: 1.5rem; text-transform: uppercase;
-            color: white; box-shadow: 0 5px 0 rgba(0,0,0,0.3);
-            transition: transform 0.1s, filter 0.2s;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-        .nav-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        .nav-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
-
-        .btn-home { background-color: var(--burgundy); }
-        .btn-prices { background-color: var(--chocolate); }
-        .btn-terms { background-color: var(--strawberry); }
-        .btn-gallery { background-color: var(--vanilla-accent); color: var(--burgundy); }
-
-        /* =========================================
-           PHONE & VN CSS (Restored Animation)
-           ========================================= */
-        .phone-icon {
-            position: fixed; right: 20px; bottom: 20px; width: 100px;
-            cursor: pointer; z-index: 100;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
-        }
-        .phone-ringing { animation: ring 1.2s infinite; }
-        @keyframes ring {
-            0%, 100% { transform: rotate(0); }
-            10%, 30%, 50% { transform: rotate(8deg) scale(1.05); }
-            20%, 40%, 60% { transform: rotate(-8deg) scale(1.05); }
-        }
-
-        .vn-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 200;
-            display: flex; justify-content: center; align-items: flex-end;
-            padding-bottom: 50px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
-        .vn-overlay.active { opacity: 1; pointer-events: auto; }
-
-        .vn-box {
-            width: 90%; max-width: 800px;
-            background: var(--card-bg);
-            border: 4px solid var(--vanilla-accent);
-            border-radius: 20px; padding: 20px;
-            display: flex; gap: 20px; position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.9);
-        }
-
-        .vn-sprite-container {
-            width: 200px; flex-shrink: 0;
-            display: flex; align-items: flex-end; justify-content: center;
-            border: 3px solid var(--chocolate); border-radius: 15px;
-            background: linear-gradient(180deg, var(--vanilla-accent), #fff);
-            overflow: hidden;
-        }
-        .tsuki-sprite {
-            width: 100%; height: auto; image-rendering: pixelated;
-        }
-        
-        /* Sprite Transition Animation */
-        .sprite-transition { animation: fadeBounce 0.36s ease-out; }
-        @keyframes fadeBounce {
-            0% { opacity:0; transform:scale(0.96); }
-            60% { opacity:1; transform:scale(1.04); }
-            100% { opacity:1; transform:scale(1); }
-        }
-
-        .vn-content { flex-grow: 1; display: flex; flex-direction: column; }
-        .vn-text-area {
-            background: var(--chocolate); color: var(--cream);
-            font-family: 'VT323', monospace; font-size: 1.6rem;
-            padding: 15px; border-radius: 10px; border: 2px solid var(--burgundy);
-            flex-grow: 1; min-height: 100px;
-        }
-        .vn-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .optionButton {
-            background: var(--strawberry); color: white; border: none;
-            font-family: 'VT323', monospace; font-size: 1.4rem;
-            padding: 8px 15px; text-align: left; cursor: pointer; border-radius: 5px;
-        }
-        .optionButton:hover { background: var(--burgundy); }
-
-        .vn-close {
-            position: absolute; top: -15px; right: -15px;
-            background: var(--burgundy); color: white;
-            width: 40px; height: 40px; border-radius: 50%;
-            border: 3px solid var(--vanilla-accent);
-            font-weight: bold; cursor: pointer;
-        }
-
-        /* Mobile adjustments */
-        @media (max-width: 768px) {
-            .main-card { grid-template-columns: 1fr; }
-            .right-col { height: 300px; min-height: 0; order: -1; }
-            .bottom-nav { flex-wrap: wrap; }
-            .nav-btn { min-width: 45%; }
-            .vn-box { flex-direction: column; }
-            .vn-sprite-container { width: 120px; height: 120px; margin: 0 auto; }
-            .bat-wing { display: none; } /* Hide wings on mobile */
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -319,61 +19,95 @@
         <img src="assets/images/Bat Wing Right.png" alt="" class="bat-wing right">
 
         <main class="main-card">
-            <section class="left-col">
-                <header class="card-header">
-                    <h1>Tsuki's Lovebite.exe</h1>
-                    <h2>Hey Diva 😚</h2>
-                </header>
-
-                <a href="#" style="text-decoration:none;">
+            
+            <div id="home-tab" class="tab-content active">
+                <section class="left-col">
+                    <header class="card-header">
+                        <h1>Tsuki's Lovebite.exe</h1>
+                        <h2>Hey Diva 😚</h2>
+                    </header>
                     <button class="pill-btn-top">Version 1.0</button>
-                </a>
-
-                <article class="text-box-outer">
-                    <div class="text-box-inner">
-                        <p>Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page, as well as pricing for Commissions which is what I plan on doing now <3 If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO</p>
+                    <article class="text-box-outer">
+                        <div class="text-box-inner">
+                            <p>Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page, as well as pricing for Commissions which is what I plan on doing now <3 If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO</p>
+                        </div>
+                    </article>
+                    <div class="links-section">
+                        <h3>... links !</h3>
+                        <div class="social-icons">
+                            <a href="#" class="icon-box ib-1"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="icon-box ib-2"><i class="fab fa-tiktok"></i></a>
+                            <a href="#" class="icon-box ib-3"><i class="fa-solid fa-x"></i></a>
+                            <a href="#" class="icon-box ib-4"><i class="fa-solid fa-heart"></i></a>
+                        </div>
                     </div>
-                </article>
+                    <div class="status-bar">
+                        <div class="status-label">STATUS:</div>
+                        <div class="status-value">OPEN</div>
+                    </div>
+                </section>
+                <aside class="right-col">
+                    <div class="image-placeholder"><p>IMAGE PLACEHOLDER</p></div>
+                </aside>
+            </div>
 
-                <div class="links-section">
-                    <h3>... links !</h3>
-                    <div class="social-icons">
-                        <a href="#" class="icon-box ib-1"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="icon-box ib-2"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" class="icon-box ib-3"><i class="fa-solid fa-x"></i></a>
-                        <a href="#" class="icon-box ib-4"><i class="fa-solid fa-heart"></i></a>
+            <div id="prices-tab" class="tab-content">
+                <div class="page-layout">
+                    <header class="content-header">
+                        <h1>Commission Prices</h1>
+                    </header>
+                    <div class="inner-container">
+                        <p style="text-align:center; font-size:1.2rem;">Price sheet coming soon...</p>
                     </div>
                 </div>
+            </div>
 
-                <div class="status-bar">
-                    <div class="status-label">STATUS:</div>
-                    <div class="status-value">OPEN</div>
+            <div id="terms-tab" class="tab-content">
+                <div class="page-layout">
+                    <header class="content-header">
+                        <h1>Terms of Service</h1>
+                    </header>
+                    <div class="inner-container">
+                        <ul style="list-style-type: square; margin-left: 20px; line-height: 1.6;">
+                            <li>Payment required upfront via Paypal.</li>
+                            <li>No refunds after the sketching phase begins.</li>
+                            <li>Personal use only unless discussed otherwise.</li>
+                        </ul>
+                    </div>
                 </div>
-            </section>
+            </div>
 
-            <aside class="right-col">
-                <div class="image-placeholder">
-                    <p>IMAGE PLACEHOLDER</p>
+            <div id="gallery-tab" class="tab-content">
+                <div class="page-layout">
+                    <header class="content-header">
+                        <h1>Portfolio</h1>
+                    </header>
+                    <div class="inner-container gallery-grid">
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                        <div class="gallery-item"></div>
+                    </div>
                 </div>
-            </aside>
+            </div>
+
         </main>
     </div>
 
     <nav class="bottom-nav">
-        <a href="#home" class="nav-btn btn-home">HOME</a>
-        <a href="#prices" class="nav-btn btn-prices">PRICES</a>
-        <a href="#terms" class="nav-btn btn-terms">TERMS</a>
-        <a href="#gallery" class="nav-btn btn-gallery">GALLERY</a>
+        <button class="nav-btn btn-home active-btn" data-target="home-tab">HOME</button>
+        <button class="nav-btn btn-prices" data-target="prices-tab">PRICES</button>
+        <button class="nav-btn btn-terms" data-target="terms-tab">TERMS</button>
+        <button class="nav-btn btn-gallery" data-target="gallery-tab">GALLERY</button>
     </nav>
 
     <img id="phoneButton" src="assets/images/Phone.png" alt="Phone" class="phone-icon phone-ringing">
-
     <div id="vnContainer" class="vn-overlay">
         <div class="vn-box">
             <button id="vnClose" class="vn-close">X</button>
-            <div class="vn-sprite-container">
-                <img id="tsukiSprite" class="tsuki-sprite" src="" alt="Tsuki">
-            </div>
+            <div class="vn-sprite-container"><img id="tsukiSprite" class="tsuki-sprite" src="" alt="Tsuki"></div>
             <div class="vn-content">
                 <div id="textBox" class="vn-text-area"></div>
                 <div id="optionsBox" class="vn-options"></div>
@@ -381,241 +115,6 @@
         </div>
     </div>
 
-    <script>
-        (() => {
-            'use strict';
-
-            const TYPE_SPEED_MS = 24;
-            const TALK_INTERVAL_MS = 140;
-            const SPRITE_TRANSITION_CLASS = 'sprite-transition';
-
-            /* --- RESOURCE MAPPING --- */
-            // Using exact filenames provided in your list
-            const spriteFiles = {
-                happy: ['Thanks.png', 'Thanks 2.png'],
-                neutral: ['Sad Talking.png', 'Sad Talking 2.png'],
-                frown: ['Sad Talking.png'], // Fallback
-                wineSmile: ['Holding Wine Smile.png', 'Holding Wine Smile 2.png'],
-                wineScoff: ['Holding Wine Scoff 2.png'], 
-                rose: ['Holding Rose Talk 1.png', 'Holding Rose Talk 2.png'],
-                hangup: ['Hanging Up the phone.png']
-            };
-            
-            const sprites = {};
-            Object.keys(spriteFiles).forEach(k => {
-                sprites[k] = spriteFiles[k].map(fn => `assets/sprites/${fn}`);
-            });
-
-            /* --- DOM --- */
-            const phoneBtn = document.getElementById('phoneButton');
-            const vnContainer = document.getElementById('vnContainer');
-            const vnClose = document.getElementById('vnClose');
-            const tsukiSprite = document.getElementById('tsukiSprite');
-            const textBox = document.getElementById('textBox');
-            const optionsBox = document.getElementById('optionsBox');
-
-            /* --- AUDIO --- */
-            // Simple ringer simulation
-            let ringInterval;
-            function stopRing() {
-                phoneBtn.classList.remove('phone-ringing');
-            }
-            function startRing() {
-                phoneBtn.classList.add('phone-ringing');
-            }
-
-            /* --- ANIMATION LOGIC --- */
-            function safeSetSprite(path, el = tsukiSprite) {
-                if (!el) return;
-                el.classList.remove(SPRITE_TRANSITION_CLASS);
-                void el.offsetWidth; // trigger reflow
-                el.classList.add(SPRITE_TRANSITION_CLASS);
-                el.src = path;
-            }
-
-            function typeText(text = '', speed = TYPE_SPEED_MS) {
-                return new Promise(resolve => {
-                    if (!textBox) return resolve();
-                    textBox.innerHTML = '';
-                    let i = 0;
-                    function step() {
-                        if (i < text.length) {
-                            textBox.innerHTML += text.charAt(i);
-                            i++;
-                            setTimeout(step, speed);
-                        } else resolve();
-                    }
-                    step();
-                });
-            }
-
-            let talkInterval = null;
-            function startTalking(frames = [], intervalMs = TALK_INTERVAL_MS) {
-                stopTalking();
-                if (!frames || frames.length === 0) return;
-                let idx = 0;
-                // Set initial frame immediately
-                tsukiSprite.src = frames[0];
-                
-                if (frames.length > 1) {
-                    talkInterval = setInterval(() => {
-                        idx++;
-                        tsukiSprite.src = frames[idx % frames.length];
-                    }, intervalMs);
-                }
-            }
-
-            function stopTalking(finalPath) {
-                if (talkInterval) clearInterval(talkInterval);
-                talkInterval = null;
-                if (finalPath) safeSetSprite(finalPath);
-            }
-
-            function showOptions(list = []) {
-                if (!optionsBox) return;
-                optionsBox.innerHTML = '';
-                list.forEach(item => {
-                    const b = document.createElement('button');
-                    b.className = 'optionButton';
-                    b.textContent = item.label;
-                    b.addEventListener('click', item.onClick);
-                    optionsBox.appendChild(b);
-                });
-            }
-
-            function openVN() {
-                vnContainer.classList.add('active');
-                stopRing();
-            }
-            function closeVN() {
-                vnContainer.classList.remove('active');
-                optionsBox.innerHTML = '';
-                textBox.innerHTML = '';
-                stopTalking();
-                setTimeout(startRing, 5000); // Ring again later
-            }
-
-            /* --- SCENES (Restored from your Script) --- */
-            async function scene_start() {
-                openVN();
-                optionsBox.innerHTML = '';
-                startTalking(sprites.happy);
-                await typeText("Tsuki: Hey Boo! ♡ You finally picked up..");
-                stopTalking(sprites.happy[0]);
-                setTimeout(scene_whatsUp, 300);
-            }
-
-            async function scene_whatsUp() {
-                startTalking(sprites.happy);
-                await typeText("Tsuki: What's up, girl?");
-                stopTalking(sprites.happy[0]);
-                showOptions([
-                    { label: "Who are you…What are you?", onClick: scene_identity },
-                    { label: "Hang up", onClick: scene_userHangup }
-                ]);
-            }
-
-            async function scene_identity() {
-                optionsBox.innerHTML = '';
-                startTalking(sprites.neutral);
-                await typeText("Tsuki: Girl..Did you hit your head? Its me! Your Bestie? Maybe you just need a refresher..what do ya wanna know?");
-                stopTalking(sprites.neutral[0]);
-                showOptions([
-                    { label: "Tell me about being Cupid's daughter?", onClick: scene_cupidLore },
-                    { label: "What's the vampire side like?", onClick: scene_vampireLore },
-                    { label: "Favorite Monster High character?", onClick: scene_monsterHigh },
-                    { label: "Hang up", onClick: scene_userHangup }
-                ]);
-            }
-
-            async function scene_cupidLore() {
-                optionsBox.innerHTML = '';
-                startTalking(sprites.rose);
-                await typeText("Tsuki: Dad? Dads fun! Way out of his league now with technology though. It’s hard to do the arrows thing when everyone is online now, y’know?");
-                stopTalking(sprites.rose[0]);
-                showOptions([
-                   { label: "More about your job?", onClick: scene_jobLore },
-                   { label: "Back", onClick: scene_identity }
-                ]);
-            }
-
-            async function scene_vampireLore() {
-                optionsBox.innerHTML = '';
-                startTalking(sprites.wineScoff);
-                await typeText("Tsuki: Believe it or not I wasn’t born a vampire. I was turned on my sweet 1600..something about destiny..I dont wanna talk about it..");
-                stopTalking(sprites.wineScoff[0]);
-                showOptions([
-                  { label: "Do you drink blood?", onClick: scene_bloodQuestion }, 
-                  { label: "Back", onClick: scene_identity }
-                ]);
-            }
-
-            async function scene_monsterHigh() {
-                optionsBox.innerHTML = '';
-                startTalking(sprites.happy);
-                await typeText("Tsuki: Monster High? I’m Obsessed! Draculaura and Abby are my spirit ghouls! Who's your fave?");
-                stopTalking(sprites.happy[0]);
-
-                const container = document.createElement('div');
-                container.style.marginTop = '14px';
-                
-                const input = document.createElement('input');
-                input.type = 'text'; input.placeholder = 'Type your fave ghoul…';
-                input.style.width = '100%'; input.style.padding = '10px';
-                input.style.fontFamily = 'VT323'; input.style.fontSize='1.2rem';
-
-                const submitBtn = document.createElement('button');
-                submitBtn.textContent = 'Tell Tsuki!';
-                submitBtn.className = 'optionButton';
-                submitBtn.style.marginTop = '6px';
-
-                container.appendChild(input); container.appendChild(submitBtn);
-                optionsBox.appendChild(container);
-
-                submitBtn.onclick = async () => {
-                    const fave = input.value.trim() || 'them';
-                    optionsBox.innerHTML = '';
-                    startTalking(sprites.happy);
-                    await typeText(`Tsuki: Girrrrl! I love ${fave} too! We should watch it together some time~`);
-                    stopTalking(sprites.happy[0]);
-                    setTimeout(() => showOptions([
-                        { label: "Back to questions", onClick: scene_identity },
-                        { label: "Hang up", onClick: scene_userHangup }
-                    ]), 1500);
-                };
-            }
-
-            async function scene_jobLore() {
-                optionsBox.innerHTML = '';
-                startTalking(sprites.neutral);
-                await typeText("Tsuki: You’re seeing it, babe! I do this..I spill tea with you and then tell everyone else about it!");
-                stopTalking(sprites.neutral[0]);
-                showOptions([{ label: "Back", onClick: scene_identity }]);
-            }
-
-            async function scene_bloodQuestion() {
-                optionsBox.innerHTML = '';
-                startTalking(sprites.neutral); // Using neutral/frown equivalent
-                await typeText("Tsuki: Blood? Girl no! We don’t do that anymore..are you racist?");
-                await new Promise(r => setTimeout(r, 1500)); 
-                startTalking(sprites.wineSmile);
-                await typeText("Tsuki: Im kidding! We don’t need to drink blood anymore, my father would kill me if i did..");
-                stopTalking(sprites.wineSmile[0]);
-                showOptions([{ label: "Back", onClick: scene_identity }]);
-            }
-
-            async function scene_userHangup() {
-                optionsBox.innerHTML = '';
-                safeSetSprite(sprites.hangup[0]);
-                await typeText("—call ended—");
-                setTimeout(closeVN, 1000);
-            }
-
-            /* --- LISTENERS --- */
-            if (phoneBtn) phoneBtn.onclick = scene_start;
-            if (vnClose) vnClose.onclick = closeVN;
-
-        })();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
