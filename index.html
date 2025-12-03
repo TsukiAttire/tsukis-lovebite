@@ -5,8 +5,286 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Untitled Site</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           CSS STYLING STARTS HERE
+           ========================================= */
+        
+        :root {
+            /* VAMPIRE x NEAPOLITAN PALETTE */
+            /* Backgrounds */
+            --bg-dark: #121212;        /* Deep charcoal background */
+            --grid-line: #2a1f1f;      /* Subtle reddish-brown grid line */
+            --card-bg: #1e1616;        /* Very dark brownish-grey card body */
+
+            /* Text Colors */
+            --text-cream: #f3e5d8;     /* Vanilla cream for main text */
+            --text-muted: #cbb6b6;     /* Dusty pinkish-grey for subheaders */
+            
+            /* Accents */
+            --accent-burgundy: #722f37; /* Deep vampire red */
+            --accent-strawberry: #a85e6a; /* Muted neapolitan pink */
+            --accent-chocolate: #4e3629;  /* Rich chocolate brown */
+            --accent-vanilla: #e6d2b5;    /* Darker vanilla accent */
+
+            /* Borders */
+            --border-color: #3d2a2a;
+        }
+
+        /* Global Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-cream);
+            /* Grid Pattern Background */
+            background-image: 
+                linear-gradient(var(--grid-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+            background-size: 30px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Top Banner Area */
+        .site-title-banner {
+            width: 100%;
+            max-width: 900px;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .site-title-banner h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-vanilla);
+            text-shadow: 2px 2px var(--accent-burgundy);
+            text-transform: uppercase;
+        }
+
+        /* Main Card Container */
+        .main-card {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 900px;
+            border-radius: 30px;
+            padding: 25px;
+            border: 3px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            
+            /* Layout: Left Text, Right Image */
+            display: grid;
+            grid-template-columns: 3fr 4fr; 
+            gap: 25px;
+        }
+
+        /* Left Column Styling */
+        .left-col {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card-header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-vanilla);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            color: var(--accent-strawberry);
+            font-weight: 400;
+            text-align: center;
+            margin-top: 5px;
+        }
+
+        /* Pill Button */
+        .pill-btn {
+            background-color: var(--accent-burgundy);
+            color: var(--text-cream);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            border: 2px solid var(--accent-chocolate);
+        }
+
+        /* Text Box (Box in a Box) */
+        .text-box-outer {
+            background-color: var(--accent-strawberry);
+            padding: 12px;
+            border-radius: 20px;
+            border: 2px solid var(--accent-burgundy);
+        }
+
+        .text-box-inner {
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--accent-chocolate);
+        }
+
+        .text-box-inner p {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-muted);
+        }
+
+        /* Links Section */
+        .links-section h3 {
+            color: var(--accent-vanilla);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-box {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+
+        .icon-box:hover {
+            transform: translateY(-3px);
+        }
+
+        .icon-box.instagram { background-color: var(--accent-burgundy); color: var(--text-cream); }
+        .icon-box.tiktok { background-color: var(--accent-chocolate); color: var(--text-cream); }
+        .icon-box.twitter { background-color: var(--accent-strawberry); color: var(--bg-dark); }
+        .icon-box.other { background-color: var(--accent-vanilla); color: var(--accent-burgundy); }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: auto; 
+            border: 2px solid var(--accent-burgundy);
+        }
+
+        .status-label {
+            background-color: var(--accent-burgundy);
+            color: var(--text-cream);
+            padding: 8px 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .status-value {
+            background-color: var(--card-bg);
+            color: var(--text-cream);
+            padding: 8px 15px;
+            flex-grow: 1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Right Column (Image Placeholder) */
+        .right-col {
+            position: relative;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        .image-placeholder-sprite {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--accent-chocolate), var(--accent-burgundy));
+            border-radius: 20px;
+            border: 3px solid var(--accent-vanilla);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-cream);
+            font-weight: 700;
+            opacity: 0.8;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .nav-pill {
+            flex: 1;
+            text-align: center;
+            padding: 12px 5px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: var(--text-cream);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid rgba(255,255,255,0.1);
+            transition: filter 0.2s;
+        }
+
+        .nav-pill:hover { filter: brightness(1.2); }
+        .nav-pill.home { background-color: var(--accent-burgundy); }
+        .nav-pill.prices { background-color: var(--accent-chocolate); }
+        .nav-pill.terms { background-color: var(--accent-strawberry); color: var(--bg-dark);}
+        .nav-pill.gallery { background-color: var(--accent-vanilla); color: var(--accent-burgundy); }
+
+        /* Footer */
+        footer {
+            width: 100%;
+            max-width: 900px;
+            text-align: right;
+            margin-top: 10px;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .main-card {
+                grid-template-columns: 1fr;
+            }
+            .right-col {
+                min-height: 300px;
+            }
+            .bottom-nav {
+                flex-wrap: wrap;
+            }
+            .nav-pill {
+                min-width: 45%;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -37,7 +315,8 @@
                 <div class="social-icons">
                     <a href="#" class="icon-box instagram"><i class="fab fa-instagram"></i></a>
                     <a href="#" class="icon-box tiktok"><i class="fab fa-tiktok"></i></a>
-                    <a href="#" class="icon-box twitter"><i class="fa-solid fa-x"></i></a> <a href="#" class="icon-box other"><i class="fa-solid fa-heart"></i></a>
+                    <a href="#" class="icon-box twitter"><i class="fa-solid fa-x"></i></a> 
+                    <a href="#" class="icon-box other"><i class="fa-solid fa-heart"></i></a>
                 </div>
             </div>
 
