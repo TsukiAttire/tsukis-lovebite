@@ -4,213 +4,184 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tsuki's Lovebite.exe</title>
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-icon">♡</div>
-      <div class="brand-title">Tsuki's Lovebite.exe</div>
-    </div>
+  <div class="bg-pattern"></div>
+  
+  <div class="main-container">
+    
+    <header class="header-section">
+      <div class="header-cloud">
+        <div class="bat-wing-left">🦇</div> <div class="logo-text">
+            <h1>Tsuki's Lovebite</h1>
+            <span class="heart-decoration">♥ .exe ♥</span>
+        </div>
+        <div class="bat-wing-right">🦇</div>
+      </div>
+    </header>
 
-    <nav class="nav">
+    <nav class="nav-bar">
       <button class="nav-tab active" data-tab="home">Home</button>
       <button class="nav-tab" data-tab="shop">Shop</button>
-      <button class="nav-tab" data-tab="socials">Socials</button>
-      <button class="nav-tab" data-tab="settings">Settings</button>
-      <button class="nav-tab" data-tab="about">About</button>
+      <button class="nav-tab" data-tab="socials">Links</button>
+      <button class="nav-tab" data-tab="settings">Config</button>
     </nav>
-  </header>
 
-  <main class="main">
-    <section id="home" class="page-panel active">
-      <div class="hero">
-        <h1 class="title-chrome">Tsuki's Lovebite.exe</h1>
-        <p class="tagline">soft chaos • pink tea • pixel love</p>
-
-        <div class="hero-actions">
-          <button class="cta" id="openVNbtn">Chat with Tsuki ♡</button>
-          <a class="kofi-btn" href="#" target="_blank">Support (Ko-Fi)</a>
+    <main class="content-grid">
+      
+      <aside class="col-profile">
+        <div class="profile-frame">
+          <img id="staticAvatar" src="assets/sprites/Thanks.png" alt="Tsuki Avatar">
         </div>
-
-        <div id="firstPetUnlock" style="display:none; margin-top:14px; text-align:center;">
-          <button id="petUnlockBtn" class="cta" style="background:linear-gradient(180deg,#ffe6f0,#ffb3c6); color:#3b2a1a;">
-            🐾 Your Pet Awaits…
-          </button>
+        <div class="status-box">
+          <h3>♥ Status ♥</h3>
+          <p class="blink">● Online</p>
         </div>
-      </div>
-    </section>
+        <div class="deco-stickers">
+           <span>🍓</span><span>💉</span><span>🍰</span>
+        </div>
+      </aside>
 
-    <section id="shop" class="page-panel">
-      <div class="card">
-        <h2>✨ Tsuki's Gift Shop</h2>
-        <p style="margin-bottom:12px; opacity:0.8">Buy a gift to see Tsuki's reaction!</p>
+      <section class="col-main">
         
-        <div class="shop-grid">
-          <button class="shop-btn" id="btn-gift-rose">
-            <span class="emoji">🌹</span>
-            <span class="label">Red Rose</span>
-            <span class="cost">20★</span>
-          </button>
-
-          <button class="shop-btn" id="btn-gift-teddy">
-            <span class="emoji">🧸</span>
-            <span class="label">Teddy Bear</span>
-            <span class="cost">40★</span>
-          </button>
-
-          <button class="shop-btn" id="btn-gift-purse">
-            <span class="emoji">👜</span>
-            <span class="label">Purse</span>
-            <span class="cost">50★</span>
-          </button>
-
-          <button class="shop-btn" id="btn-gift-choco">
-            <span class="emoji">🍫</span>
-            <span class="label">Chocolate</span>
-            <span class="cost">15★</span>
-          </button>
-
-          <button class="shop-btn" id="btn-gift-boba">
-            <span class="emoji">🧋</span>
-            <span class="label">Boba Tea</span>
-            <span class="cost">15★</span>
-          </button>
+        <div id="home" class="page-panel active">
+            <div class="content-box">
+                <h2 class="section-title">✨ Welcome ✨</h2>
+                <div class="scroll-text">
+                    <p>Welcome to my digital crypt! <br>Grab some tea and stay a while.</p>
+                    <p style="color:var(--accent-red)">"Soft chaos & pixel love..."</p>
+                </div>
+                
+                <div class="action-area">
+                    <button class="cta-btn" id="openVNbtn">Start Chat ♡</button>
+                    <div id="firstPetUnlock" style="display:none; margin-top:10px;">
+                        <button id="petUnlockBtn" class="cta-btn secondary">🐾 Pet Found!</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <div class="card" style="margin-top:20px; background:linear-gradient(180deg,#f3e6ff,#efe6ff);">
-        <h2>🔮 Mystic Corner</h2>
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <p>Consult the spirits for a vibe check.</p>
-          <button class="cta" id="btn-fortune" style="font-size:16px;">Ask Fortune (10★)</button>
+        <div id="shop" class="page-panel">
+            <div class="content-box">
+                <h2 class="section-title">🥀 Gift Shop</h2>
+                <div class="shop-grid">
+                    <button class="shop-item" id="btn-gift-rose">🌹<br><span>Rose</span><br><small>20★</small></button>
+                    <button class="shop-item" id="btn-gift-teddy">🧸<br><span>Bear</span><br><small>40★</small></button>
+                    <button class="shop-item" id="btn-gift-purse">👜<br><span>Purse</span><br><small>50★</small></button>
+                    <button class="shop-item" id="btn-gift-choco">🍫<br><span>Choco</span><br><small>15★</small></button>
+                    <button class="shop-item" id="btn-gift-boba">🧋<br><span>Tea</span><br><small>15★</small></button>
+                </div>
+                <div style="margin-top:15px; border-top: 2px dashed var(--accent-light);">
+                    <button class="cta-btn secondary" id="btn-fortune" style="width:100%; margin-top:10px;">🔮 Fortune (10★)</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </section>
 
-    <section id="socials" class="page-panel">
-      <div class="card">
-        <h2>Stay up to date</h2>
-        <div class="links">
-          <a href="#" target="_blank">YouTube</a>
-          <a href="#" target="_blank">TikTok</a>
-          <a href="#" target="_blank">Roblox</a>
+        <div id="settings" class="page-panel">
+            <div class="content-box">
+                <h2 class="section-title">⚙️ Config</h2>
+                <div class="settings-list">
+                    <label class="toggle-row">
+                        <span>Enable SFX</span>
+                        <input type="checkbox" id="toggle-sfx" checked>
+                    </label>
+                    <hr class="dashed-line">
+                    <div class="debug-zone">
+                        <button class="debug-btn" id="debug-add-stars">+50 Stars</button>
+                        <button class="debug-btn" id="debug-reset">Reset Pet</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </section>
-
-    <section id="settings" class="page-panel">
-      <div class="card">
-        <h2>Settings</h2>
-        <label><input type="checkbox" id="toggle-sfx" checked> Enable sounds</label>
-
-        <div class="settings-section" style="margin-top:12px">
-          <h3>Debug / Cheats</h3>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-            <button class="debug-btn" id="debug-add-stars">+50 Stars</button>
-            <button class="debug-btn" id="debug-unlock-pets">Unlock Pet</button>
-            <button class="debug-btn" id="debug-reset">Reset Pet</button>
-            <button class="debug-btn" id="debug-full-reset">Wipe Save</button>
-          </div>
+        
+        <div id="socials" class="page-panel">
+            <div class="content-box">
+                <h2 class="section-title">☁️ Socials</h2>
+                <p>Follow the chaos elsewhere:</p>
+                </div>
         </div>
-      </div>
-    </section>
 
-    <section id="about" class="page-panel">
-      <div class="card">
-        <h2>About</h2>
-        <p>Tsuki's Lovebite.exe — a soft, glittery Y2K corner for pixel tea and cozy chaos.</p>
-      </div>
-    </section>
-  </main>
+      </section>
 
-  <img id="phoneButton" src="assets/images/Phone.png" alt="phone" class="phone-icon" />
+      <aside class="col-links">
+        <a href="#" target="_blank" class="link-pill">📺 YouTube</a>
+        <a href="#" target="_blank" class="link-pill">🎵 TikTok</a>
+        <a href="#" target="_blank" class="link-pill">🎮 Roblox</a>
+        <a href="#" target="_blank" class="link-pill">☕ Ko-Fi</a>
+      </aside>
 
-  <div id="vnContainer" class="vn hidden" aria-hidden="true">
-    <div class="vn-card">
-      <div class="vn-left">
-        <img id="tsukiSprite" class="tsuki-sprite" src="assets/sprites/Thanks.png" alt="Tsuki sprite">
+    </main>
+
+    <footer class="footer-bar">
+      ( made with <span style="color:red">❤</span> & anxiety )
+    </footer>
+
+  </div> <img id="phoneButton" src="assets/images/Phone.png" alt="phone" class="phone-floater" />
+
+  <div id="vnContainer" class="overlay hidden" aria-hidden="true">
+    <div class="vn-window">
+      <div class="vn-character-area">
+        <img id="tsukiSprite" class="sprite-img" src="assets/sprites/Thanks.png" alt="Tsuki">
       </div>
-      <div class="vn-right">
-        <div id="vnBox" class="vn-box">
-          <div id="textBox" class="vn-text" aria-live="polite"></div>
-          <div id="optionsBox" class="vn-choices"></div>
-        </div>
+      <div class="vn-dialogue-box">
+        <div id="textBox" class="vn-text"></div>
+        <div id="optionsBox" class="vn-choices"></div>
       </div>
-      <button id="vnClose" class="vn-close" aria-label="close VN">✕</button>
+      <button id="vnClose" class="close-badge">✕</button>
     </div>
   </div>
 
-  <div id="petPopup" class="vn hidden" aria-hidden="true" data-type="pet">
-    <div class="vn-card">
-      <div class="vn-left" style="flex:0 0 220px">
-        <div id="petVisualWrap" style="width:180px; margin:0 auto; position:relative;">
-          <img id="petSprite" src="" alt="pet" style="width:100%; image-rendering:pixelated; border-radius:10px; border:3px solid var(--accent-dark)">
-          </div>
-        <div style="text-align:center;margin-top:8px;color:var(--accent-dark)">
-          <div id="petNameTitle">Your Pet</div>
-          <div style="margin-top:6px">Stars: <strong id="starCountDisp">0</strong></div>
-        </div>
+  <div id="petPopup" class="overlay hidden" aria-hidden="true">
+    <div class="pet-window">
+      <div class="pet-header">
+        <span id="petNameTitle">My Pet</span>
+        <button id="petClose" class="close-badge-small">✕</button>
+      </div>
+      
+      <div class="pet-display">
+         <div id="petVisualWrap" class="pet-stage">
+            <img id="petSprite" src="" alt="pet">
+         </div>
+         <div class="love-meter">
+            <div id="loveFill" class="love-fill"></div>
+         </div>
+         <div class="star-wallet">🌟 <span id="starCountDisp">0</span></div>
       </div>
 
-      <div class="vn-right">
-        <div class="vn-box" style="min-height:260px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <strong style="color:var(--accent-dark)">Pet Menu</strong>
-            <div>
-              <button id="feedBtn" class="optionButton" style="margin-right:8px">Feed</button>
-              <button id="batheBtn" class="optionButton">Bathe</button>
-            </div>
-          </div>
-
-          <div style="margin-top:10px">
-            <label style="color:var(--accent-dark)">Choose pet:</label>
-            <div style="margin-top:6px">
-              <select id="petVariant" style="padding:6px;border-radius:8px;border:2px solid var(--accent-dark);font-family:'VT323'">
-                <option value="Bunny">Bunny</option>
-                <option value="Bear Cub">Bear Cub</option>
-                <option value="Dog">Dog</option>
-                <option value="Frog">Frog</option>
-                <option value="Pony">Pony</option>
-                <option value="Cat">Cat</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="margin-top:12px">
-            <div style="color:var(--accent-dark);margin-bottom:6px">Love</div>
-            <div style="width:100%; height:18px; border:2px solid var(--accent-dark); background:#fff0f0; border-radius:8px; overflow:hidden">
-              <div id="loveFill" style="height:100%; width:0%; background:linear-gradient(90deg,#ffb3c6,#ff99aa)"></div>
-            </div>
-          </div>
-
-          <hr style="margin:12px 0; border-color: #ffd6df">
-          <div style="color:var(--accent-dark);margin-bottom:8px">Hat Inventory (Click to Equip)</div>
-          <div id="shopScroll" class="pet-shop-window"></div>
-
+      <div class="pet-controls">
+        <div class="control-row">
+            <button id="feedBtn" class="action-pill">🍖 Feed</button>
+            <button id="batheBtn" class="action-pill">🧼 Bathe</button>
         </div>
+        <select id="petVariant" class="pet-select">
+            <option value="Bunny">Bunny</option>
+            <option value="Bear Cub">Bear Cub</option>
+            <option value="Dog">Dog</option>
+            <option value="Frog">Frog</option>
+            <option value="Pony">Pony</option>
+            <option value="Cat">Cat</option>
+        </select>
+        <div class="shop-mini-scroll" id="shopScroll"></div>
       </div>
-      <button id="petClose" class="vn-close" aria-label="close pet">✕</button>
     </div>
   </div>
 
-  <div id="suggestModal" class="modal hidden" aria-hidden="true">
+  <div id="suggestModal" class="overlay hidden">
     <div class="modal-card">
-      <h3>Submit a suggestion</h3>
-      <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
-        <label>Your name <input type="text" name="name" required></label>
-        <label>Your suggestion <textarea name="message" rows="4" required></textarea></label>
-        <div class="modal-actions">
-          <button type="submit" class="submit-btn">Send</button>
-          <button type="button" id="modalCloseBtn" class="close-btn">Cancel</button>
-        </div>
-      </form>
+        <h3>💌 Send a Note</h3>
+        <form id="suggestForm" action="https://formspree.io/f/mjkdzyqk" method="POST">
+            <input type="text" name="name" placeholder="Your Name" required>
+            <textarea name="message" rows="3" placeholder="Message..." required></textarea>
+            <button type="submit" class="cta-btn">Send</button>
+            <button type="button" id="modalCloseBtn" class="text-btn">Cancel</button>
+        </form>
     </div>
   </div>
 
-  <div id="toast" class="toast" aria-hidden="true"></div>
+  <div id="toast" class="toast"></div>
   <script src="assets/js/script.js" defer></script>
 </body>
 </html>
