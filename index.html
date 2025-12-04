@@ -4,351 +4,381 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tsuki's Lovebite.exe</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;800&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Sniglet:wght@400;800&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* =========================================
-           COQUETTE CHOCOLATE PALETTE & PATTERNS
+           1-TO-1 PALETTE & PATTERNS
            ========================================= */
         :root {
-            --bg-chocolate: #3d2a2a;
-            --bg-chocolate-dark: #2a1f1f;
-            --card-base: #fff0f5; /* Light pink base */
-            --text-brown: #4e3629;
-            --text-pink: #a85e6a;
-            --accent-pink: #ffb3c6;
-            --accent-brown: #722f37;
+            /* Colors extracted from reference */
+            --cocoa-dark: #3e2723;   /* The dark border color */
+            --cocoa-milk: #5d4037;   /* Lighter brown text */
+            --cocoa-light: #8d6e63;  /* Subtitles */
+            --pink-deep: #d7aefc;    /* (Adjusted to your Vampire/Neo palette) -> sticking to Reference Pink? */
+            /* Reference Pinks: */
+            --ref-pink-bg: #ffd1dc;  /* The main pink background */
+            --ref-pink-border: #f8bbd0;
+            --ref-cream: #fff9fa;
             
-            /* Patterns */
-            --plaid-pattern: repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(114, 47, 55, 0.05) 20px, rgba(114, 47, 55, 0.05) 22px),
-                             repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(114, 47, 55, 0.05) 20px, rgba(114, 47, 55, 0.05) 22px);
+            /* Your Vampire Palette Tweaks to fit the Reference Style */
+            --vamp-dark: #2b1111;
+            --vamp-pink: #ffb3c6;
+            --vamp-cream: #fff0f5;
+            --vamp-brown: #4e3629;
             
-            --lace-trim: radial-gradient(circle at 10px 0, transparent 6px, var(--card-base) 7px, var(--card-base) 10px, transparent 11px) repeat-x bottom;
+            /* Actual used vars */
+            --bg-grid: #2b1d1d;
+            --card-border: #8c6b6b;
+            --header-bg: #8d6e63;
         }
 
-        /* Reset & Body */
+        /* --- GLOBAL RESET --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Quicksand', sans-serif;
-            background-color: var(--bg-chocolate);
-            color: var(--text-brown);
-            /* Chocolate Bar Background Pattern */
-            background-image: linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
-            background-size: 40px 40px;
+            font-family: 'Sniglet', cursive; /* Matches the rounded body text */
+            background-color: #261a1a;
+            color: #4e3629;
+            /* The Chocolate Bar Grid Background */
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; padding: 20px;
         }
 
-        /* --- MAIN FRAME --- */
-        .main-frame-wrapper {
-            position: relative; width: 100%; max-width: 850px; margin-top: 30px; z-index: 10;
-        }
-        .bat-wing {
-            position: absolute; width: 250px; top: -60px; z-index: -1;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); pointer-events: none;
-        }
-        .bat-wing.left { left: -100px; transform: rotate(-15deg); }
-        .bat-wing.right { right: -100px; transform: rotate(15deg); }
-
-        .main-frame {
-            background-color: var(--accent-brown); /* Outer brown border */
+        /* --- MAIN CONTAINER (The Card) --- */
+        .main-container {
+            position: relative;
+            width: 100%; max-width: 800px;
+            margin-top: 40px;
+            background-color: #5d4037; /* Dark Brown Border */
             border-radius: 25px;
             padding: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10;
         }
-        
+
+        /* The Inner Lighter Brown Frame */
         .inner-frame {
-            background-color: var(--card-base);
-            background-image: var(--plaid-pattern); /* Inner plaid glow */
+            background-color: #a1887f; /* Muted brown header bg */
+            background-image: radial-gradient(#bcaaa4 15%, transparent 16%); /* Polka dot header */
+            background-size: 10px 10px;
+            border: 2px solid #5d4037;
             border-radius: 18px;
-            border: 3px solid var(--text-brown);
-            padding: 15px;
             overflow: hidden;
         }
 
-        /* --- TOP HEADER SECTION --- */
-        .coquette-header {
-            display: flex; gap: 15px;
-            background: #fff;
-            border: 3px solid var(--text-brown);
-            border-radius: 15px;
-            padding: 12px;
+        /* Bat Wings (Behind) */
+        .bat-wing {
+            position: absolute; width: 280px; top: -80px; z-index: -1;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); pointer-events: none;
+        }
+        .bat-wing.left { left: -120px; transform: rotate(-15deg); }
+        .bat-wing.right { right: -120px; transform: rotate(15deg); }
+
+        /* --- HEADER AREA --- */
+        .top-header {
+            display: flex; gap: 15px; padding: 15px;
+            align-items: center;
             position: relative;
-            margin-bottom: 15px;
-        }
-        /* Lace Trim at bottom of header */
-        .coquette-header::after {
-            content: ''; position: absolute; bottom: -12px; left: 5px; right: 5px; height: 12px;
-            background: var(--lace-trim); background-size: 20px 12px;
         }
 
-        .header-img-box {
+        /* Lace decoration under header text */
+        .header-deco-line {
+            border-bottom: 2px dashed #fff;
+            margin: 5px 0; opacity: 0.5;
+        }
+
+        .avatar-frame {
             width: 110px; height: 110px; flex-shrink: 0;
-            border: 3px solid var(--text-brown); border-radius: 12px;
-            background: var(--accent-pink); overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            background: #d7ccc8; border: 4px solid #5d4037;
+            border-radius: 15px; overflow: hidden;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
         }
-        .header-img-box img { height: 100%; width: auto; }
+        .avatar-frame img { width: 100%; height: 100%; object-fit: cover; }
 
-        .header-content { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .header-title {
-            font-size: 2.5rem; font-weight: 800; color: var(--accent-brown);
-            text-shadow: 2px 2px 0 #fff, 3px 3px 0 var(--text-brown);
-            margin-bottom: 5px;
+        .header-text { flex-grow: 1; color: #fff; text-shadow: 2px 2px 0 #3e2723; }
+        .header-text h1 {
+            font-family: 'Fredoka', sans-serif; /* The Title Font */
+            font-size: 2.8rem; line-height: 1; letter-spacing: 1px;
+            margin-bottom: 5px; color: #ffebee;
         }
-        .header-sub {
-            font-size: 1.1rem; color: var(--text-brown); margin-bottom: 10px;
-            font-weight: 600;
+        .header-text p { font-size: 1rem; color: #efebe9; text-shadow: 1px 1px 0 #3e2723; }
+
+        .header-pills {
+            display: flex; gap: 15px; margin-top: 8px;
         }
-        .header-pills { display: flex; gap: 10px; }
-        .header-pill {
-            background: #fff; border: 2px dashed var(--text-brown);
-            padding: 4px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 700;
+        .pill-white {
+            background: #fff; color: #5d4037;
+            border-radius: 20px; padding: 4px 20px;
+            font-family: 'Sniglet', cursive; font-weight: 800; font-size: 0.9rem;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+            text-shadow: none; border: 2px dashed #a1887f;
         }
 
-        /* --- NAVIGATION TABS --- */
-        .tab-nav {
-            display: flex; gap: 8px; margin-bottom: 15px; padding: 0 10px;
-            position: relative; z-index: 2;
+        /* --- SCALLOPED DIVIDER (Lace) --- */
+        .lace-divider {
+            height: 15px; width: 100%;
+            background-color: #5d4037; /* Match header bottom */
+            background-image: radial-gradient(circle, #fff 6px, transparent 7px);
+            background-size: 20px 20px;
+            background-position: bottom center;
+            background-repeat: repeat-x;
+            margin-top: -15px; position: relative; z-index: 5;
+        }
+
+        /* --- TABS SECTION --- */
+        .tabs-container {
+            display: flex; gap: 6px; padding: 10px 15px 0 15px;
+            background: #5d4037; /* Dark separator */
         }
         .tab-btn {
-            flex: 1; border: none;
-            background: var(--card-base);
-            background-image: var(--plaid-pattern); /* Plaid tabs */
-            border: 3px solid var(--text-brown);
-            border-bottom: none;
-            border-radius: 15px 15px 0 0;
-            padding: 10px 5px;
-            font-family: inherit; font-size: 1.2rem; font-weight: 700; color: var(--text-brown);
-            cursor: pointer; transition: transform 0.1s;
-            box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1);
+            flex: 1;
+            background: #fff0f5; /* Light Pink */
+            /* Checkered Pattern for Tabs */
+            background-image: 
+                linear-gradient(45deg, #fce4ec 25%, transparent 25%, transparent 75%, #fce4ec 75%, #fce4ec), 
+                linear-gradient(45deg, #fce4ec 25%, transparent 25%, transparent 75%, #fce4ec 75%, #fce4ec);
+            background-size: 10px 10px;
+            background-position: 0 0, 5px 5px;
+            
+            border: none; border-radius: 12px 12px 0 0;
+            padding: 8px;
+            color: #5d4037; font-family: 'Sniglet', cursive; font-size: 1.2rem;
+            cursor: pointer; position: relative;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
         }
-        .tab-btn:hover { transform: translateY(-2px); }
+        .tab-btn i { color: #f48fb1; font-size: 0.9rem; } /* Heart Icon */
         .tab-btn.active {
-            background: #fff;
-            padding-bottom: 12px; margin-bottom: -2px;
-            box-shadow: none;
+            background: #fff0f5; /* Solid or slightly brighter */
+            padding-bottom: 12px; margin-bottom: -4px; z-index: 2;
         }
 
-        /* --- CONTENT AREA --- */
-        .content-container {
-            background: #fff;
-            border: 3px solid var(--text-brown);
-            border-radius: 0 0 15px 15px;
+        /* --- PINK CONTENT BODY --- */
+        .pink-body {
+            background-color: #f8bbd0; /* Main pink bg */
+            /* Polka Dot Pattern */
+            background-image: radial-gradient(#f48fb1 15%, transparent 16%);
+            background-size: 15px 15px;
             padding: 20px;
-            min-height: 400px;
+            border-top: 4px solid #fff; /* White lace line top */
+            border-bottom: 4px solid #fff; /* White lace line bottom */
         }
-        
-        /* Page Banner */
-        .page-banner {
-            background: var(--card-base);
-            background-image: var(--plaid-pattern);
-            border: 2px dashed var(--text-brown);
+
+        /* "My Home Page" Banner */
+        .page-title-banner {
+            background: #fff;
             border-radius: 30px;
-            text-align: center; padding: 8px;
-            font-size: 1.5rem; font-weight: 800; color: var(--text-brown);
-            margin-bottom: 20px;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            border: 2px dashed #f48fb1;
+            text-align: center;
+            padding: 8px; margin-bottom: 20px;
+            color: #5d4037; font-family: 'Fredoka', sans-serif; font-size: 1.8rem;
+            position: relative;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.05);
+        }
+        .page-title-banner::before, .page-title-banner::after {
+            content: '❖'; color: #f48fb1; margin: 0 10px; font-size: 1.2rem; vertical-align: middle;
         }
 
-        /* Tab Content Visibility */
-        .tab-content { display: none; animation: fadeIn 0.3s ease; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-
-        /* HOME TAB LAYOUT */
-        .home-layout {
-            display: grid; grid-template-columns: 1.5fr 1fr; gap: 25px;
+        /* --- WHITE CONTENT AREA --- */
+        .white-content-area {
+            display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px;
         }
+
+        /* Left Column */
+        .content-card {
+            background: #fff; border-radius: 15px;
+            padding: 15px;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.05);
+            border: 1px dashed #f48fb1;
+        }
+        .content-card h2 {
+            font-family: 'Sniglet', cursive; font-size: 1.6rem; color: #5d4037;
+            text-align: center; margin-bottom: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .content-card h2 i { color: #8d6e63; } /* Brown Hearts */
         
-        /* Left Column styles */
-        .home-left { display: flex; flex-direction: column; gap: 15px; position: relative; padding-bottom: 20px; }
-        .home-subtitle {
-            font-size: 1.8rem; color: var(--text-brown); text-align: center;
+        .dashed-line { border-bottom: 2px dashed #d7ccc8; margin: 10px 0; }
+        
+        .info-block {
+            background: #fff9fa; border-left: 4px solid #f48fb1;
+            padding: 8px; margin-bottom: 10px; font-size: 0.95rem; color: #5d4037;
         }
-        .plaid-box {
-            background: var(--card-base);
-            background-image: var(--plaid-pattern); /* Plaid text boxes */
-            border: 2px dashed var(--text-brown);
-            border-radius: 12px; padding: 12px;
-        }
-        .plaid-box p { font-size: 0.95rem; line-height: 1.5; }
-        /* Bottom Lace Trim for Left Column */
-        .home-left::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 12px;
-            background: var(--lace-trim); background-size: 20px 12px;
-        }
+        .info-block i { color: #f48fb1; margin-right: 5px; }
 
-        /* Right Column (Links) styles */
-        .home-right { display: flex; flex-direction: column; gap: 12px; }
-        .link-pill {
+        /* Right Column (Links) */
+        .links-col { display: flex; flex-direction: column; gap: 10px; }
+        .link-row {
             display: flex; align-items: center;
-            background: var(--card-base);
-            border: 3px solid var(--text-brown);
-            border-radius: 30px; padding: 6px;
-            text-decoration: none; color: var(--text-brown); font-weight: 700;
-            transition: transform 0.1s;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            background: #fff; border-radius: 30px;
+            border: 2px solid #ffcdd2; /* Light pink border */
+            overflow: hidden; transition: transform 0.1s;
+            text-decoration: none; color: #5d4037; font-weight: bold;
         }
-        .link-pill:hover { transform: translateX(-3px); }
-        .link-icon {
-            width: 40px; height: 40px; background: var(--text-brown); color: var(--card-base);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 1.2rem; margin-right: 10px;
+        .link-row:hover { transform: translateX(-3px); }
+        .link-icon-square {
+            width: 45px; height: 40px;
+            background: #ef9a9a; /* Darker pink square */
+            color: #fff; display: flex; justify-content: center; align-items: center;
+            font-size: 1.2rem;
+        }
+        .link-text { flex-grow: 1; text-align: center; padding-right: 15px; }
+
+        /* --- FOOTER --- */
+        .lace-footer {
+            height: 15px; width: 100%;
+            background-image: radial-gradient(circle at top, #fff 6px, transparent 7px);
+            background-size: 20px 20px;
+            background-repeat: repeat-x;
+            margin-top: -1px;
+        }
+        .bottom-credit {
+            background: #5d4037; color: #d7ccc8;
+            text-align: center; padding: 10px;
+            font-size: 0.9rem;
+            border-radius: 0 0 18px 18px;
         }
 
-        /* OTHER TABS */
-        .generic-content-box {
-            background: var(--card-base); background-image: var(--plaid-pattern);
-            border: 2px dashed var(--text-brown); border-radius: 15px; padding: 20px;
-        }
-        .gallery-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;
-        }
-        .gallery-item {
-            background: var(--text-brown); height: 120px; border-radius: 8px; border: 2px solid var(--accent-pink);
+        /* --- VISIBILITY CLASSES --- */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
+
+        /* Media Query */
+        @media (max-width: 768px) {
+            .white-content-area { grid-template-columns: 1fr; }
+            .top-header { flex-direction: column; text-align: center; }
+            .header-pills { justify-content: center; }
+            .bat-wing { display: none; }
         }
 
-        /* FOOTER */
-        .site-footer {
-            margin-top: 15px; text-align: center; color: var(--text-pink); font-size: 0.9rem; font-weight: 600;
-        }
-
-        /* --- PHONE & VN LOGIC (Unchanged) --- */
+        /* --- PHONE & VN (Original Logic) --- */
         .phone-icon { position: fixed; right: 20px; bottom: 20px; width: 100px; cursor: pointer; z-index: 100; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .phone-ringing { animation: ring 1.2s infinite; }
         @keyframes ring { 0%, 100% { transform: rotate(0); } 10%, 30%, 50% { transform: rotate(8deg) scale(1.05); } 20%, 40%, 60% { transform: rotate(-8deg) scale(1.05); } }
-        .vn-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200;
-            display: flex; justify-content: center; align-items: flex-end; padding-bottom: 50px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
-        }
+        .vn-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 50px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
         .vn-overlay.active { opacity: 1; pointer-events: auto; }
-        .vn-box {
-            width: 90%; max-width: 800px; background: var(--card-base); border: 4px solid var(--text-brown);
-            border-radius: 20px; padding: 20px; display: flex; gap: 20px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.9);
-        }
-        .vn-sprite-container {
-            width: 200px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center;
-            border: 3px solid var(--text-brown); border-radius: 15px; background: linear-gradient(180deg, var(--accent-pink), #fff); overflow: hidden;
-        }
+        .vn-box { width: 90%; max-width: 800px; background: #fff0f5; border: 4px solid #5d4037; border-radius: 20px; padding: 20px; display: flex; gap: 20px; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.9); }
+        .vn-sprite-container { width: 200px; flex-shrink: 0; display: flex; align-items: flex-end; justify-content: center; border: 3px solid #5d4037; border-radius: 15px; background: linear-gradient(180deg, #f8bbd0, #fff); overflow: hidden; }
         .tsuki-sprite { width: 100%; height: auto; image-rendering: pixelated; }
         .sprite-transition { animation: fadeBounce 0.36s ease-out; }
         @keyframes fadeBounce { 0% { opacity:0; transform:scale(0.96); } 60% { opacity:1; transform:scale(1.04); } 100% { opacity:1; transform:scale(1); } }
         .vn-content { flex-grow: 1; display: flex; flex-direction: column; }
-        .vn-text-area { background: var(--text-brown); color: var(--cream); font-family: 'VT323', monospace; font-size: 1.6rem; padding: 15px; border-radius: 10px; border: 2px solid var(--accent-brown); flex-grow: 1; min-height: 100px; }
+        .vn-text-area { background: #5d4037; color: #fff; font-family: 'VT323', monospace; font-size: 1.6rem; padding: 15px; border-radius: 10px; border: 2px solid #a1887f; flex-grow: 1; min-height: 100px; }
         .vn-options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        .optionButton { background: var(--strawberry); color: white; border: none; font-family: 'VT323', monospace; font-size: 1.4rem; padding: 8px 15px; text-align: left; cursor: pointer; border-radius: 5px; }
-        .optionButton:hover { background: var(--accent-brown); }
-        .vn-close { position: absolute; top: -15px; right: -15px; background: var(--accent-brown); color: white; width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--text-brown); font-weight: bold; cursor: pointer; }
+        .optionButton { background: #f48fb1; color: white; border: none; font-family: 'VT323', monospace; font-size: 1.4rem; padding: 8px 15px; text-align: left; cursor: pointer; border-radius: 5px; }
+        .optionButton:hover { background: #ad1457; }
+        .vn-close { position: absolute; top: -15px; right: -15px; background: #5d4037; color: white; width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fff; font-weight: bold; cursor: pointer; }
 
-        @media (max-width: 768px) {
-            .home-layout { grid-template-columns: 1fr; }
-            .coquette-header { flex-direction: column; text-align: center; }
-            .header-img-box { margin: 0 auto; }
-            .header-pills { justify-content: center; }
-            .bat-wing { display: none; }
-            .vn-box { flex-direction: column; }
-            .vn-sprite-container { margin: 0 auto; width: 120px; height: 120px; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="main-frame-wrapper">
+    <div class="main-container">
         <img src="assets/images/Bat Wing Left.png" alt="" class="bat-wing left">
         <img src="assets/images/Bat Wing Right.png" alt="" class="bat-wing right">
 
-        <div class="main-frame">
-            <div class="inner-frame">
+        <div class="inner-frame">
+            
+            <header class="top-header">
+                <div class="avatar-frame">
+                    <img src="assets/sprites/Thanks.png" alt="Avatar">
+                </div>
+                <div class="header-text">
+                    <h1>Tsuki's Lovebite.exe</h1>
+                    <div class="header-deco-line"></div>
+                    <p>Hey Diva 😚 | Version 1.0</p>
+                    <div class="header-pills">
+                        <div class="pill-white">Status: Open!</div>
+                        <div class="pill-white">Comms: Yes</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="tabs-container">
+                <button class="tab-btn active" data-target="home-tab"><i class="fa-solid fa-heart"></i> home</button>
+                <button class="tab-btn" data-target="prices-tab"><i class="fa-solid fa-heart"></i> prices</button>
+                <button class="tab-btn" data-target="terms-tab"><i class="fa-solid fa-heart"></i> terms</button>
+                <button class="tab-btn" data-target="gallery-tab"><i class="fa-solid fa-heart"></i> gallery</button>
+            </div>
+
+            <div class="pink-body">
                 
-                <header class="coquette-header">
-                    <div class="header-img-box">
-                        <img src="assets/sprites/Thanks.png" alt="Profile">
-                    </div>
-                    <div class="header-content">
-                        <h1 class="header-title">Tsuki's Lovebite</h1>
-                        <div class="header-sub">Hey Diva 😚  |  Version 1.0</div>
-                        <div class="header-pills">
-                            <div class="header-pill">STATUS: OPEN</div>
-                            <div class="header-pill">Comms: Yes!</div>
-                        </div>
-                    </div>
-                </header>
-
-                <nav class="tab-nav">
-                    <button class="tab-btn active" data-target="home-tab">home</button>
-                    <button class="tab-btn" data-target="prices-tab">prices</button>
-                    <button class="tab-btn" data-target="terms-tab">terms</button>
-                    <button class="tab-btn" data-target="gallery-tab">gallery</button>
-                </nav>
-
-                <main class="content-container">
+                <div id="home-tab" class="tab-content active">
+                    <div class="page-title-banner">My Home Page</div>
                     
-                    <div id="home-tab" class="tab-content active">
-                        <div class="page-banner">❖ My Home Page ❖</div>
-                        
-                        <div class="home-layout">
-                            <div class="home-left">
-                                <h2 class="home-subtitle">Welcome Boo! ♡</h2>
-                                <div class="plaid-box">
-                                    <p>Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page.</p>
-                                </div>
-                                <div class="plaid-box">
-                                    <p>Pricing for Commissions is up! If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO</p>
-                                </div>
+                    <div class="white-content-area">
+                        <div class="content-card">
+                            <h2><i class="fa-solid fa-heart"></i> Welcome Boo! <i class="fa-solid fa-heart"></i></h2>
+                            <div class="dashed-line"></div>
+                            
+                            <div class="info-block">
+                                <i class="fa-solid fa-star"></i> Hey, boo! Welcome to my site! I've got a few minigames, a little chat area and my portfolio page.
                             </div>
-
-                            <div class="home-right">
-                                <a href="#" class="link-pill">
-                                    <div class="link-icon"><i class="fab fa-instagram"></i></div> Instagram
-                                </a>
-                                <a href="#" class="link-pill">
-                                    <div class="link-icon"><i class="fab fa-tiktok"></i></div> TikTok
-                                </a>
-                                <a href="#" class="link-pill">
-                                    <div class="link-icon"><i class="fa-solid fa-x"></i></div> Twitter / X
-                                </a>
-                                <a href="#" class="link-pill">
-                                    <div class="link-icon"><i class="fa-solid fa-heart"></i></div> Ko-Fi
-                                </a>
+                            <div class="info-block">
+                                <i class="fa-solid fa-star"></i> Pricing for Commissions is up! If you're looking for some small cheap personal art of maybe your Monsterverze OC or even just your OC I might be your girl XOXO
                             </div>
                         </div>
-                    </div>
 
-                    <div id="prices-tab" class="tab-content">
-                        <div class="page-banner">❖ Prices ❖</div>
-                        <div class="generic-content-box" style="text-align:center;">
-                            <p>Price sheet coming soon...</p>
+                        <div class="links-col">
+                            <a href="#" class="link-row">
+                                <div class="link-icon-square"><i class="fab fa-instagram"></i></div>
+                                <div class="link-text">Instagram</div>
+                            </a>
+                            <a href="#" class="link-row">
+                                <div class="link-icon-square"><i class="fab fa-tiktok"></i></div>
+                                <div class="link-text">TikTok</div>
+                            </a>
+                            <a href="#" class="link-row">
+                                <div class="link-icon-square"><i class="fa-solid fa-x"></i></div>
+                                <div class="link-text">Twitter / X</div>
+                            </a>
+                            <a href="#" class="link-row">
+                                <div class="link-icon-square"><i class="fa-solid fa-heart"></i></div>
+                                <div class="link-text">Ko-Fi</div>
+                            </a>
                         </div>
                     </div>
+                </div>
 
-                    <div id="terms-tab" class="tab-content">
-                        <div class="page-banner">❖ Terms ❖</div>
-                        <div class="generic-content-box">
-                            <ul style="list-style:none; padding-left:10px;">
-                                <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--accent-brown);"></i> Payment required upfront via Paypal.</li>
-                                <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--accent-brown);"></i> No refunds after the sketching phase.</li>
-                                <li style="margin-bottom:10px;"><i class="fa-solid fa-caret-right" style="color:var(--accent-brown);"></i> Personal use only.</li>
-                            </ul>
+                <div id="prices-tab" class="tab-content">
+                    <div class="page-title-banner">Commissions</div>
+                    <div class="content-card" style="text-align:center; min-height:200px; display:flex; align-items:center; justify-content:center;">
+                        <p>Price sheet coming soon...</p>
+                    </div>
+                </div>
+
+                <div id="terms-tab" class="tab-content">
+                    <div class="page-title-banner">Terms of Service</div>
+                    <div class="content-card">
+                        <div class="info-block"><i class="fa-solid fa-caret-right"></i> Payment required upfront via Paypal.</div>
+                        <div class="info-block"><i class="fa-solid fa-caret-right"></i> No refunds after the sketching phase begins.</div>
+                        <div class="info-block"><i class="fa-solid fa-caret-right"></i> Personal use only unless discussed otherwise.</div>
+                    </div>
+                </div>
+
+                <div id="gallery-tab" class="tab-content">
+                    <div class="page-title-banner">Gallery</div>
+                    <div class="content-card">
+                        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px;">
+                            <div style="background:#ddd; height:100px; border-radius:5px;"></div>
+                            <div style="background:#ddd; height:100px; border-radius:5px;"></div>
+                            <div style="background:#ddd; height:100px; border-radius:5px;"></div>
+                            <div style="background:#ddd; height:100px; border-radius:5px;"></div>
                         </div>
                     </div>
+                </div>
 
-                    <div id="gallery-tab" class="tab-content">
-                        <div class="page-banner">❖ Gallery ❖</div>
-                        <div class="generic-content-box">
-                            <div class="gallery-grid">
-                                <div class="gallery-item"></div>
-                                <div class="gallery-item"></div>
-                                <div class="gallery-item"></div>
-                                <div class="gallery-item"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                </main>
-            </div> </div> <div class="site-footer">( Made with love by Tsuki )</div>
+            </div> <div class="lace-footer"></div>
+            <div class="bottom-credit">
+                ( Made by Tsuki with love )
+            </div>
+        </div>
     </div>
 
     <img id="phoneButton" src="assets/images/Phone.png" alt="Phone" class="phone-icon phone-ringing">
@@ -366,23 +396,20 @@
     <script>
         (() => {
             'use strict';
-
-            /* --- TAB SYSTEM LOGIC --- */
+            /* --- TAB LOGIC --- */
             const navButtons = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
-
             navButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
                     navButtons.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    
                     tabContents.forEach(tab => tab.classList.remove('active'));
                     const targetId = btn.getAttribute('data-target');
                     document.getElementById(targetId).classList.add('active');
                 });
             });
 
-            /* --- VN & PHONE LOGIC --- */
+            /* --- VN LOGIC --- */
             const TYPE_SPEED_MS = 24; const TALK_INTERVAL_MS = 140; const SPRITE_TRANSITION_CLASS = 'sprite-transition';
             const spriteFiles = { happy: ['Thanks.png', 'Thanks 2.png'], neutral: ['Sad Talking.png', 'Sad Talking 2.png'], frown: ['Sad Talking.png'], wineSmile: ['Holding Wine Smile.png', 'Holding Wine Smile 2.png'], wineScoff: ['Holding Wine Scoff 2.png'], rose: ['Holding Rose Talk 1.png', 'Holding Rose Talk 2.png'], hangup: ['Hanging Up the phone.png'] };
             const sprites = {}; Object.keys(spriteFiles).forEach(k => { sprites[k] = spriteFiles[k].map(fn => `assets/sprites/${fn}`); });
