@@ -1,1 +1,13 @@
+@font-face {
+  font-family: 'MarshmallowPopHeart';
+  src: url('./assets/MARSHMALLOWPOPHEART.OTF') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+.logo {
+  font-family: 'MarshmallowPopHeart', 'Hachi Maru Pop', cursive;
+  font-size: 48px;
+  color: #8B3A4A; /* deep accent */
+}
 
